@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flash Cards Stylées - Espaces Préhilbertiens et Euclidiens</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #2C75FF, #002FA7);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+            color: #2c3e50;
+            min-height: 100vh;
+        }
+        h1 {
+            color: #73C2FB;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            font-size: 2.5em;
+            margin-bottom: 40px;
+            animation: fadeIn 1s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .flashcard-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            max-width: 1400px;
+            width: 100%;
+        }
+        .flashcard {
+            perspective: 1500px;
+            cursor: pointer;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            background: white;
+        }
+        .flashcard:hover {
+            transform: scale(1.08) rotate(2deg);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.25);
+        }
+        .flashcard-inner {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            text-align: center;
+            transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            transform-style: preserve-3d;
+        }
+        .flashcard.flipped .flashcard-inner {
+            transform: rotateY(180deg);
+        }
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 25px;
+            box-sizing: border-box;
+            border-radius: 15px;
+            font-size: 1.1em;
+            line-height: 1.5;
+        }
+        .flashcard-front {
+            background: linear-gradient(135deg, #CECECE, #478ed1);
+            color: white;
+            font-weight: 600;
+        }
+        .flashcard-back {
+            background: linear-gradient(135deg, #66bb6a, #00561B);
+            color: white;
+            transform: rotateY(180deg);
+            font-size: 1em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Flash Cards Stylées - Espaces Préhilbertiens et Euclidiens</h1>
+    <div class="flashcard-container">
+        <div class="flashcard" onclick="this.classList.toggle('flipped')">
+            <div class="flashcard-inner">
+                <div class="flashcard-front">
+                    Qu'est-ce qu'un produit scalaire (ps) sur un espace vectoriel réel E ?
+                </div>
+                <div class="flashcard-back">
+                    Un produit scalaire vérifie : <br>1. Symétrie : ∀x,y ∈ E, &lt;x,y&gt; = &lt;y,x&gt; <br>2. Bilinéarité : ∀x,y,z ∈ E, ∀λ,μ ∈ ℝ, &lt;λx + μy, z&gt; = λ&lt;x,z&gt; + μ&lt;y,z&gt; et &lt;z, λx + μy&gt; = λ&lt;z,x&gt; + μ&lt;z,y&gt; <br>3. Positivité : ∀x ∈ E, &lt;x,x&gt; ≥ 0 <br>4. Définitude : &lt;x,x&gt; = 0 ⇒ x = 0E
+                </div>
+            </div>
+        </div>
+        <div class="flashcard" onclick="this.classList.toggle('flipped')">
+            <div class="flashcard-inner">
+                <div class="flashcard-front">
+                    Définition d'un espace préhilbertien réel.
+                </div>
+                <div class="flashcard-back">
+                    E est un ℝ-espace vectoriel muni d'un produit scalaire. La dimension peut être finie ou infinie.
+                </div>
+            </div>
+        </div>
+        <div class="flashcard" onclick="this.classList.toggle('flipped')">
+            <div class="flashcard-inner">
+                <div class="flashcard-front">
+                    Qu'est-ce qu'un espace euclidien ?
+                </div>
+                <div class="flashcard-back">
+                    Un espace préhilbertien de dimension finie.
+                </div>
+            </div>
+        </div>
+        <div class="flashcard" onclick="this.classList.toggle('flipped')">
+            <div class="flashcard-inner">
+                <div class="flashcard-front">
+                    Norme associée à un produit scalaire.
+                </div>
+                <div class="flashcard-back">
+                    ∀x ∈ E, ||x|| = √&lt;x,x&gt;. C'est la norme du vecteur x.
+                </div>
+            </div>
+        </div>
+        <div class="flashcard" onclick="this.classList.toggle('flipped')">
+            <div class="flashcard-inner">
+                <div class="flashcard-front">
+                    Distance associée au produit scalaire.
+                </div>
+                <div class="flashcard-back">
+                    ∀x,y ∈ E, d(x,y) = ||x - y||.
+                </div>
+            </div>
+        </div>
+        <div class="flashcard" onclick="this.classList.toggle('flipped')">
+            <div class="flashcard-inner">
+                <div class="flashcard-front">
+                    Identités remarquables pour les normes.
+                </div>
+                <div class="flashcard-back">
+                    1. ||x + y||² = ||x||² + ||y||² + 2&lt;x,y&gt; <br>2. ||x - y||² = ||x||² + ||y||² - 2&lt;x,y&gt; <br>3. Identité du parallélogramme : ||x + y||² + ||x - y||² = 2(||x||² + ||y||²)
+                </div>
+            </div>
+        </div>
+        <div class="flashcard" onclick="this.classList.toggle('flipped')">
+            <div class="flashcard-inner">
+                <div class="flashcard-front">
+                    Inégalité de Cauchy-Schwarz.
+                </div>
+                <div class="flashcard-back">
+                    ∀x,y ∈ E, |&lt;x,y&gt;| ≤ ||x|| ||y||. Égalité si x et y sont colinéaires.
+                </div>
+            </div>
+        </div>
+        <div class="flashcard" onclick="this.classList.toggle('flipped')">
+            <div class="flashcard-inner">
+                <div class="flashcard-front">
+                    Propriétés de la norme.
+                </div>
+                <div class="flashcard-back">
+                    - ∀x ∈ E, ∀λ ∈ ℝ, ||λx|| = |λ| ||x|| <br>- ∀x,y ∈ E, ||x + y|| ≤ ||x|| + ||y|| (inégalité triangulaire) <br>- ||x|| = 0 ⇔ x = 0
+                </div>
+            </div>
+        </div>
+        <div class="flashcard" onclick="this.classList.toggle('flipped')">
+            <div class="flashcard-inner">
+                <div class="flashcard-front">
+                    Définition de l'orthogonalité.
+                </div>
+                <div class="flashcard-back">
+                    Deux vecteurs x et y sont orthogonaux si &lt;x,y&gt; = 0.
+                </div>
+            </div>
+        </div>
+        <div class="flashcard" onclick="this.classList.toggle('flipped')">
+            <div class="flashcard-inner">
+                <div class="flashcard-front">
+                    Famille orthogonale.
+                </div>
+                <div class="flashcard-back">
+                    Famille de vecteurs deux à deux orthogonaux. Toute famille orthogonale sans le vecteur nul est libre (linéairement indépendante).
+                </div>
+            </div>
+        </div>
+        <div class="flashcard" onclick="this.classList.toggle('flipped')">
+            <div class="flashcard-inner">
+                <div class="flashcard-front">
+                    Théorème de Pythagore dans un espace préhilbertien.
+                </div>
+                <div class="flashcard-back">
+                    1. Pour une famille orthogonale {e1, ..., en}, ||e1 + ... + en||² = ||e1||² + ... + ||en||² <br>2. Pour deux vecteurs x,y : &lt;x,y&gt; = 0 ⇔ ||x + y||² = ||x||² + ||y||²
+                </div>
+            </div>
+        </div>
+        <div class="flashcard" onclick="this.classList.toggle('flipped')">
+            <div class="flashcard-inner">
+                <div class="flashcard-front">
+                    Famille orthonormale.
+                </div>
+                <div class="flashcard-back">
+                    Famille orthogonale où chaque vecteur a une norme égale à 1. Pour {e_i}, &lt;e_i, e_j&gt; = δ_{ij} (1 si i=j, 0 sinon).
+                </div>
+            </div>
+        </div>
+        <div class="flashcard" onclick="this.classList.toggle('flipped')">
+            <div class="flashcard-inner">
+                <div class="flashcard-front">
+                    Vecteur unitaire.
+                </div>
+                <div class="flashcard-back">
+                    Vecteur de norme égale à 1.
+                </div>
+            </div>
+        </div>
+        <div class="flashcard" onclick="this.classList.toggle('flipped')">
+            <div class="flashcard-inner">
+                <div class="flashcard-front">
+                    Théorème d'orthonormalisation de Gram-Schmidt.
+                </div>
+                <div class="flashcard-back">
+                    Soit {e1, ..., en} une famille libre de E. Il existe une unique famille orthonormale {ε1, ..., εn} telle que : <br>- ∀k, Vect(e1,...,ek) = Vect(ε1,...,εk) <br>- ∀k, &lt;εk, ek&gt; > 0 <br>Formule : ε1 = e1 / ||e1||, puis εk = (ek - ∑_{i=1}^{k-1} &lt;ek, εi&gt; εi) / ||ek - ∑_{i=1}^{k-1} &lt;ek, εi&gt; εi||
+                </div>
+            </div>
+        </div>
+        <div class="flashcard" onclick="this.classList.toggle('flipped')">
+            <div class="flashcard-inner">
+                <div class="flashcard-front">
+                    Orthogonal d'un sous-ensemble F (F⊥).
+                </div>
+                <div class="flashcard-back">
+                    Ensemble des vecteurs de E orthogonaux à tous les vecteurs de F. F⊥ est un sous-espace vectoriel de E.
+                </div>
+            </div>
+        </div>
+        <div class="flashcard" onclick="this.classList.toggle('flipped')">
+            <div class="flashcard-inner">
+                <div class="flashcard-front">
+                    Projection orthogonale sur un sous-espace de dimension finie F.
+                </div>
+                <div class="flashcard-back">
+                    Pour x ∈ E, il existe un unique Pf(x) ∈ F tel que : <br>- Pf(x) ∈ F <br>- x - Pf(x) ∈ F⊥ <br>Si {ε1, ..., εn} base orthonormale de F, Pf(x) = ∑_{i=1}^n &lt;x, εi&gt; εi
+                </div>
+            </div>
+        </div>
+        <div class="flashcard" onclick="this.classList.toggle('flipped')">
+            <div class="flashcard-inner">
+                <div class="flashcard-front">
+                    Décomposition orthogonale.
+                </div>
+                <div class="flashcard-back">
+                    E = F ⊕ F⊥ (somme directe). ||x||² = ||Pf(x)||² + ||x - Pf(x)||²
+                </div>
+            </div>
+        </div>
+        <div class="flashcard" onclick="this.classList.toggle('flipped')">
+            <div class="flashcard-inner">
+                <div class="flashcard-front">
+                    Propriétés de l'application p(f).
+                </div>
+                <div class="flashcard-back">
+                    p(f) : E → E est un projecteur (p(f)² = p(f)), de noyau F⊥ et d'image F. C'est le projecteur orthogonal sur F.
+                </div>
+            </div>
+        </div>
+        <div class="flashcard" onclick="this.classList.toggle('flipped')">
+            <div class="flashcard-inner">
+                <div class="flashcard-front">
+                    Distance d'un vecteur x à un sous-espace F de dimension finie.
+                </div>
+                <div class="flashcard-back">
+                    d(x, F) = ||x - Pf(x)||
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
