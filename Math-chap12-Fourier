@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcards - Séries de Fourier</title>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #2C75FF, #002FA7);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        overflow-x: hidden;
+    }
+
+    .container {
+        max-width: 900px;
+        width: 100%;
+        position: relative;
+        z-index: 1;
+    }
+
+    .header {
+        text-align: center;
+        color: white;
+        margin-bottom: 25px;
+    }
+
+    .header h1 {
+        font-size: 2.2em;
+        margin-bottom: 8px;
+        text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .header p {
+        opacity: 0.95;
+    }
+
+    .top-panels {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-bottom: 18px;
+    }
+
+    .panel {
+        background: rgba(255,255,255,0.16);
+        border: 1px solid rgba(255,255,255,0.18);
+        border-radius: 18px;
+        padding: 12px 14px;
+        color: white;
+        backdrop-filter: blur(6px);
+        box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+    }
+
+    .panel-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .btn {
+        padding: 10px 18px;
+        border-radius: 50px;
+        font-weight: 700;
+        cursor: pointer;
+        border: none;
+        background: white;
+        color: #2C75FF;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.12);
+        transition: transform 0.2s, opacity 0.2s;
+        user-select: none;
+    }
+
+    .btn:active {
+        transform: scale(0.95);
+    }
+
+    .btn.secondary {
+        background: rgba(255,255,255,0.92);
+        color: #0b2a88;
+    }
+
+    .btn.danger {
+        background: rgba(255,255,255,0.92);
+        color: #b91c1c;
+    }
+
+    .btn-know {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+    }
+
+    .btn-dontknow {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: white;
+    }
+
+    .select {
+        border: none;
+        border-radius: 50px;
+        padding: 10px 14px;
+        font-weight: 700;
+        outline: none;
+        cursor: pointer;
+        background: white;
+        color: #2C75FF;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.12);
+    }
+
+    .stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        font-weight: 700;
+    }
+
+    .chip {
+        background: rgba(255,255,255,0.22);
+        border: 1px solid rgba(255,255,255,0.2);
+        padding: 6px 12px;
+        border-radius: 999px;
+        color: white;
+        font-size: 14px;
+    }
+
+    /* --- CARTE --- */
+    .card-scene {
+        perspective: 1000px;
+        width: 100%;
+        height: 450px;
+        cursor: pointer;
+    }
+
+    .card {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+        transform-style: preserve-3d;
+        border-radius: 25px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    }
+
+    .card.is-flipped {
+        transform: rotateY(180deg);
+    }
+
+    .card-face {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        border-radius: 25px;
+        padding: 40px;
+        background: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .card-face.back {
+        transform: rotateY(180deg);
+        background: #fdfdfd;
+    }
+
+    .card-label {
+        position: absolute;
+        top: 30px;
+        font-size: 13px;
+        font-weight: 900;
+        padding: 8px 20px;
+        border-radius: 20px;
+        color: white;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .bg-question {
+        background: linear-gradient(135deg, #74D0F1, #0000FF);
+    }
+
+    .bg-answer {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .card-content {
+        font-size: 22px;
+        line-height: 1.6;
+        color: #333;
+        width: 100%;
+        overflow-y: auto;
+        max-height: 80%;
+        white-space: pre-line;
+    }
+
+    mjx-container {
+        font-size: 110% !important;
+        outline: none;
+    }
+
+    .card-hint {
+        position: absolute;
+        bottom: 18px;
+        font-size: 14px;
+        color: #aaa;
+        width: 100%;
+        text-align: center;
+    }
+
+    /* --- BADGE ETAT CARTE --- */
+    .status-pill {
+        position: absolute;
+        top: 30px;
+        right: 30px;
+        font-size: 12px;
+        font-weight: 900;
+        padding: 8px 12px;
+        border-radius: 999px;
+        color: white;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+    }
+
+    .status-unknown {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+
+    .status-known {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .status-unset {
+        background: linear-gradient(135deg, #64748b, #475569);
+    }
+
+    /* --- NAVIGATION --- */
+    .navigation {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 22px;
+        padding: 0 10px;
+    }
+
+    .nav-btn {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: none;
+        background: linear-gradient(135deg, #74D0F1, #0000FF);
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+        transition: transform 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .nav-btn:hover {
+        transform: scale(1.1);
+    }
+
+    .nav-btn:active {
+        transform: scale(0.9);
+    }
+
+    .counter {
+        color: white;
+        font-size: 18px;
+        font-weight: 700;
+        background: rgba(255,255,255,0.2);
+        padding: 5px 15px;
+        border-radius: 15px;
+    }
+
+    .progress-bar {
+        margin-top: 20px;
+        height: 8px;
+        background: rgba(0,0,0,0.2);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #74D0F1, #0000FF);
+        width: 0%;
+        transition: width 0.3s ease-out;
+    }
+
+    .keyboard-hint {
+        text-align: center;
+        color: rgba(255,255,255,0.6);
+        font-size: 12px;
+        margin-top: 10px;
+    }
+
+    /* --- BOUTONS JE SAIS / JE SAIS PAS --- */
+    .knowbar {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        margin-top: 18px;
+        flex-wrap: wrap;
+    }
+
+    @media (max-width: 520px) {
+        .card-face { padding: 28px; }
+        .card-content { font-size: 19px; }
+        .status-pill { top: 20px; right: 20px; }
+    }
+</style>
+
+
+</head><script>
+  window.MathJax = {
+    tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+    },
+    svg: { fontCache: 'global' },
+    startup: { typeset: false }
+  };
+</script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script><body>
+    <div class="container">
+        <div class="header">
+            <h1>📘 Séries de Fourier</h1>
+            <p>Flashcards + Révision intelligente (localStorage)</p>
+        </div>
+
+    <div class="top-panels">
+        <div class="panel">
+            <div class="panel-row">
+                <button class="btn" onclick="shuffleCards()">🎲 Mélanger</button>
+                <button class="btn secondary" onclick="resetOrder()">↩️ Ordre normal</button>
+                <button class="btn danger" onclick="resetProgress()">🧹 Reset progrès</button>
+
+                <select class="select" id="filterSelect" onchange="applyFilter()">
+                    <option value="all">📚 Toutes</option>
+                    <option value="review">🟠 À revoir</option>
+                    <option value="known">🟢 Maîtrisées</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="stats" id="statsArea">
+                <span class="chip">Chargement...</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-scene" onclick="flipCard()">
+        <div class="card" id="cardElement">
+
+            <div class="card-face front">
+                <div class="card-label bg-question">Question</div>
+                <div class="status-pill status-unset" id="statusPill">Non notée</div>
+                <div class="card-content" id="questionContent"></div>
+                <div class="card-hint">Toucher ou Espace pour retourner</div>
+            </div>
+
+            <div class="card-face back">
+                <div class="card-label bg-answer">Réponse</div>
+                <div class="card-content" id="answerContent"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="knowbar">
+        <button class="btn btn-dontknow" onclick="markDontKnow(event)">🟠 Je sais pas</button>
+        <button class="btn btn-know" onclick="markKnow(event)">🟢 Je sais</button>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" onclick="previousCard(event)">←</button>
+        <div class="counter">
+            <span id="currentCard">1</span> / <span id="totalCards">1</span>
+        </div>
+        <button class="nav-btn" onclick="nextCard(event)">→</button>
+    </div>
+
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <div class="keyboard-hint">
+        ⌨️ Flèches : naviguer • Espace : retourner • 1 = Je sais pas • 2 = Je sais
+    </div>
+</div>
+
+
+<script>
+/* ======================================================
+   FLASHCARDS – SÉRIES DE FOURIER (Chapitre 12)
+   Source : PDF fourni par l'utilisateur
+   ====================================================== */
+
+const flashcardsData = [
+    {
+        id: "fourier-01",
+        q: "Quel est l’objectif des séries de Fourier ?",
+        a: "Décomposer un signal périodique $f(t)$ en somme de sinus et cosinus.\nChaque fréquence est un multiple de la fondamentale.\n(Source : Chapitre 12)  [oai_citation:0‡12_Séries de Fourier_ce.pdf](sediment://file_00000000189071f4a731976b4384c710)"
+    },
+    {
+        id: "fourier-02",
+        q: "Définition : que signifie “$f$ continue par morceaux” sur un segment ?",
+        a: "Il existe une subdivision $a=t_0<t_1<\\dots<t_n=b$ telle que $f$ soit continue sur chaque intervalle $(t_{k-1},t_k)$ et admette des limites à gauche/droite.\n(Source : Définition 1.1)  [oai_citation:1‡12_Séries de Fourier_ce.pdf](sediment://file_00000000189071f4a731976b4384c710)"
+    },
+    {
+        id: "fourier-03",
+        q: "Définition : $f$ est de classe $\\mathcal{C}^1$ par morceaux ?",
+        a: "Sur chaque morceau, $f$ est dérivable, et $f'$ admet des limites à gauche/droite.\n(Source : Définition 1.3)  [oai_citation:2‡12_Séries de Fourier_ce.pdf](sediment://file_00000000189071f4a731976b4384c710)"
+    },
+    {
+        id: "fourier-04",
+        q: "Définition : $f$ est $T$-périodique ?",
+        a: "$$\\forall t,\\quad f(t+T)=f(t).$$\n(Source : Définition 1.6)  [oai_citation:3‡12_Séries de Fourier_ce.pdf](sediment://file_00000000189071f4a731976b4384c710)"
+    },
+    {
+        id: "fourier-05",
+        q: "Quelle est la pulsation fondamentale $\\omega_0$ associée à la période $T$ ?",
+        a: "$$\\omega_0 = \\frac{2\\pi}{T}.$$  [oai_citation:4‡12_Séries de Fourier_ce.pdf](sediment://file_00000000189071f4a731976b4384c710)"
+    },
+    {
+        id: "fourier-06",
+        q: "Quels sont les coefficients trigonométriques de Fourier ($a_0, a_n, b_n$) ?",
+        a: "Pour $f$ $T$-périodique :\n$$a_0 = \\frac{2}{T}\\int_{-T/2}^{T/2} f(t)\\,dt$$\n$$a_n = \\frac{2}{T}\\int_{-T/2}^{T/2} f(t)\\cos(n\\omega_0 t)\\,dt$$\n$$b_n = \\frac{2}{T}\\int_{-T/2}^{T/2} f(t)\\sin(n\\omega_0 t)\\,dt$$\n(Source : Définition 2.1)  [oai_citation:5‡12_Séries de Fourier_ce.pdf](sediment://file_00000000189071f4a731976b4384c710)"
+    },
+    {
+        id: "fourier-07",
+        q: "Que représente $a_0$ dans la série de Fourier ?",
+        a: "$a_0$ correspond à la valeur moyenne de $f$ sur une période.\n(Source : remarques)  [oai_citation:6‡12_Séries de Fourier_ce.pdf](sediment://file_00000000189071f4a731976b4384c710)"
+    },
+    {
+        id: "fourier-08",
+        q: "Quelle est l’expression de la série de Fourier (forme réelle) ?",
+        a: "$$f(t) = a_0+ \\sum_{n=1}^{\\infty}\\big(a_n\\cos(n\\omega_0 t)+b_n\\sin(n\\omega_0 t)\\big).$$\n(Source : Définition 2.2)  [oai_citation:7‡12_Séries de Fourier_ce.pdf](sediment://file_00000000189071f4a731976b4384c710)"
+    },
+    {
+        id: "fourier-09",
+        q: "Qu’est-ce qu’une somme partielle de Fourier $S_N$ ?",
+        a: "$$S_N(t)=\\frac{a_0}{2}+\\sum_{n=1}^{N}\\big(a_n\\cos(n\\omega_0 t)+b_n\\sin(n\\omega_0 t)\\big).$$\n(Source : Définition 2.2)  [oai_citation:8‡12_Séries de Fourier_ce.pdf](sediment://file_00000000189071f4a731976b4384c710)"
+    },
+    {
+        id: "fourier-10",
+        q: "Si $f$ est paire, que peut-on dire des $b_n$ ?",
+        a: "Si $f$ est paire, alors $b_n=0$.\n(Source : § cas paire)  [oai_citation:9‡12_Séries de Fourier_ce.pdf](sediment://file_00000000189071f4a731976b4384c710)"
+    },
+    {
+        id: "fourier-11",
+        q: "Si $f$ est impaire, que peut-on dire de $a_0$ et $a_n$ ?",
+        a: "Si $f$ est impaire, alors $a_0=0$ et $a_n=0$.\n(Source : § cas impaire)  [oai_citation:10‡12_Séries de Fourier_ce.pdf](sediment://file_00000000189071f4a731976b4384c710)"
+    },
+    {
+        id: "fourier-12",
+        q: "Théorème de Dirichlet : vers quoi converge la série de Fourier ?",
+        a: "Si $f$ est $T$-périodique et $\\mathcal{C}^1$ par morceaux, alors la série converge en $t$ vers :\n$$\\frac{f(t^+)+f(t^-)}{2}.$$\n(Source : Théorème 3.3)  [oai_citation:11‡12_Séries de Fourier_ce.pdf](sediment://file_00000000189071f4a731976b4384c710)"
+    },
+    {
+        id: "fourier-13",
+        q: "Que dit la formule de Parseval (idée) ?",
+        a: "Elle relie l’énergie moyenne de $f$ sur une période à la somme des carrés des coefficients de Fourier.\n(Source : Théorème 3.5)  [oai_citation:12‡12_Séries de Fourier_ce.pdf](sediment://file_00000000189071f4a731976b4384c710)"
+    },
+    {
+        id: "fourier-14",
+        q: "Quelle famille est orthogonale dans l’espace des fonctions périodiques ?",
+        a: "$\\{1,\\cos(n\\omega_0 t),\\sin(n\\omega_0 t)\\}$ est une famille orthogonale sur une période.\n(Source : Théorème 4.3)  [oai_citation:13‡12_Séries de Fourier_ce.pdf](sediment://file_00000000189071f4a731976b4384c710)"
+    },
+    {
+        id: "fourier-15",
+        q: "Interprétation : que représente $S_N$ ?",
+        a: "$S_N$ est la projection orthogonale de $f$ sur l’espace des polynômes trigonométriques d’ordre $N$.\n(Source : Théorème 4.8)  [oai_citation:14‡12_Séries de Fourier_ce.pdf](sediment://file_00000000189071f4a731976b4384c710)"
+    }
+];
+
+/* =========================
+   localStorage keys
+   ========================= */
+const LS_KEY_PROGRESS = "fourier_flashcards_progress_v1";
+const LS_KEY_ORDER = "fourier_flashcards_order_v1";
+const LS_KEY_FILTER = "fourier_flashcards_filter_v1";
+
+/* =========================
+   State
+   ========================= */
+let baseCards = [...flashcardsData];
+let cards = [];
+let currentIndex = 0;
+let isFlipped = false;
+
+const cardElement = document.getElementById("cardElement");
+const statusPill = document.getElementById("statusPill");
+const filterSelect = document.getElementById("filterSelect");
+
+/* =========================
+   Progress storage
+   progressMap[id] = "known" | "review" | null
+   ========================= */
+function loadProgress() {
+    try {
+        return JSON.parse(localStorage.getItem(LS_KEY_PROGRESS)) || {};
+    } catch {
+        return {};
+    }
+}
+
+function saveProgress(progressMap) {
+    localStorage.setItem(LS_KEY_PROGRESS, JSON.stringify(progressMap));
+}
+
+/* =========================
+   Order storage (array of ids)
+   ========================= */
+function loadOrder() {
+    try {
+        return JSON.parse(localStorage.getItem(LS_KEY_ORDER)) || null;
+    } catch {
+        return null;
+    }
+}
+
+function saveOrder(orderIds) {
+    localStorage.setItem(LS_KEY_ORDER, JSON.stringify(orderIds));
+}
+
+/* =========================
+   Filter storage
+   ========================= */
+function loadFilter() {
+    return localStorage.getItem(LS_KEY_FILTER) || "all";
+}
+
+function saveFilter(value) {
+    localStorage.setItem(LS_KEY_FILTER, value);
+}
+
+/* =========================
+   Helpers
+   ========================= */
+function setStatusPill(state) {
+    statusPill.classList.remove("status-known", "status-unknown", "status-unset");
+
+    if (state === "known") {
+        statusPill.classList.add("status-known");
+        statusPill.textContent = "Maîtrisée";
+    } else if (state === "review") {
+        statusPill.classList.add("status-unknown");
+        statusPill.textContent = "À revoir";
+    } else {
+        statusPill.classList.add("status-unset");
+        statusPill.textContent = "Non notée";
+    }
+}
+
+function getCurrentCard() {
+    return cards[currentIndex];
+}
+
+/* =========================
+   Apply filter + order
+   ========================= */
+function rebuildCardsList(keepIndex = false) {
+    const progressMap = loadProgress();
+    const filter = filterSelect.value;
+
+    // base list (ordered)
+    const orderIds = loadOrder();
+    let ordered = [...baseCards];
+
+    if (Array.isArray(orderIds) && orderIds.length === baseCards.length) {
+        const map = new Map(baseCards.map(c => [c.id, c]));
+        ordered = orderIds.map(id => map.get(id)).filter(Boolean);
+    }
+
+    // filter
+    if (filter === "known") {
+        ordered = ordered.filter(c => progressMap[c.id] === "known");
+    } else if (filter === "review") {
+        ordered = ordered.filter(c => progressMap[c.id] !== "known");
+    }
+
+    // fallback if empty
+    if (ordered.length === 0) {
+        ordered = [...baseCards];
+    }
+
+    const oldId = keepIndex && cards[currentIndex] ? cards[currentIndex].id : null;
+
+    cards = ordered;
+
+    if (keepIndex && oldId) {
+        const newIndex = cards.findIndex(c => c.id === oldId);
+        currentIndex = newIndex >= 0 ? newIndex : 0;
+    } else {
+        currentIndex = 0;
+    }
+
+    updateCardContent();
+}
+
+/* =========================
+   UI update
+   ========================= */
+function updateStats() {
+    const progressMap = loadProgress();
+    const total = baseCards.length;
+    const known = baseCards.filter(c => progressMap[c.id] === "known").length;
+    const review = total - known;
+    const pct = total === 0 ? 0 : Math.round((known / total) * 100);
+
+    const statsArea = document.getElementById("statsArea");
+    statsArea.innerHTML = `
+        <span class="chip">🟢 Maîtrisées : <strong>${known}</strong> / ${total}</span>
+        <span class="chip">🟠 À revoir : <strong>${review}</strong> / ${total}</span>
+        <span class="chip">📊 ${pct}% maîtrisé</span>
+    `;
+}
+
+function updateCardContent() {
+    if (!cards || cards.length === 0) return;
+
+    const progressMap = loadProgress();
+    const card = getCurrentCard();
+
+    const qDiv = document.getElementById("questionContent");
+    const aDiv = document.getElementById("answerContent");
+
+    qDiv.innerHTML = card.q;
+    aDiv.innerHTML = card.a;
+
+    const status = progressMap[card.id] || null;
+    setStatusPill(status);
+
+    document.getElementById("currentCard").textContent = currentIndex + 1;
+    document.getElementById("totalCards").textContent = cards.length;
+
+    document.getElementById("progressFill").style.width =
+        ((currentIndex + 1) / cards.length) * 100 + "%";
+
+    updateStats();
+
+    if (window.MathJax) {
+        MathJax.typesetPromise([qDiv, aDiv]);
+    }
+}
+
+/* =========================
+   Actions
+   ========================= */
+function flipCard() {
+    isFlipped = !isFlipped;
+    cardElement.classList.toggle("is-flipped", isFlipped);
+}
+
+function nextCard(e) {
+    if (e) e.stopPropagation();
+    isFlipped = false;
+    cardElement.classList.remove("is-flipped");
+
+    setTimeout(() => {
+        currentIndex = (currentIndex + 1) % cards.length;
+        updateCardContent();
+    }, 200);
+}
+
+function previousCard(e) {
+    if (e) e.stopPropagation();
+    isFlipped = false;
+    cardElement.classList.remove("is-flipped");
+
+    setTimeout(() => {
+        currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+        updateCardContent();
+    }, 200);
+}
+
+function shuffleCards() {
+    isFlipped = false;
+    cardElement.classList.remove("is-flipped");
+
+    setTimeout(() => {
+        // shuffle order IDs and store it
+        const ids = [...baseCards.map(c => c.id)];
+        ids.sort(() => Math.random() - 0.5);
+        saveOrder(ids);
+
+        rebuildCardsList(false);
+    }, 250);
+}
+
+function resetOrder() {
+    localStorage.removeItem(LS_KEY_ORDER);
+    rebuildCardsList(false);
+}
+
+function resetProgress() {
+    if (!confirm("Reset complet : tu veux supprimer toutes tes cartes maîtrisées/à revoir ?")) return;
+    localStorage.removeItem(LS_KEY_PROGRESS);
+    rebuildCardsList(true);
+}
+
+function markKnow(e) {
+    if (e) e.stopPropagation();
+
+    const progressMap = loadProgress();
+    const card = getCurrentCard();
+    progressMap[card.id] = "known";
+    saveProgress(progressMap);
+
+    updateCardContent();
+    // auto-next pour révision rapide
+    setTimeout(() => nextCard(), 150);
+}
+
+function markDontKnow(e) {
+    if (e) e.stopPropagation();
+
+    const progressMap = loadProgress();
+    const card = getCurrentCard();
+    progressMap[card.id] = "review";
+    saveProgress(progressMap);
+
+    updateCardContent();
+    setTimeout(() => nextCard(), 150);
+}
+
+function applyFilter() {
+    const val = filterSelect.value;
+    saveFilter(val);
+    rebuildCardsList(false);
+}
+
+/* =========================
+   Keyboard shortcuts
+   ========================= */
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') nextCard();
+    if (e.key === 'ArrowLeft') previousCard();
+
+    if (e.key === ' ' || e.key === 'Enter') {
+        e.preventDefault();
+        flipCard();
+    }
+
+    // 1 = je sais pas / 2 = je sais
+    if (e.key === '1') markDontKnow();
+    if (e.key === '2') markKnow();
+});
+
+/* =========================
+   Mobile swipe
+   ========================= */
+let touchStartX = 0;
+const scene = document.querySelector('.card-scene');
+
+scene.addEventListener('touchstart', e => {
+    touchStartX = e.changedTouches[0].screenX;
+});
+
+scene.addEventListener('touchend', e => {
+    let touchEndX = e.changedTouches[0].screenX;
+    handleSwipe(touchStartX, touchEndX);
+});
+
+function handleSwipe(start, end) {
+    const threshold = 50;
+    if (start - end > threshold) nextCard();
+    if (end - start > threshold) previousCard();
+}
+
+/* =========================
+   Init
+   ========================= */
+(function init() {
+    // restore filter
+    const savedFilter = loadFilter();
+    filterSelect.value = savedFilter;
+
+    rebuildCardsList(false);
+})();
+</script></body>
+</html> 
