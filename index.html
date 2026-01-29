@@ -3,282 +3,320 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flash Cards Stylées - Espaces Préhilbertiens et Euclidiens</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <title>Mon Espace de Révision</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
 
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
         body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #2C75FF, #002FA7);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 40px;
-            color: #2c3e50;
+            font-family: 'Lato', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
             min-height: 100vh;
+            padding: 40px 20px;
+            color: #333;
         }
-        h1 {
-            color: #73C2FB;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-            font-size: 2.5em;
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* --- EN-TÊTE --- */
+        .header {
+            text-align: center;
+            color: white;
             margin-bottom: 40px;
-            animation: fadeIn 1s ease-in-out;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
-        .flashcard-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 30px;
-            max-width: 1400px;
+        .header p { opacity: 0.8; font-size: 1.1rem; }
+
+        /* --- BARRE DE RECHERCHE --- */
+        .search-container {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+        }
+        
+        #searchBar {
             width: 100%;
+            max-width: 500px;
+            padding: 15px 25px;
+            border-radius: 50px;
+            border: none;
+            font-size: 1rem;
+            font-family: 'Lato', sans-serif;
+            background: rgba(255,255,255,0.9);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            outline: none;
+            transition: transform 0.2s;
         }
-        .flashcard {
-            perspective: 1500px;
-            cursor: pointer;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-            border-radius: 15px;
-            overflow: hidden;
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        #searchBar:focus {
+            transform: scale(1.02);
             background: white;
         }
-        .flashcard:hover {
-            transform: scale(1.08) rotate(2deg);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.25);
+
+        /* --- GRILLE DES MATIÈRES --- */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
         }
-        .flashcard-inner {
-            position: relative;
-            width: 100%;
-            height: 250px;
-            text-align: center;
-            transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-            transform-style: preserve-3d;
+
+        /* --- CARTE MATIÈRE --- */
+        .subject-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 20px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
         }
-        .flashcard.flipped .flashcard-inner {
-            transform: rotateY(180deg);
+
+        .subject-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255,255,255,0.15);
         }
-        .flashcard-front, .flashcard-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
+
+        .subject-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+            padding-bottom: 15px;
+        }
+
+        .subject-icon {
+            font-size: 2rem;
+            background: white;
+            width: 50px;
+            height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 25px;
-            box-sizing: border-box;
-            border-radius: 15px;
-            font-size: 1.1em;
-            line-height: 1.5;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
-        .flashcard-front {
-            background: linear-gradient(135deg, #CECECE, #478ed1);
+
+        .subject-title {
             color: white;
-            font-weight: 600;
+            font-size: 1.4rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
-        .flashcard-back {
-            background: linear-gradient(135deg, #66bb6a, #00561B);
-            color: white;
-            transform: rotateY(180deg);
-            font-size: 1em;
+
+        /* --- LISTE DES LIENS --- */
+        .chapter-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
+
+        .chapter-link {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.95);
+            color: #1e3c72;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-weight: 700;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chapter-link:hover {
+            transform: translateX(5px);
+            background: white;
+            color: #2a5298;
+        }
+
+        .chapter-link::after {
+            content: '→';
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.2s;
+        }
+
+        .chapter-link:hover::after {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Status tags (Optionnel) */
+        .tag {
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 10px;
+            margin-left: 10px;
+            text-transform: uppercase;
+        }
+        .tag-new { background: #e74c3c; color: white; }
+        .tag-rev { background: #f1c40f; color: #333; }
+
+        /* Animation d'apparition */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .subject-card {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        .subject-card:nth-child(2) { animation-delay: 0.1s; }
+        .subject-card:nth-child(3) { animation-delay: 0.2s; }
+
     </style>
 </head>
 <body>
-    <h1>Flash Cards Stylées - Espaces Préhilbertiens et Euclidiens</h1>
-    <div class="flashcard-container">
-        <div class="flashcard" onclick="this.classList.toggle('flipped')">
-            <div class="flashcard-inner">
-                <div class="flashcard-front">
-                    Qu'est-ce qu'un produit scalaire (ps) sur un espace vectoriel réel E ?
-                </div>
-                <div class="flashcard-back">
-                    Un produit scalaire vérifie : <br>1. Symétrie : ∀x,y ∈ E, &lt;x,y&gt; = &lt;y,x&gt; <br>2. Bilinéarité : ∀x,y,z ∈ E, ∀λ,μ ∈ ℝ, &lt;λx + μy, z&gt; = λ&lt;x,z&gt; + μ&lt;y,z&gt; et &lt;z, λx + μy&gt; = λ&lt;z,x&gt; + μ&lt;z,y&gt; <br>3. Positivité : ∀x ∈ E, &lt;x,x&gt; ≥ 0 <br>4. Définitude : &lt;x,x&gt; = 0 ⇒ x = 0E
-                </div>
-            </div>
-        </div>
-        <div class="flashcard" onclick="this.classList.toggle('flipped')">
-            <div class="flashcard-inner">
-                <div class="flashcard-front">
-                    Définition d'un espace préhilbertien réel.
-                </div>
-                <div class="flashcard-back">
-                    E est un ℝ-espace vectoriel muni d'un produit scalaire. La dimension peut être finie ou infinie.
-                </div>
-            </div>
-        </div>
-        <div class="flashcard" onclick="this.classList.toggle('flipped')">
-            <div class="flashcard-inner">
-                <div class="flashcard-front">
-                    Qu'est-ce qu'un espace euclidien ?
-                </div>
-                <div class="flashcard-back">
-                    Un espace préhilbertien de dimension finie.
-                </div>
-            </div>
-        </div>
-        <div class="flashcard" onclick="this.classList.toggle('flipped')">
-            <div class="flashcard-inner">
-                <div class="flashcard-front">
-                    Norme associée à un produit scalaire.
-                </div>
-                <div class="flashcard-back">
-                    ∀x ∈ E, ||x|| = √&lt;x,x&gt;. C'est la norme du vecteur x.
-                </div>
-            </div>
-        </div>
-        <div class="flashcard" onclick="this.classList.toggle('flipped')">
-            <div class="flashcard-inner">
-                <div class="flashcard-front">
-                    Distance associée au produit scalaire.
-                </div>
-                <div class="flashcard-back">
-                    ∀x,y ∈ E, d(x,y) = ||x - y||.
-                </div>
-            </div>
-        </div>
-        <div class="flashcard" onclick="this.classList.toggle('flipped')">
-            <div class="flashcard-inner">
-                <div class="flashcard-front">
-                    Identités remarquables pour les normes.
-                </div>
-                <div class="flashcard-back">
-                    1. ||x + y||² = ||x||² + ||y||² + 2&lt;x,y&gt; <br>2. ||x - y||² = ||x||² + ||y||² - 2&lt;x,y&gt; <br>3. Identité du parallélogramme : ||x + y||² + ||x - y||² = 2(||x||² + ||y||²)
-                </div>
-            </div>
-        </div>
-        <div class="flashcard" onclick="this.classList.toggle('flipped')">
-            <div class="flashcard-inner">
-                <div class="flashcard-front">
-                    Inégalité de Cauchy-Schwarz.
-                </div>
-                <div class="flashcard-back">
-                    ∀x,y ∈ E, |&lt;x,y&gt;| ≤ ||x|| ||y||. Égalité si x et y sont colinéaires.
-                </div>
-            </div>
-        </div>
-        <div class="flashcard" onclick="this.classList.toggle('flipped')">
-            <div class="flashcard-inner">
-                <div class="flashcard-front">
-                    Propriétés de la norme.
-                </div>
-                <div class="flashcard-back">
-                    - ∀x ∈ E, ∀λ ∈ ℝ, ||λx|| = |λ| ||x|| <br>- ∀x,y ∈ E, ||x + y|| ≤ ||x|| + ||y|| (inégalité triangulaire) <br>- ||x|| = 0 ⇔ x = 0
-                </div>
-            </div>
-        </div>
-        <div class="flashcard" onclick="this.classList.toggle('flipped')">
-            <div class="flashcard-inner">
-                <div class="flashcard-front">
-                    Définition de l'orthogonalité.
-                </div>
-                <div class="flashcard-back">
-                    Deux vecteurs x et y sont orthogonaux si &lt;x,y&gt; = 0.
-                </div>
-            </div>
-        </div>
-        <div class="flashcard" onclick="this.classList.toggle('flipped')">
-            <div class="flashcard-inner">
-                <div class="flashcard-front">
-                    Famille orthogonale.
-                </div>
-                <div class="flashcard-back">
-                    Famille de vecteurs deux à deux orthogonaux. Toute famille orthogonale sans le vecteur nul est libre (linéairement indépendante).
-                </div>
-            </div>
-        </div>
-        <div class="flashcard" onclick="this.classList.toggle('flipped')">
-            <div class="flashcard-inner">
-                <div class="flashcard-front">
-                    Théorème de Pythagore dans un espace préhilbertien.
-                </div>
-                <div class="flashcard-back">
-                    1. Pour une famille orthogonale {e1, ..., en}, ||e1 + ... + en||² = ||e1||² + ... + ||en||² <br>2. Pour deux vecteurs x,y : &lt;x,y&gt; = 0 ⇔ ||x + y||² = ||x||² + ||y||²
-                </div>
-            </div>
-        </div>
-        <div class="flashcard" onclick="this.classList.toggle('flipped')">
-            <div class="flashcard-inner">
-                <div class="flashcard-front">
-                    Famille orthonormale.
-                </div>
-                <div class="flashcard-back">
-                    Famille orthogonale où chaque vecteur a une norme égale à 1. Pour {e_i}, &lt;e_i, e_j&gt; = δ_{ij} (1 si i=j, 0 sinon).
-                </div>
-            </div>
-        </div>
-        <div class="flashcard" onclick="this.classList.toggle('flipped')">
-            <div class="flashcard-inner">
-                <div class="flashcard-front">
-                    Vecteur unitaire.
-                </div>
-                <div class="flashcard-back">
-                    Vecteur de norme égale à 1.
-                </div>
-            </div>
-        </div>
-        <div class="flashcard" onclick="this.classList.toggle('flipped')">
-            <div class="flashcard-inner">
-                <div class="flashcard-front">
-                    Théorème d'orthonormalisation de Gram-Schmidt.
-                </div>
-                <div class="flashcard-back">
-                    Soit {e1, ..., en} une famille libre de E. Il existe une unique famille orthonormale {ε1, ..., εn} telle que : <br>- ∀k, Vect(e1,...,ek) = Vect(ε1,...,εk) <br>- ∀k, &lt;εk, ek&gt; > 0 <br>Formule : ε1 = e1 / ||e1||, puis εk = (ek - ∑_{i=1}^{k-1} &lt;ek, εi&gt; εi) / ||ek - ∑_{i=1}^{k-1} &lt;ek, εi&gt; εi||
-                </div>
-            </div>
-        </div>
-        <div class="flashcard" onclick="this.classList.toggle('flipped')">
-            <div class="flashcard-inner">
-                <div class="flashcard-front">
-                    Orthogonal d'un sous-ensemble F (F⊥).
-                </div>
-                <div class="flashcard-back">
-                    Ensemble des vecteurs de E orthogonaux à tous les vecteurs de F. F⊥ est un sous-espace vectoriel de E.
-                </div>
-            </div>
-        </div>
-        <div class="flashcard" onclick="this.classList.toggle('flipped')">
-            <div class="flashcard-inner">
-                <div class="flashcard-front">
-                    Projection orthogonale sur un sous-espace de dimension finie F.
-                </div>
-                <div class="flashcard-back">
-                    Pour x ∈ E, il existe un unique Pf(x) ∈ F tel que : <br>- Pf(x) ∈ F <br>- x - Pf(x) ∈ F⊥ <br>Si {ε1, ..., εn} base orthonormale de F, Pf(x) = ∑_{i=1}^n &lt;x, εi&gt; εi
-                </div>
-            </div>
-        </div>
-        <div class="flashcard" onclick="this.classList.toggle('flipped')">
-            <div class="flashcard-inner">
-                <div class="flashcard-front">
-                    Décomposition orthogonale.
-                </div>
-                <div class="flashcard-back">
-                    E = F ⊕ F⊥ (somme directe). ||x||² = ||Pf(x)||² + ||x - Pf(x)||²
-                </div>
-            </div>
-        </div>
-        <div class="flashcard" onclick="this.classList.toggle('flipped')">
-            <div class="flashcard-inner">
-                <div class="flashcard-front">
-                    Propriétés de l'application p(f).
-                </div>
-                <div class="flashcard-back">
-                    p(f) : E → E est un projecteur (p(f)² = p(f)), de noyau F⊥ et d'image F. C'est le projecteur orthogonal sur F.
-                </div>
-            </div>
-        </div>
-        <div class="flashcard" onclick="this.classList.toggle('flipped')">
-            <div class="flashcard-inner">
-                <div class="flashcard-front">
-                    Distance d'un vecteur x à un sous-espace F de dimension finie.
-                </div>
-                <div class="flashcard-back">
-                    d(x, F) = ||x - Pf(x)||
-                </div>
-            </div>
-        </div>
+
+<div class="container">
+    <div class="header">
+        <h1>📚 Mes Révisions</h1>
+        <p>Centralisation des cours et fiches</p>
     </div>
+
+    <div class="search-container">
+        <input type="text" id="searchBar" onkeyup="filterChapters()" placeholder="🔍 Rechercher un chapitre, une matière...">
+    </div>
+
+    <div class="grid">
+
+        <div class="subject-card">
+            <div class="subject-header">
+                <div class="subject-icon">📐</div>
+                <div class="subject-title">Maths</div>
+            </div>
+            <div class="chapter-list">
+                <a href="fourier.html" class="chapter-link">
+                    Séries de Fourier <span class="tag tag-rev">À faire</span>
+                </a>
+                <a href="algebre.html" class="chapter-link">
+                    Algèbre Linéaire
+                </a>
+                <a href="proba.html" class="chapter-link">
+                    Probabilités
+                </a>
+            </div>
+        </div>
+
+        <div class="subject-card">
+            <div class="subject-header">
+                <div class="subject-icon">⚡</div>
+                <div class="subject-title">Physique</div>
+            </div>
+            <div class="chapter-list">
+                <a href="elec.html" class="chapter-link">
+                    Électromagnétisme
+                </a>
+                <a href="thermo.html" class="chapter-link">
+                    Thermodynamique
+                </a>
+                <a href="optique.html" class="chapter-link">
+                    Optique Ondulatoire
+                </a>
+            </div>
+        </div>
+
+        <div class="subject-card">
+            <div class="subject-header">
+                <div class="subject-icon">💻</div>
+                <div class="subject-title">Info</div>
+            </div>
+            <div class="chapter-list">
+                <a href="bdd.html" class="chapter-link">
+                    Bases de Données SQL <span class="tag tag-new">New</span>
+                </a>
+                <a href="algo.html" class="chapter-link">
+                    Algorithmique
+                </a>
+                <a href="reseau.html" class="chapter-link">
+                    Réseaux & Protocoles
+                </a>
+            </div>
+        </div>
+
+        <div class="subject-card">
+            <div class="subject-header">
+                <div class="subject-icon">🇬🇧</div>
+                <div class="subject-title">Anglais</div>
+            </div>
+            <div class="chapter-list">
+                <a href="voc_tech.html" class="chapter-link">
+                    Vocabulaire Technique
+                </a>
+                <a href="grammar.html" class="chapter-link">
+                    Grammaire Avancée
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // Petit script pour filtrer les boutons quand tu tapes dans la barre
+    function filterChapters() {
+        const input = document.getElementById('searchBar');
+        const filter = input.value.toUpperCase();
+        
+        // On prend toutes les cartes de matières
+        const cards = document.getElementsByClassName('subject-card');
+
+        for (let i = 0; i < cards.length; i++) {
+            let card = cards[i];
+            let links = card.getElementsByClassName('chapter-link');
+            let hasVisibleLink = false;
+
+            // On vérifie chaque lien dans la carte
+            for (let j = 0; j < links.length; j++) {
+                let link = links[j];
+                let txtValue = link.textContent || link.innerText;
+                
+                // Si le texte correspond à la recherche
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    link.style.display = ""; // On affiche le lien
+                    hasVisibleLink = true;
+                } else {
+                    link.style.display = "none"; // On cache le lien
+                }
+            }
+
+            // Si aucun lien n'est visible dans cette matière, on cache toute la matière
+            // SAUF si le titre de la matière correspond à la recherche (ex: taper "MATHS")
+            let title = card.querySelector('.subject-title').innerText;
+            if (title.toUpperCase().indexOf(filter) > -1) {
+                 // Si on a cherché le nom de la matière, on réaffiche tous ses liens
+                 for (let j = 0; j < links.length; j++) links[j].style.display = "";
+                 card.style.display = "";
+            } else {
+                if (hasVisibleLink) {
+                    card.style.display = "";
+                } else {
+                    card.style.display = "none";
+                }
+            }
+        }
+    }
+</script>
+
 </body>
 </html>
