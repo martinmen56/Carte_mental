@@ -417,58 +417,72 @@
 
 const flashcardsData = [
         {
-            q: "Quelle est la formule de la vitesse de synchronisme $n_s$ ?",
+            id: "synchrone_1",
+				q: "Quelle est la formule de la vitesse de synchronisme $n_s$ ?",
             a: "La vitesse du champ tournant est :\n$$n_s = \\frac{f}{p}$$\nAvec :\n- $f$ : fréquence (Hz)\n- $p$ : paires de pôles\n*(Source: I)*"
         },
         {
+				id: "synchrone_2",
             q: "De quoi est composé le rotor d'une machine synchrone ?",
             a: "C'est un aimant permanent ou une bobine alimentée en **courant continu**.\nIl obéit à la règle du flux maximum.\n*(Source: I)*"
         },
         {
+  				id: "synchrone_3",
             q: "Quelle est la relation entre la vitesse du rotor $n$ et $n_s$ ?",
             a: "Le rotor tourne exactement à la vitesse de synchronisme :\n$$n = n_s$$\nIl n'y a pas de glissement.\n*(Source: I)*"
         },
         {
+				id: "synchrone_4",
             q: "Qu'est-ce que l'angle interne $\\delta$ ?",
             a: "C'est l'angle de retard de l'axe du rotor par rapport au champ tournant.\nIl dépend de la charge (quasi nul à vide).\n*(Source: I)*"
         },
         {
+				id: "synchrone_5",
             q: "Formule de la F.E.M (Boucherot) d'une machine synchrone",
             a: "$$E = 2,22 \\cdot K \\cdot \\Phi_{\\max} \\cdot N \\cdot f$$\n- $K$ : coefficient de bobinage\n- $N$ : nombre d'enroulements\n*(Source: II)*"
         },
         {
+				id: "synchrone_6",
             q: "Bilan puissance : Formule de la puissance absorbée en MOTEUR",
             a: "$$P_a = UI\\sqrt{3}\\cos\\varphi + U_{ex}I_{ex}$$\n(Stator alternatif + Rotor continu)\n*(Source: III)*"
         },
         {
+				id: "synchrone_7",
             q: "Quelle est la formule des pertes Joule au stator (couplage inconnu) ?",
             a: "$$P_{js} = \\frac{3}{2} R' I^2$$\nSi $R'$ est la résistance mesurée entre 2 bornes.\n*(Source: III)*"
         },
         {
+				id: "synchrone_8",
             q: "Loi des mailles pour un enroulement (Modèle Moteur)",
             a: "$$\\underline{V} = \\underline{E} + R\\underline{I} + jX_s\\underline{I}$$\nSoit $\\underline{V} = \\underline{E} + \\underline{Z_s}\\underline{I}$\n*(Source: IV)*"
         },
         {
+				id: "synchrone_9",
             q: "Comment déterminer la réactance synchrone $X_s$ ?",
             a: "Par un essai à vide ($E_0$) et un essai en court-circuit ($I_{cc}$) :\n$$Z_s = \\frac{E_0}{I_{cc}}$$\nOn considère souvent $X_s \\approx Z_s$.\n*(Source: V)*"
         },
         {
+				id: "synchrone_10",
             q: "Qu'est-ce qu'un Compensateur Synchrone ?",
             a: "Un moteur fonctionnant **à vide** et **surexcité**.\nIl se comporte comme un condensateur ($\\,\\varphi = \\pi/2\\,$) pour relever le facteur de puissance.\n*(Source: VII)*"
         },
         {
+				id: "synchrone_11",
             q: "Expression du Couple Moteur $T_u$ (en négligeant les pertes)",
             a: "$$T_u = \\frac{3VE}{X_s \\Omega_s} \\sin \\delta$$\nLe couple est proportionnel au sinus de l'angle interne.\n*(Source: VIII)*"
         },
         {
+				id: "synchrone_12",
             q: "Condition de décrochage du moteur",
             a: "Le couple est maximum pour $\\delta = \\pi/2$.\nAu-delà, le couple diminue et le moteur décroche.\n*(Source: VIII)*"
         },
         {
+				id: "synchrone_13",
             q: "Pourquoi le moteur synchrone ne démarre-t-il pas seul ?",
             a: "Au démarrage, l'angle interne $\\delta \\approx 0$, donc le couple est nul.\nIl faut un système auxiliaire (ex: cage d'écureuil).\n*(Source: VIII)*"
         },
         {
+				id: "synchrone_14",
             q: "Rendement d'un Alternateur",
             a: "$$\\eta = \\frac{UI\\sqrt{3}\\cos\\varphi}{T\\Omega_s + U_{ex}I_{ex}}$$\nPuissance utile (élec) / Puissance absorbée (méca + excit).\n*(Source: III)*"
         }
@@ -478,9 +492,9 @@ const flashcardsData = [
 /* =========================
    localStorage keys
    ========================= */
-const LS_KEY_PROGRESS = "fourier_flashcards_progress_v1";
-const LS_KEY_ORDER = "fourier_flashcards_order_v1";
-const LS_KEY_FILTER = "fourier_flashcards_filter_v1";
+const LS_KEY_PROGRESS = "synchrone_flashcards_progress_v1";
+const LS_KEY_ORDER = "synchrone_flashcards_order_v1";
+const LS_KEY_FILTER = "synchrone_flashcards_filter_v1";
 
 /* =========================
    State
