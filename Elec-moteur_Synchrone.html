@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcards - Moteur Synchrone</title>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #2C75FF, #002FA7);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        overflow-x: hidden;
+    }
+
+    .container {
+        max-width: 900px;
+        width: 100%;
+        position: relative;
+        z-index: 1;
+    }
+
+    .header {
+        text-align: center;
+        color: white;
+        margin-bottom: 25px;
+    }
+
+    .header h1 {
+        font-size: 2.2em;
+        margin-bottom: 8px;
+        text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .header p {
+        opacity: 0.95;
+    }
+
+    .top-panels {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-bottom: 18px;
+    }
+
+    .panel {
+        background: rgba(255,255,255,0.16);
+        border: 1px solid rgba(255,255,255,0.18);
+        border-radius: 18px;
+        padding: 12px 14px;
+        color: white;
+        backdrop-filter: blur(6px);
+        box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+    }
+
+    .panel-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .btn {
+        padding: 10px 18px;
+        border-radius: 50px;
+        font-weight: 700;
+        cursor: pointer;
+        border: none;
+        background: white;
+        color: #2C75FF;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.12);
+        transition: transform 0.2s, opacity 0.2s;
+        user-select: none;
+    }
+
+    .btn:active {
+        transform: scale(0.95);
+    }
+
+    .btn.secondary {
+        background: rgba(255,255,255,0.92);
+        color: #0b2a88;
+    }
+
+    .btn.danger {
+        background: rgba(255,255,255,0.92);
+        color: #b91c1c;
+    }
+
+    .btn-know {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+    }
+
+    .btn-dontknow {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: white;
+    }
+
+    .select {
+        border: none;
+        border-radius: 50px;
+        padding: 10px 14px;
+        font-weight: 700;
+        outline: none;
+        cursor: pointer;
+        background: white;
+        color: #2C75FF;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.12);
+    }
+
+    .stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        font-weight: 700;
+    }
+
+    .chip {
+        background: rgba(255,255,255,0.22);
+        border: 1px solid rgba(255,255,255,0.2);
+        padding: 6px 12px;
+        border-radius: 999px;
+        color: white;
+        font-size: 14px;
+    }
+
+    /* --- CARTE --- */
+    .card-scene {
+        perspective: 1000px;
+        width: 100%;
+        height: 450px;
+        cursor: pointer;
+    }
+
+    .card {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+        transform-style: preserve-3d;
+        border-radius: 25px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    }
+
+    .card.is-flipped {
+        transform: rotateY(180deg);
+    }
+
+    .card-face {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        border-radius: 25px;
+        padding: 40px;
+        background: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .card-face.back {
+        transform: rotateY(180deg);
+        background: #fdfdfd;
+    }
+
+    .card-label {
+        position: absolute;
+        top: 30px;
+        font-size: 13px;
+        font-weight: 900;
+        padding: 8px 20px;
+        border-radius: 20px;
+        color: white;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .bg-question {
+        background: linear-gradient(135deg, #74D0F1, #0000FF);
+    }
+
+    .bg-answer {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .card-content {
+        font-size: 22px;
+        line-height: 1.6;
+        color: #333;
+        width: 100%;
+        overflow-y: auto;
+        max-height: 80%;
+        white-space: pre-line;
+    }
+
+    mjx-container {
+        font-size: 110% !important;
+        outline: none;
+    }
+
+    .card-hint {
+        position: absolute;
+        bottom: 18px;
+        font-size: 14px;
+        color: #aaa;
+        width: 100%;
+        text-align: center;
+    }
+
+    /* --- BADGE ETAT CARTE --- */
+    .status-pill {
+        position: absolute;
+        top: 30px;
+        right: 30px;
+        font-size: 12px;
+        font-weight: 900;
+        padding: 8px 12px;
+        border-radius: 999px;
+        color: white;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+    }
+
+    .status-unknown {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+
+    .status-known {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .status-unset {
+        background: linear-gradient(135deg, #64748b, #475569);
+    }
+
+    /* --- NAVIGATION --- */
+    .navigation {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 22px;
+        padding: 0 10px;
+    }
+
+    .nav-btn {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: none;
+        background: linear-gradient(135deg, #74D0F1, #0000FF);
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+        transition: transform 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .nav-btn:hover {
+        transform: scale(1.1);
+    }
+
+    .nav-btn:active {
+        transform: scale(0.9);
+    }
+
+    .counter {
+        color: white;
+        font-size: 18px;
+        font-weight: 700;
+        background: rgba(255,255,255,0.2);
+        padding: 5px 15px;
+        border-radius: 15px;
+    }
+
+    .progress-bar {
+        margin-top: 20px;
+        height: 8px;
+        background: rgba(0,0,0,0.2);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #74D0F1, #0000FF);
+        width: 0%;
+        transition: width 0.3s ease-out;
+    }
+
+    .keyboard-hint {
+        text-align: center;
+        color: rgba(255,255,255,0.6);
+        font-size: 12px;
+        margin-top: 10px;
+    }
+
+    /* --- BOUTONS JE SAIS / JE SAIS PAS --- */
+    .knowbar {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        margin-top: 18px;
+        flex-wrap: wrap;
+    }
+
+    @media (max-width: 520px) {
+        .card-face { padding: 28px; }
+        .card-content { font-size: 19px; }
+        .status-pill { top: 20px; right: 20px; }
+    }
+</style>
+
+
+</head><script>
+  window.MathJax = {
+    tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+    },
+    svg: { fontCache: 'global' },
+    startup: { typeset: false }
+  };
+</script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script><body>
+    <div class="container">
+        <div class="header">
+            <h1>⚡️Elec-Moteur Syncrone</h1>
+            <p>Flashcards + Révision intelligente (localStorage)</p>
+        </div>
+
+    <div class="top-panels">
+        <div class="panel">
+            <div class="panel-row">
+                <button class="btn" onclick="shuffleCards()">🎲 Mélanger</button>
+                <button class="btn secondary" onclick="resetOrder()">↩️ Ordre normal</button>
+                <button class="btn danger" onclick="resetProgress()">🧹 Reset progrès</button>
+
+                <select class="select" id="filterSelect" onchange="applyFilter()">
+                    <option value="all">📚 Toutes</option>
+                    <option value="review">🟠 À revoir</option>
+                    <option value="known">🟢 Maîtrisées</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="stats" id="statsArea">
+                <span class="chip">Chargement...</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-scene" onclick="flipCard()">
+        <div class="card" id="cardElement">
+
+            <div class="card-face front">
+                <div class="card-label bg-question">Question</div>
+                <div class="status-pill status-unset" id="statusPill">Non notée</div>
+                <div class="card-content" id="questionContent"></div>
+                <div class="card-hint">Toucher ou Espace pour retourner</div>
+            </div>
+
+            <div class="card-face back">
+                <div class="card-label bg-answer">Réponse</div>
+                <div class="card-content" id="answerContent"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="knowbar">
+        <button class="btn btn-dontknow" onclick="markDontKnow(event)">🟠 Je sais pas</button>
+        <button class="btn btn-know" onclick="markKnow(event)">🟢 Je sais</button>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" onclick="previousCard(event)">←</button>
+        <div class="counter">
+            <span id="currentCard">1</span> / <span id="totalCards">1</span>
+        </div>
+        <button class="nav-btn" onclick="nextCard(event)">→</button>
+    </div>
+
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <div class="keyboard-hint">
+        ⌨️ Flèches : naviguer • Espace : retourner • 1 = Je sais pas • 2 = Je sais
+    </div>
+</div>
+
+
+<script>
+
+
+const flashcardsData = [
+        {
+            q: "Quelle est la formule de la vitesse de synchronisme $n_s$ ?",
+            a: "La vitesse du champ tournant est :\n$$n_s = \\frac{f}{p}$$\nAvec :\n- $f$ : fréquence (Hz)\n- $p$ : paires de pôles\n*(Source: I)*"
+        },
+        {
+            q: "De quoi est composé le rotor d'une machine synchrone ?",
+            a: "C'est un aimant permanent ou une bobine alimentée en **courant continu**.\nIl obéit à la règle du flux maximum.\n*(Source: I)*"
+        },
+        {
+            q: "Quelle est la relation entre la vitesse du rotor $n$ et $n_s$ ?",
+            a: "Le rotor tourne exactement à la vitesse de synchronisme :\n$$n = n_s$$\nIl n'y a pas de glissement.\n*(Source: I)*"
+        },
+        {
+            q: "Qu'est-ce que l'angle interne $\\delta$ ?",
+            a: "C'est l'angle de retard de l'axe du rotor par rapport au champ tournant.\nIl dépend de la charge (quasi nul à vide).\n*(Source: I)*"
+        },
+        {
+            q: "Formule de la F.E.M (Boucherot) d'une machine synchrone",
+            a: "$$E = 2,22 \\cdot K \\cdot \\Phi_{\\max} \\cdot N \\cdot f$$\n- $K$ : coefficient de bobinage\n- $N$ : nombre d'enroulements\n*(Source: II)*"
+        },
+        {
+            q: "Bilan puissance : Formule de la puissance absorbée en MOTEUR",
+            a: "$$P_a = UI\\sqrt{3}\\cos\\varphi + U_{ex}I_{ex}$$\n(Stator alternatif + Rotor continu)\n*(Source: III)*"
+        },
+        {
+            q: "Quelle est la formule des pertes Joule au stator (couplage inconnu) ?",
+            a: "$$P_{js} = \\frac{3}{2} R' I^2$$\nSi $R'$ est la résistance mesurée entre 2 bornes.\n*(Source: III)*"
+        },
+        {
+            q: "Loi des mailles pour un enroulement (Modèle Moteur)",
+            a: "$$\\underline{V} = \\underline{E} + R\\underline{I} + jX_s\\underline{I}$$\nSoit $\\underline{V} = \\underline{E} + \\underline{Z_s}\\underline{I}$\n*(Source: IV)*"
+        },
+        {
+            q: "Comment déterminer la réactance synchrone $X_s$ ?",
+            a: "Par un essai à vide ($E_0$) et un essai en court-circuit ($I_{cc}$) :\n$$Z_s = \\frac{E_0}{I_{cc}}$$\nOn considère souvent $X_s \\approx Z_s$.\n*(Source: V)*"
+        },
+        {
+            q: "Qu'est-ce qu'un Compensateur Synchrone ?",
+            a: "Un moteur fonctionnant **à vide** et **surexcité**.\nIl se comporte comme un condensateur ($\\,\\varphi = \\pi/2\\,$) pour relever le facteur de puissance.\n*(Source: VII)*"
+        },
+        {
+            q: "Expression du Couple Moteur $T_u$ (en négligeant les pertes)",
+            a: "$$T_u = \\frac{3VE}{X_s \\Omega_s} \\sin \\delta$$\nLe couple est proportionnel au sinus de l'angle interne.\n*(Source: VIII)*"
+        },
+        {
+            q: "Condition de décrochage du moteur",
+            a: "Le couple est maximum pour $\\delta = \\pi/2$.\nAu-delà, le couple diminue et le moteur décroche.\n*(Source: VIII)*"
+        },
+        {
+            q: "Pourquoi le moteur synchrone ne démarre-t-il pas seul ?",
+            a: "Au démarrage, l'angle interne $\\delta \\approx 0$, donc le couple est nul.\nIl faut un système auxiliaire (ex: cage d'écureuil).\n*(Source: VIII)*"
+        },
+        {
+            q: "Rendement d'un Alternateur",
+            a: "$$\\eta = \\frac{UI\\sqrt{3}\\cos\\varphi}{T\\Omega_s + U_{ex}I_{ex}}$$\nPuissance utile (élec) / Puissance absorbée (méca + excit).\n*(Source: III)*"
+        }
+    ];
+
+
+/* =========================
+   localStorage keys
+   ========================= */
+const LS_KEY_PROGRESS = "fourier_flashcards_progress_v1";
+const LS_KEY_ORDER = "fourier_flashcards_order_v1";
+const LS_KEY_FILTER = "fourier_flashcards_filter_v1";
+
+/* =========================
+   State
+   ========================= */
+let baseCards = [...flashcardsData];
+let cards = [];
+let currentIndex = 0;
+let isFlipped = false;
+
+const cardElement = document.getElementById("cardElement");
+const statusPill = document.getElementById("statusPill");
+const filterSelect = document.getElementById("filterSelect");
+
+/* =========================
+   Progress storage
+   progressMap[id] = "known" | "review" | null
+   ========================= */
+function loadProgress() {
+    try {
+        return JSON.parse(localStorage.getItem(LS_KEY_PROGRESS)) || {};
+    } catch {
+        return {};
+    }
+}
+
+function saveProgress(progressMap) {
+    localStorage.setItem(LS_KEY_PROGRESS, JSON.stringify(progressMap));
+}
+
+/* =========================
+   Order storage (array of ids)
+   ========================= */
+function loadOrder() {
+    try {
+        return JSON.parse(localStorage.getItem(LS_KEY_ORDER)) || null;
+    } catch {
+        return null;
+    }
+}
+
+function saveOrder(orderIds) {
+    localStorage.setItem(LS_KEY_ORDER, JSON.stringify(orderIds));
+}
+
+/* =========================
+   Filter storage
+   ========================= */
+function loadFilter() {
+    return localStorage.getItem(LS_KEY_FILTER) || "all";
+}
+
+function saveFilter(value) {
+    localStorage.setItem(LS_KEY_FILTER, value);
+}
+
+/* =========================
+   Helpers
+   ========================= */
+function setStatusPill(state) {
+    statusPill.classList.remove("status-known", "status-unknown", "status-unset");
+
+    if (state === "known") {
+        statusPill.classList.add("status-known");
+        statusPill.textContent = "Maîtrisée";
+    } else if (state === "review") {
+        statusPill.classList.add("status-unknown");
+        statusPill.textContent = "À revoir";
+    } else {
+        statusPill.classList.add("status-unset");
+        statusPill.textContent = "Non notée";
+    }
+}
+
+function getCurrentCard() {
+    return cards[currentIndex];
+}
+
+/* =========================
+   Apply filter + order
+   ========================= */
+function rebuildCardsList(keepIndex = false) {
+    const progressMap = loadProgress();
+    const filter = filterSelect.value;
+
+    // base list (ordered)
+    const orderIds = loadOrder();
+    let ordered = [...baseCards];
+
+    if (Array.isArray(orderIds) && orderIds.length === baseCards.length) {
+        const map = new Map(baseCards.map(c => [c.id, c]));
+        ordered = orderIds.map(id => map.get(id)).filter(Boolean);
+    }
+
+    // filter
+    if (filter === "known") {
+        ordered = ordered.filter(c => progressMap[c.id] === "known");
+    } else if (filter === "review") {
+        ordered = ordered.filter(c => progressMap[c.id] !== "known");
+    }
+
+    // fallback if empty
+    if (ordered.length === 0) {
+        ordered = [...baseCards];
+    }
+
+    const oldId = keepIndex && cards[currentIndex] ? cards[currentIndex].id : null;
+
+    cards = ordered;
+
+    if (keepIndex && oldId) {
+        const newIndex = cards.findIndex(c => c.id === oldId);
+        currentIndex = newIndex >= 0 ? newIndex : 0;
+    } else {
+        currentIndex = 0;
+    }
+
+    updateCardContent();
+}
+
+/* =========================
+   UI update
+   ========================= */
+function updateStats() {
+    const progressMap = loadProgress();
+    const total = baseCards.length;
+    const known = baseCards.filter(c => progressMap[c.id] === "known").length;
+    const review = total - known;
+    const pct = total === 0 ? 0 : Math.round((known / total) * 100);
+
+    const statsArea = document.getElementById("statsArea");
+    statsArea.innerHTML = `
+        <span class="chip">🟢 Maîtrisées : <strong>${known}</strong> / ${total}</span>
+        <span class="chip">🟠 À revoir : <strong>${review}</strong> / ${total}</span>
+        <span class="chip">📊 ${pct}% maîtrisé</span>
+    `;
+}
+
+function updateCardContent() {
+    if (!cards || cards.length === 0) return;
+
+    const progressMap = loadProgress();
+    const card = getCurrentCard();
+
+    const qDiv = document.getElementById("questionContent");
+    const aDiv = document.getElementById("answerContent");
+
+    qDiv.innerHTML = card.q;
+    aDiv.innerHTML = card.a;
+
+    const status = progressMap[card.id] || null;
+    setStatusPill(status);
+
+    document.getElementById("currentCard").textContent = currentIndex + 1;
+    document.getElementById("totalCards").textContent = cards.length;
+
+    document.getElementById("progressFill").style.width =
+        ((currentIndex + 1) / cards.length) * 100 + "%";
+
+    updateStats();
+
+    if (window.MathJax) {
+        MathJax.typesetPromise([qDiv, aDiv]);
+    }
+}
+
+/* =========================
+   Actions
+   ========================= */
+function flipCard() {
+    isFlipped = !isFlipped;
+    cardElement.classList.toggle("is-flipped", isFlipped);
+}
+
+function nextCard(e) {
+    if (e) e.stopPropagation();
+    isFlipped = false;
+    cardElement.classList.remove("is-flipped");
+
+    setTimeout(() => {
+        currentIndex = (currentIndex + 1) % cards.length;
+        updateCardContent();
+    }, 200);
+}
+
+function previousCard(e) {
+    if (e) e.stopPropagation();
+    isFlipped = false;
+    cardElement.classList.remove("is-flipped");
+
+    setTimeout(() => {
+        currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+        updateCardContent();
+    }, 200);
+}
+
+function shuffleCards() {
+    isFlipped = false;
+    cardElement.classList.remove("is-flipped");
+
+    setTimeout(() => {
+        // shuffle order IDs and store it
+        const ids = [...baseCards.map(c => c.id)];
+        ids.sort(() => Math.random() - 0.5);
+        saveOrder(ids);
+
+        rebuildCardsList(false);
+    }, 250);
+}
+
+function resetOrder() {
+    localStorage.removeItem(LS_KEY_ORDER);
+    rebuildCardsList(false);
+}
+
+function resetProgress() {
+    if (!confirm("Reset complet : tu veux supprimer toutes tes cartes maîtrisées/à revoir ?")) return;
+    localStorage.removeItem(LS_KEY_PROGRESS);
+    rebuildCardsList(true);
+}
+
+function markKnow(e) {
+    if (e) e.stopPropagation();
+
+    const progressMap = loadProgress();
+    const card = getCurrentCard();
+    progressMap[card.id] = "known";
+    saveProgress(progressMap);
+
+    updateCardContent();
+    // auto-next pour révision rapide
+    setTimeout(() => nextCard(), 150);
+}
+
+function markDontKnow(e) {
+    if (e) e.stopPropagation();
+
+    const progressMap = loadProgress();
+    const card = getCurrentCard();
+    progressMap[card.id] = "review";
+    saveProgress(progressMap);
+
+    updateCardContent();
+    setTimeout(() => nextCard(), 150);
+}
+
+function applyFilter() {
+    const val = filterSelect.value;
+    saveFilter(val);
+    rebuildCardsList(false);
+}
+
+/* =========================
+   Keyboard shortcuts
+   ========================= */
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') nextCard();
+    if (e.key === 'ArrowLeft') previousCard();
+
+    if (e.key === ' ' || e.key === 'Enter') {
+        e.preventDefault();
+        flipCard();
+    }
+
+    // 1 = je sais pas / 2 = je sais
+    if (e.key === '1') markDontKnow();
+    if (e.key === '2') markKnow();
+});
+
+/* =========================
+   Mobile swipe
+   ========================= */
+let touchStartX = 0;
+const scene = document.querySelector('.card-scene');
+
+scene.addEventListener('touchstart', e => {
+    touchStartX = e.changedTouches[0].screenX;
+});
+
+scene.addEventListener('touchend', e => {
+    let touchEndX = e.changedTouches[0].screenX;
+    handleSwipe(touchStartX, touchEndX);
+});
+
+function handleSwipe(start, end) {
+    const threshold = 50;
+    if (start - end > threshold) nextCard();
+    if (end - start > threshold) previousCard();
+}
+
+/* =========================
+   Init
+   ========================= */
+(function init() {
+    // restore filter
+    const savedFilter = loadFilter();
+    filterSelect.value = savedFilter;
+
+    rebuildCardsList(false);
+})();
+</script></body>
+</html> 
