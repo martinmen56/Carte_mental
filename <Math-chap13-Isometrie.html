@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcards - Isométrie</title>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #2C75FF, #002FA7);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        overflow-x: hidden;
+    }
+
+    .container {
+        max-width: 900px;
+        width: 100%;
+        position: relative;
+        z-index: 1;
+    }
+
+    .header {
+        text-align: center;
+        color: white;
+        margin-bottom: 25px;
+    }
+
+    .header h1 {
+        font-size: 2.2em;
+        margin-bottom: 8px;
+        text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .header p {
+        opacity: 0.95;
+    }
+
+    .top-panels {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-bottom: 18px;
+    }
+
+    .panel {
+        background: rgba(255,255,255,0.16);
+        border: 1px solid rgba(255,255,255,0.18);
+        border-radius: 18px;
+        padding: 12px 14px;
+        color: white;
+        backdrop-filter: blur(6px);
+        box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+    }
+
+    .panel-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .btn {
+        padding: 10px 18px;
+        border-radius: 50px;
+        font-weight: 700;
+        cursor: pointer;
+        border: none;
+        background: white;
+        color: #2C75FF;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.12);
+        transition: transform 0.2s, opacity 0.2s;
+        user-select: none;
+    }
+
+    .btn:active {
+        transform: scale(0.95);
+    }
+
+    .btn.secondary {
+        background: rgba(255,255,255,0.92);
+        color: #0b2a88;
+    }
+
+    .btn.danger {
+        background: rgba(255,255,255,0.92);
+        color: #b91c1c;
+    }
+
+    .btn-know {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+    }
+
+    .btn-dontknow {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: white;
+    }
+
+    .select {
+        border: none;
+        border-radius: 50px;
+        padding: 10px 14px;
+        font-weight: 700;
+        outline: none;
+        cursor: pointer;
+        background: white;
+        color: #2C75FF;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.12);
+    }
+
+    .stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        font-weight: 700;
+    }
+
+    .chip {
+        background: rgba(255,255,255,0.22);
+        border: 1px solid rgba(255,255,255,0.2);
+        padding: 6px 12px;
+        border-radius: 999px;
+        color: white;
+        font-size: 14px;
+    }
+
+    /* --- CARTE --- */
+    .card-scene {
+        perspective: 1000px;
+        width: 100%;
+        height: 450px;
+        cursor: pointer;
+    }
+
+    .card {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+        transform-style: preserve-3d;
+        border-radius: 25px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    }
+
+    .card.is-flipped {
+        transform: rotateY(180deg);
+    }
+
+    .card-face {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        border-radius: 25px;
+        padding: 40px;
+        background: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .card-face.back {
+        transform: rotateY(180deg);
+        background: #fdfdfd;
+    }
+
+    .card-label {
+        position: absolute;
+        top: 30px;
+        font-size: 13px;
+        font-weight: 900;
+        padding: 8px 20px;
+        border-radius: 20px;
+        color: white;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .bg-question {
+        background: linear-gradient(135deg, #74D0F1, #0000FF);
+    }
+
+    .bg-answer {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .card-content {
+        font-size: 22px;
+        line-height: 1.6;
+        color: #333;
+        width: 100%;
+        overflow-y: auto;
+        max-height: 80%;
+        white-space: pre-line;
+    }
+
+    mjx-container {
+        font-size: 110% !important;
+        outline: none;
+    }
+
+    .card-hint {
+        position: absolute;
+        bottom: 18px;
+        font-size: 14px;
+        color: #aaa;
+        width: 100%;
+        text-align: center;
+    }
+
+    /* --- BADGE ETAT CARTE --- */
+    .status-pill {
+        position: absolute;
+        top: 30px;
+        right: 30px;
+        font-size: 12px;
+        font-weight: 900;
+        padding: 8px 12px;
+        border-radius: 999px;
+        color: white;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+    }
+
+    .status-unknown {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+
+    .status-known {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .status-unset {
+        background: linear-gradient(135deg, #64748b, #475569);
+    }
+
+    /* --- NAVIGATION --- */
+    .navigation {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 22px;
+        padding: 0 10px;
+    }
+
+    .nav-btn {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: none;
+        background: linear-gradient(135deg, #74D0F1, #0000FF);
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+        transition: transform 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .nav-btn:hover {
+        transform: scale(1.1);
+    }
+
+    .nav-btn:active {
+        transform: scale(0.9);
+    }
+
+    .counter {
+        color: white;
+        font-size: 18px;
+        font-weight: 700;
+        background: rgba(255,255,255,0.2);
+        padding: 5px 15px;
+        border-radius: 15px;
+    }
+
+    .progress-bar {
+        margin-top: 20px;
+        height: 8px;
+        background: rgba(0,0,0,0.2);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #74D0F1, #0000FF);
+        width: 0%;
+        transition: width 0.3s ease-out;
+    }
+
+    .keyboard-hint {
+        text-align: center;
+        color: rgba(255,255,255,0.6);
+        font-size: 12px;
+        margin-top: 10px;
+    }
+
+    /* --- BOUTONS JE SAIS / JE SAIS PAS --- */
+    .knowbar {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        margin-top: 18px;
+        flex-wrap: wrap;
+    }
+
+    @media (max-width: 520px) {
+        .card-face { padding: 28px; }
+        .card-content { font-size: 19px; }
+        .status-pill { top: 20px; right: 20px; }
+    }
+</style>
+
+
+</head><script>
+  window.MathJax = {
+    tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+    },
+    svg: { fontCache: 'global' },
+    startup: { typeset: false }
+  };
+</script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script><body>
+    <div class="container">
+        <div class="header">
+            <h1>Chap 13 Isometrie</h1>
+            <p>Flashcards + Révision intelligente (localStorage)</p>
+        </div>
+
+    <div class="top-panels">
+        <div class="panel">
+            <div class="panel-row">
+				    <button class="btn" onclick="window.location.href='index.html'">🏠 Accueil</button>
+                <button class="btn" onclick="shuffleCards()">🎲 Mélanger</button>
+                <button class="btn secondary" onclick="resetOrder()">↩️ Ordre normal</button>
+                <button class="btn danger" onclick="resetProgress()">🧹 Reset progrès</button>
+
+                <select class="select" id="filterSelect" onchange="applyFilter()">
+                    <option value="all">📚 Toutes</option>
+                    <option value="review">🟠 À revoir</option>
+                    <option value="known">🟢 Maîtrisées</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="stats" id="statsArea">
+                <span class="chip">Chargement...</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-scene" onclick="flipCard()">
+        <div class="card" id="cardElement">
+
+            <div class="card-face front">
+                <div class="card-label bg-question">Question</div>
+                <div class="status-pill status-unset" id="statusPill">Non notée</div>
+                <div class="card-content" id="questionContent"></div>
+                <div class="card-hint">Toucher ou Espace pour retourner</div>
+            </div>
+
+            <div class="card-face back">
+                <div class="card-label bg-answer">Réponse</div>
+                <div class="card-content" id="answerContent"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="knowbar">
+        <button class="btn btn-dontknow" onclick="markDontKnow(event)">🟠 Je sais pas</button>
+        <button class="btn btn-know" onclick="markKnow(event)">🟢 Je sais</button>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" onclick="previousCard(event)">←</button>
+        <div class="counter">
+            <span id="currentCard">1</span> / <span id="totalCards">1</span>
+        </div>
+        <button class="nav-btn" onclick="nextCard(event)">→</button>
+    </div>
+
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <div class="keyboard-hint">
+        ⌨️ Flèches : naviguer • Espace : retourner • 1 = Je sais pas • 2 = Je sais
+    </div>
+</div>
+
+
+<script>
+
+
+const flashcardsData = [
+  {
+    id: "Ch13-1",
+    q: "Définition : qu’est-ce qu’une isométrie vectorielle (automorphisme orthogonal) ?",
+    a: "C’est un endomorphisme $f\\in\\mathcal L(E)$ qui conserve la norme : $$\\forall x\\in E,\\ \\|f(x)\\|=\\|x\\|.$$ Alors $f$ est automatiquement un automorphisme et on dit que $f\\in\\mathcal O(E)$."
+  },
+  {
+    id: "Ch13-2",
+    q: "Caractérisation fondamentale d’une isométrie vectorielle avec le produit scalaire",
+    a: "Les propriétés suivantes sont équivalentes : $$\\forall x\\in E,\\ \\|f(x)\\|=\\|x\\| \\quad\\Longleftrightarrow\\quad \\forall (x,y)\\in E^2,\\ \\langle f(x),f(y)\\rangle=\\langle x,y\\rangle.$$"
+  },
+  {
+    id: "Ch13-3",
+    q: "Une isométrie vectorielle conserve-t-elle l’orthogonalité ?",
+    a: "Oui. Si $x\\perp y$ alors $\\langle x,y\\rangle=0$ et comme $$\\langle f(x),f(y)\\rangle=\\langle x,y\\rangle,$$ on obtient $\\langle f(x),f(y)\\rangle=0$, donc $f(x)\\perp f(y)$."
+  },
+  {
+    id: "Ch13-4",
+    q: "Définition du groupe orthogonal $\\mathcal O(E)$",
+    a: "Le groupe orthogonal est l’ensemble des automorphismes orthogonaux de $E$ : $$\\mathcal O(E)=\\{f\\in\\mathrm{GL}(E)\\mid \\forall x\\in E,\\ \\|f(x)\\|=\\|x\\|\\}.$$ C’est un sous-groupe de $\\mathrm{GL}(E)$."
+  },
+  {
+    id: "Ch13-5",
+    q: "Définition : une matrice orthogonale",
+    a: "Une matrice $A\\in\\mathcal M_n(\\mathbb R)$ est orthogonale si et seulement si $$A^T A=I_n.$$"
+  },
+  {
+    id: "Ch13-6",
+    q: "Propriété immédiate d’une matrice orthogonale (inverse)",
+    a: "Si $A$ est orthogonale, alors elle est inversible et $$A^{-1}=A^T.$$"
+  },
+  {
+    id: "Ch13-7",
+    q: "Définition du groupe orthogonal $O(n)$",
+    a: "On note $$O(n)=\\{A\\in\\mathrm{GL}_n(\\mathbb R)\\mid A^T A=I_n\\}.$$ C’est un sous-groupe de $\\mathrm{GL}_n(\\mathbb R)$."
+  },
+  {
+    id: "Ch13-8",
+    q: "Caractérisation par les colonnes (ou lignes) d’une matrice orthogonale",
+    a: "$A$ est orthogonale $\\Longleftrightarrow$ ses colonnes forment une base orthonormée de $\\mathbb R^n$ (idem pour les lignes)."
+  },
+  {
+    id: "Ch13-9",
+    q: "Lien BON et matrice orthogonale (matrice de passage)",
+    a: "Si $B$ est une BON de $E$, une base $B'$ est orthonormée si et seulement si la matrice de passage de $B$ à $B'$ est orthogonale."
+  },
+  {
+    id: "Ch13-10",
+    q: "Déterminant d’une matrice orthogonale",
+    a: "Si $A\\in O(n)$ alors $$\\det(A)=\\pm 1.$$"
+  },
+  {
+    id: "Ch13-11",
+    q: "Déterminant d’une isométrie vectorielle",
+    a: "Si $f\\in\\mathcal O(E)$ alors $$\\det(f)=\\pm 1.$$"
+  },
+  {
+    id: "Ch13-12",
+    q: "Définition du groupe spécial orthogonal $SO(n)$",
+    a: "Le groupe spécial orthogonal est $$SO(n)=\\{A\\in O(n)\\mid \\det(A)=1\\}.$$ (matrices orthogonales directes)."
+  },
+  {
+    id: "Ch13-13",
+    q: "Valeurs propres possibles d’une matrice orthogonale réelle",
+    a: "Si $A\\in O(n)$ et $\\lambda$ est une valeur propre réelle, alors $$\\lambda\\in\\{-1,1\\}.$$"
+  },
+  {
+    id: "Ch13-14",
+    q: "Orthogonalité des sous-espaces propres d’une matrice orthogonale",
+    a: "Pour un automorphisme orthogonal, les sous-espaces propres associés à des valeurs propres distinctes sont orthogonaux."
+  },
+  {
+    id: "Ch13-15",
+    q: "Sous-espace stable : propriété avec l’orthogonal",
+    a: "Si $f\\in\\mathcal O(E)$ et si $F$ est stable par $f$, alors $$F^\\perp \\text{ est aussi stable par } f.$$"
+  },
+  {
+    id: "Ch13-16",
+    q: "Orientation : bases orthonormées directes et indirectes",
+    a: "Si $B$ est une BON de référence, une BON $B'$ est dite directe si la matrice de passage $P$ vérifie $$\\det(P)=1,$$ et indirecte si $$\\det(P)=-1.$$"
+  },
+  {
+    id: "Ch13-17",
+    q: "Définition : matrice symétrique réelle",
+    a: "Une matrice $M\\in\\mathcal M_n(\\mathbb R)$ est symétrique réelle si $$M^T=M.$$"
+  },
+  {
+    id: "Ch13-18",
+    q: "Définition : endomorphisme symétrique (autoadjoint)",
+    a: "Un endomorphisme $f\\in\\mathcal L(E)$ est symétrique si et seulement si $$\\forall (x,y)\\in E^2,\\ \\langle f(x),y\\rangle=\\langle x,f(y)\\rangle.$$"
+  },
+  {
+    id: "Ch13-19",
+    q: "Valeurs propres d’une matrice symétrique réelle",
+    a: "Toute matrice symétrique réelle a des valeurs propres réelles."
+  },
+  {
+    id: "Ch13-20",
+    q: "Orthogonalité des vecteurs propres d’une matrice symétrique",
+    a: "Si $A$ est symétrique réelle, alors deux vecteurs propres associés à deux valeurs propres distinctes sont orthogonaux."
+  },
+  {
+    id: "Ch13-21",
+    q: "Stabilité d’un sous-espace et de son orthogonal pour un endomorphisme symétrique",
+    a: "Si $f$ est symétrique et si $F$ est stable par $f$, alors $$F^\\perp \\text{ est aussi stable par } f.$$"
+  },
+  {
+    id: "Ch13-22",
+    q: "Théorème spectral (matrices symétriques réelles)",
+    a: "Si $A$ est symétrique réelle, alors il existe une matrice orthogonale $P$ et une matrice diagonale $D$ telles que $$A=PDP^T.$$ Autrement dit, $A$ est diagonalisable dans une base orthonormée."
+  },
+  {
+    id: "Ch13-23",
+    q: "Conséquence du théorème spectral sur la diagonalisation",
+    a: "Une matrice symétrique réelle est diagonalisable et admet une base orthonormée de vecteurs propres."
+  },
+  {
+    id: "Ch13-24",
+    q: "Définition : matrice antisymétrique",
+    a: "Une matrice $A$ est antisymétrique si $$A^T=-A.$$"
+  },
+  {
+    id: "Ch13-25",
+    q: "Décomposition symétrique + antisymétrique",
+    a: "Toute matrice $M\\in\\mathcal M_n(\\mathbb R)$ s’écrit de façon unique : $$M=\\frac{M+M^T}{2}+\\frac{M-M^T}{2},$$ avec $\\frac{M+M^T}{2}$ symétrique et $\\frac{M-M^T}{2}$ antisymétrique."
+  },
+  {
+    id: "Ch13-26",
+    q: "Forme générale des matrices orthogonales de $\\mathbb R^2$",
+    a: "Les matrices de $O(2)$ sont de la forme $$\\begin{pmatrix}\\cos\\theta & -\\sin\\theta\\\\ \\sin\\theta & \\cos\\theta\\end{pmatrix}\\quad\\text{ou}\\quad \\begin{pmatrix}\\cos\\theta & \\sin\\theta\\\\ \\sin\\theta & -\\cos\\theta\\end{pmatrix}.$$"
+  },
+  {
+    id: "Ch13-27",
+    q: "Matrices de $SO(2)$ (isométries directes du plan)",
+    a: "Les éléments de $SO(2)$ sont exactement les rotations : $$\\begin{pmatrix}\\cos\\theta & -\\sin\\theta\\\\ \\sin\\theta & \\cos\\theta\\end{pmatrix}.$$"
+  },
+  {
+    id: "Ch13-28",
+    q: "Isométries indirectes du plan : à quoi correspondent-elles ?",
+    a: "Ce sont les réflexions (symétries orthogonales par rapport à une droite vectorielle) et elles ont un déterminant $-1$."
+  },
+  {
+    id: "Ch13-29",
+    q: "Décomposition d’une rotation du plan",
+    a: "Toute rotation peut s’écrire comme produit de deux symétries orthogonales (décomposition non unique)."
+  },
+  {
+    id: "Ch13-30",
+    q: "Invariant en dimension 3 : quel sous-espace regarde-t-on pour classer une isométrie ?",
+    a: "On étudie $$\\ker(f-\\mathrm{Id}),$$ c’est-à-dire l’espace invariant (sous-espace propre associé à la valeur propre $1$)."
+  },
+  {
+    id: "Ch13-31",
+    q: "Dimension 3 : propriété de stabilité liée à l’invariant",
+    a: "Si $f$ est une isométrie vectorielle et si $F=\\ker(f-\\mathrm{Id})$, alors $$F^\\perp \\text{ est stable par } f,$$ et la restriction $f_{|F^\\perp}$ est encore une isométrie."
+  },
+  {
+    id: "Ch13-32",
+    q: "Symétrie orthogonale : caractérisation matricielle",
+    a: "Une isométrie $f$ est une symétrie orthogonale si et seulement si sa matrice dans une BON est à la fois symétrique et orthogonale."
+  },
+  {
+    id: "Ch13-33",
+    q: "Dimension 3 : forme matricielle d’une rotation vectorielle (dans une BON adaptée)",
+    a: "Dans une BON adaptée, une rotation d’axe unitaire et d’angle $\\theta$ a pour matrice : $$\\begin{pmatrix}1&0&0\\\\0&\\cos\\theta&-\\sin\\theta\\\\0&\\sin\\theta&\\cos\\theta\\end{pmatrix}.$$"
+  },
+  {
+    id: "Ch13-34",
+    q: "Dimension 3 : comment retrouver l’angle d’une rotation avec la trace ?",
+    a: "Pour une rotation en dimension 3, on a $$\\mathrm{tr}(f)=1+2\\cos\\theta,$$ donc $$\\cos\\theta=\\frac{\\mathrm{tr}(f)-1}{2}.$$"
+  },
+  {
+    id: "Ch13-35",
+    q: "Dimension 3 : décomposition d’une rotation",
+    a: "Toute rotation de l’espace (dimension 3) peut se décomposer en produit de deux réflexions par rapport à des plans."
+  }
+];
+
+
+/* =========================
+   localStorage keys
+   ========================= */
+const LS_KEY_PROGRESS = "isométrie_flashcards_progress_v1";
+const LS_KEY_ORDER = "isométrie_flashcards_order_v1";
+const LS_KEY_FILTER = "isométrie_flashcards_filter_v1";
+
+/* =========================
+   State
+   ========================= */
+let baseCards = [...flashcardsData];
+let cards = [];
+let currentIndex = 0;
+let isFlipped = false;
+
+const cardElement = document.getElementById("cardElement");
+const statusPill = document.getElementById("statusPill");
+const filterSelect = document.getElementById("filterSelect");
+
+/* =========================
+   Progress storage
+   progressMap[id] = "known" | "review" | null
+   ========================= */
+function loadProgress() {
+    try {
+        return JSON.parse(localStorage.getItem(LS_KEY_PROGRESS)) || {};
+    } catch {
+        return {};
+    }
+}
+
+function saveProgress(progressMap) {
+    localStorage.setItem(LS_KEY_PROGRESS, JSON.stringify(progressMap));
+}
+
+/* =========================
+   Order storage (array of ids)
+   ========================= */
+function loadOrder() {
+    try {
+        return JSON.parse(localStorage.getItem(LS_KEY_ORDER)) || null;
+    } catch {
+        return null;
+    }
+}
+
+function saveOrder(orderIds) {
+    localStorage.setItem(LS_KEY_ORDER, JSON.stringify(orderIds));
+}
+
+/* =========================
+   Filter storage
+   ========================= */
+function loadFilter() {
+    return localStorage.getItem(LS_KEY_FILTER) || "all";
+}
+
+function saveFilter(value) {
+    localStorage.setItem(LS_KEY_FILTER, value);
+}
+
+/* =========================
+   Helpers
+   ========================= */
+function setStatusPill(state) {
+    statusPill.classList.remove("status-known", "status-unknown", "status-unset");
+
+    if (state === "known") {
+        statusPill.classList.add("status-known");
+        statusPill.textContent = "Maîtrisée";
+    } else if (state === "review") {
+        statusPill.classList.add("status-unknown");
+        statusPill.textContent = "À revoir";
+    } else {
+        statusPill.classList.add("status-unset");
+        statusPill.textContent = "Non notée";
+    }
+}
+
+function getCurrentCard() {
+    return cards[currentIndex];
+}
+
+/* =========================
+   Apply filter + order
+   ========================= */
+function rebuildCardsList(keepIndex = false) {
+    const progressMap = loadProgress();
+    const filter = filterSelect.value;
+
+    // base list (ordered)
+    const orderIds = loadOrder();
+    let ordered = [...baseCards];
+
+    if (Array.isArray(orderIds) && orderIds.length === baseCards.length) {
+        const map = new Map(baseCards.map(c => [c.id, c]));
+        ordered = orderIds.map(id => map.get(id)).filter(Boolean);
+    }
+
+    // filter
+    if (filter === "known") {
+        ordered = ordered.filter(c => progressMap[c.id] === "known");
+    } else if (filter === "review") {
+        ordered = ordered.filter(c => progressMap[c.id] !== "known");
+    }
+
+    // fallback if empty
+    if (ordered.length === 0) {
+        ordered = [...baseCards];
+    }
+
+    const oldId = keepIndex && cards[currentIndex] ? cards[currentIndex].id : null;
+
+    cards = ordered;
+
+    if (keepIndex && oldId) {
+        const newIndex = cards.findIndex(c => c.id === oldId);
+        currentIndex = newIndex >= 0 ? newIndex : 0;
+    } else {
+        currentIndex = 0;
+    }
+
+    updateCardContent();
+}
+
+/* =========================
+   UI update
+   ========================= */
+function updateStats() {
+    const progressMap = loadProgress();
+    const total = baseCards.length;
+    const known = baseCards.filter(c => progressMap[c.id] === "known").length;
+    const review = total - known;
+    const pct = total === 0 ? 0 : Math.round((known / total) * 100);
+
+    const statsArea = document.getElementById("statsArea");
+    statsArea.innerHTML = `
+        <span class="chip">🟢 Maîtrisées : <strong>${known}</strong> / ${total}</span>
+        <span class="chip">🟠 À revoir : <strong>${review}</strong> / ${total}</span>
+        <span class="chip">📊 ${pct}% maîtrisé</span>
+    `;
+}
+
+function updateCardContent() {
+    if (!cards || cards.length === 0) return;
+
+    const progressMap = loadProgress();
+    const card = getCurrentCard();
+
+    const qDiv = document.getElementById("questionContent");
+    const aDiv = document.getElementById("answerContent");
+
+    qDiv.innerHTML = card.q;
+    aDiv.innerHTML = card.a;
+
+    const status = progressMap[card.id] || null;
+    setStatusPill(status);
+
+    document.getElementById("currentCard").textContent = currentIndex + 1;
+    document.getElementById("totalCards").textContent = cards.length;
+
+    document.getElementById("progressFill").style.width =
+        ((currentIndex + 1) / cards.length) * 100 + "%";
+
+    updateStats();
+
+    if (window.MathJax) {
+        MathJax.typesetPromise([qDiv, aDiv]);
+    }
+}
+
+/* =========================
+   Actions
+   ========================= */
+function flipCard() {
+    isFlipped = !isFlipped;
+    cardElement.classList.toggle("is-flipped", isFlipped);
+}
+
+function nextCard(e) {
+    if (e) e.stopPropagation();
+    isFlipped = false;
+    cardElement.classList.remove("is-flipped");
+
+    setTimeout(() => {
+        currentIndex = (currentIndex + 1) % cards.length;
+        updateCardContent();
+    }, 200);
+}
+
+function previousCard(e) {
+    if (e) e.stopPropagation();
+    isFlipped = false;
+    cardElement.classList.remove("is-flipped");
+
+    setTimeout(() => {
+        currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+        updateCardContent();
+    }, 200);
+}
+
+function shuffleCards() {
+    isFlipped = false;
+    cardElement.classList.remove("is-flipped");
+
+    setTimeout(() => {
+        // shuffle order IDs and store it
+        const ids = [...baseCards.map(c => c.id)];
+        ids.sort(() => Math.random() - 0.5);
+        saveOrder(ids);
+
+        rebuildCardsList(false);
+    }, 250);
+}
+
+function resetOrder() {
+    localStorage.removeItem(LS_KEY_ORDER);
+    rebuildCardsList(false);
+}
+
+function resetProgress() {
+    if (!confirm("Reset complet : tu veux supprimer toutes tes cartes maîtrisées/à revoir ?")) return;
+    localStorage.removeItem(LS_KEY_PROGRESS);
+    rebuildCardsList(true);
+}
+
+function markKnow(e) {
+    if (e) e.stopPropagation();
+
+    const progressMap = loadProgress();
+    const card = getCurrentCard();
+    progressMap[card.id] = "known";
+    saveProgress(progressMap);
+
+    updateCardContent();
+    // auto-next pour révision rapide
+    setTimeout(() => nextCard(), 150);
+}
+
+function markDontKnow(e) {
+    if (e) e.stopPropagation();
+
+    const progressMap = loadProgress();
+    const card = getCurrentCard();
+    progressMap[card.id] = "review";
+    saveProgress(progressMap);
+
+    updateCardContent();
+    setTimeout(() => nextCard(), 150);
+}
+
+function applyFilter() {
+    const val = filterSelect.value;
+    saveFilter(val);
+    rebuildCardsList(false);
+}
+
+/* =========================
+   Keyboard shortcuts
+   ========================= */
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') nextCard();
+    if (e.key === 'ArrowLeft') previousCard();
+
+    if (e.key === ' ' || e.key === 'Enter') {
+        e.preventDefault();
+        flipCard();
+    }
+
+    // 1 = je sais pas / 2 = je sais
+    if (e.key === '1') markDontKnow();
+    if (e.key === '2') markKnow();
+});
+
+/* =========================
+   Mobile swipe
+   ========================= */
+let touchStartX = 0;
+const scene = document.querySelector('.card-scene');
+
+scene.addEventListener('touchstart', e => {
+    touchStartX = e.changedTouches[0].screenX;
+});
+
+scene.addEventListener('touchend', e => {
+    let touchEndX = e.changedTouches[0].screenX;
+    handleSwipe(touchStartX, touchEndX);
+});
+
+function handleSwipe(start, end) {
+    const threshold = 50;
+    if (start - end > threshold) nextCard();
+    if (end - start > threshold) previousCard();
+}
+
+/* =========================
+   Init
+   ========================= */
+(function init() {
+    // restore filter
+    const savedFilter = loadFilter();
+    filterSelect.value = savedFilter;
+
+    rebuildCardsList(false);
+})();
+</script></body>
+</html> 
