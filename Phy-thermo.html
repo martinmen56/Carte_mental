@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcards - Thermodynamique</title>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #2C75FF, #002FA7);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        overflow-x: hidden;
+    }
+
+    .container {
+        max-width: 900px;
+        width: 100%;
+        position: relative;
+        z-index: 1;
+    }
+
+    .header {
+        text-align: center;
+        color: white;
+        margin-bottom: 25px;
+    }
+
+    .header h1 {
+        font-size: 2.2em;
+        margin-bottom: 8px;
+        text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .header p {
+        opacity: 0.95;
+    }
+
+    .top-panels {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-bottom: 18px;
+    }
+
+    .panel {
+        background: rgba(255,255,255,0.16);
+        border: 1px solid rgba(255,255,255,0.18);
+        border-radius: 18px;
+        padding: 12px 14px;
+        color: white;
+        backdrop-filter: blur(6px);
+        box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+    }
+
+    .panel-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .btn {
+        padding: 10px 18px;
+        border-radius: 50px;
+        font-weight: 700;
+        cursor: pointer;
+        border: none;
+        background: white;
+        color: #2C75FF;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.12);
+        transition: transform 0.2s, opacity 0.2s;
+        user-select: none;
+    }
+
+    .btn:active {
+        transform: scale(0.95);
+    }
+
+    .btn.secondary {
+        background: rgba(255,255,255,0.92);
+        color: #0b2a88;
+    }
+
+    .btn.danger {
+        background: rgba(255,255,255,0.92);
+        color: #b91c1c;
+    }
+
+    .btn-know {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+    }
+
+    .btn-dontknow {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: white;
+    }
+
+    .select {
+        border: none;
+        border-radius: 50px;
+        padding: 10px 14px;
+        font-weight: 700;
+        outline: none;
+        cursor: pointer;
+        background: white;
+        color: #2C75FF;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.12);
+    }
+
+    .stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        font-weight: 700;
+    }
+
+    .chip {
+        background: rgba(255,255,255,0.22);
+        border: 1px solid rgba(255,255,255,0.2);
+        padding: 6px 12px;
+        border-radius: 999px;
+        color: white;
+        font-size: 14px;
+    }
+
+    /* --- CARTE --- */
+    .card-scene {
+        perspective: 1000px;
+        width: 100%;
+        height: 450px;
+        cursor: pointer;
+    }
+
+    .card {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+        transform-style: preserve-3d;
+        border-radius: 25px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    }
+
+    .card.is-flipped {
+        transform: rotateY(180deg);
+    }
+
+    .card-face {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        border-radius: 25px;
+        padding: 40px;
+        background: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .card-face.back {
+        transform: rotateY(180deg);
+        background: #fdfdfd;
+    }
+
+    .card-label {
+        position: absolute;
+        top: 30px;
+        font-size: 13px;
+        font-weight: 900;
+        padding: 8px 20px;
+        border-radius: 20px;
+        color: white;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .bg-question {
+        background: linear-gradient(135deg, #74D0F1, #0000FF);
+    }
+
+    .bg-answer {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .card-content {
+        font-size: 22px;
+        line-height: 1.6;
+        color: #333;
+        width: 100%;
+        overflow-y: auto;
+        max-height: 80%;
+        white-space: pre-line;
+    }
+
+    mjx-container {
+        font-size: 110% !important;
+        outline: none;
+    }
+
+    .card-hint {
+        position: absolute;
+        bottom: 18px;
+        font-size: 14px;
+        color: #aaa;
+        width: 100%;
+        text-align: center;
+    }
+
+    /* --- BADGE ETAT CARTE --- */
+    .status-pill {
+        position: absolute;
+        top: 30px;
+        right: 30px;
+        font-size: 12px;
+        font-weight: 900;
+        padding: 8px 12px;
+        border-radius: 999px;
+        color: white;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+    }
+
+    .status-unknown {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+
+    .status-known {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .status-unset {
+        background: linear-gradient(135deg, #64748b, #475569);
+    }
+
+    /* --- NAVIGATION --- */
+    .navigation {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 22px;
+        padding: 0 10px;
+    }
+
+    .nav-btn {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: none;
+        background: linear-gradient(135deg, #74D0F1, #0000FF);
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+        transition: transform 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .nav-btn:hover {
+        transform: scale(1.1);
+    }
+
+    .nav-btn:active {
+        transform: scale(0.9);
+    }
+
+    .counter {
+        color: white;
+        font-size: 18px;
+        font-weight: 700;
+        background: rgba(255,255,255,0.2);
+        padding: 5px 15px;
+        border-radius: 15px;
+    }
+
+    .progress-bar {
+        margin-top: 20px;
+        height: 8px;
+        background: rgba(0,0,0,0.2);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #74D0F1, #0000FF);
+        width: 0%;
+        transition: width 0.3s ease-out;
+    }
+
+    .keyboard-hint {
+        text-align: center;
+        color: rgba(255,255,255,0.6);
+        font-size: 12px;
+        margin-top: 10px;
+    }
+
+    /* --- BOUTONS JE SAIS / JE SAIS PAS --- */
+    .knowbar {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        margin-top: 18px;
+        flex-wrap: wrap;
+    }
+
+    @media (max-width: 520px) {
+        .card-face { padding: 28px; }
+        .card-content { font-size: 19px; }
+        .status-pill { top: 20px; right: 20px; }
+    }
+</style>
+
+
+</head><script>
+  window.MathJax = {
+    tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+    },
+    svg: { fontCache: 'global' },
+    startup: { typeset: false }
+  };
+</script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script><body>
+    <div class="container">
+        <div class="header">
+            <h1>Thermodynamique</h1>
+            <p>Flashcards + Révision intelligente (localStorage)</p>
+        </div>
+
+    <div class="top-panels">
+        <div class="panel">
+            <div class="panel-row">
+				    <button class="btn" onclick="window.location.href='index.html'">🏠 Accueil</button>
+                <button class="btn" onclick="shuffleCards()">🎲 Mélanger</button>
+                <button class="btn secondary" onclick="resetOrder()">↩️ Ordre normal</button>
+                <button class="btn danger" onclick="resetProgress()">🧹 Reset progrès</button>
+
+                <select class="select" id="filterSelect" onchange="applyFilter()">
+                    <option value="all">📚 Toutes</option>
+                    <option value="review">🟠 À revoir</option>
+                    <option value="known">🟢 Maîtrisées</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="stats" id="statsArea">
+                <span class="chip">Chargement...</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-scene" onclick="flipCard()">
+        <div class="card" id="cardElement">
+
+            <div class="card-face front">
+                <div class="card-label bg-question">Question</div>
+                <div class="status-pill status-unset" id="statusPill">Non notée</div>
+                <div class="card-content" id="questionContent"></div>
+                <div class="card-hint">Toucher ou Espace pour retourner</div>
+            </div>
+
+            <div class="card-face back">
+                <div class="card-label bg-answer">Réponse</div>
+                <div class="card-content" id="answerContent"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="knowbar">
+        <button class="btn btn-dontknow" onclick="markDontKnow(event)">🟠 Je sais pas</button>
+        <button class="btn btn-know" onclick="markKnow(event)">🟢 Je sais</button>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" onclick="previousCard(event)">←</button>
+        <div class="counter">
+            <span id="currentCard">1</span> / <span id="totalCards">1</span>
+        </div>
+        <button class="nav-btn" onclick="nextCard(event)">→</button>
+    </div>
+
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <div class="keyboard-hint">
+        ⌨️ Flèches : naviguer • Espace : retourner • 1 = Je sais pas • 2 = Je sais
+    </div>
+</div>
+
+
+<script>
+
+
+const flashcardsData = [
+  // --- BASES & PREMIER PRINCIPE ---
+  {
+    id: "thermo-01",
+    q: "Définir un système ouvert et un système fermé.",
+    a: "Système fermé : n'échange que de l'énergie avec l'extérieur. Système ouvert : échange de l'énergie et de la matière."
+  },
+  {
+    id: "thermo-02",
+    q: "Quelle est l'équation d'état du gaz parfait ?",
+    a: "$P V = n R T$ avec $R = 8,314 J \\cdot K^{-1} \\cdot mol^{-1}$."
+  },
+  {
+    id: "thermo-03",
+    q: "Donner la définition de la capacité thermique à volume constant $C_v$ pour un gaz parfait.",
+    a: "$U = C_v T$ (1ère loi de Joule). Pour un GP monoatomique, $C_v = \\frac{3}{2} nR$."
+  },
+  {
+    id: "thermo-04",
+    q: "Donner l'expression du travail des forces de pression pour une transformation réversible.",
+    a: "$W = - \\int P_{ext} dV$. Si réversible, $P_{ext} = P_{fluide}$."
+  },
+  {
+    id: "thermo-05",
+    q: "Énoncer le Premier Principe de la thermodynamique pour un système fermé.",
+    a: "$\\Delta U + \\Delta E_c = W + Q$."
+  },
+  {
+    id: "thermo-06",
+    q: "Définir l'enthalpie $H$ et donner son lien avec la capacité thermique $C_p$.",
+    a: "$H = U + PV$. Pour un gaz parfait, $H = C_p T$ (2ème loi de Joule)."
+  },
+  {
+    id: "thermo-07",
+    q: "Quelle est la relation de Mayer pour un gaz parfait ?",
+    a: "$C_p - C_v = nR$."
+  },
+  {
+    id: "thermo-08",
+    q: "Définir le coefficient de Laplace $\\gamma$ (gamma).",
+    a: "$\\gamma = \\frac{C_p}{C_v}$. Pour l'air, $\\gamma \\approx 1,4$."
+  },
+  {
+    id: "thermo-09",
+    q: "Quelles sont les trois lois de Laplace pour une transformation adiabatique réversible ?",
+    a: "1) $PV^\\gamma = cst$ | 2) $TV^{\\gamma-1} = cst$ | 3) $P^{1-\\gamma}T^\\gamma = cst$."
+  },
+
+  // --- SECOND PRINCIPE & ENTROPIE ---
+  {
+    id: "thermo-10",
+    q: "Énoncer le Second Principe de la thermodynamique.",
+    a: "$\\Delta S = S_{echange} + S_{creee}$ avec $S_{creee} \\ge 0$ ($S_{creee} = 0$ si réversible)."
+  },
+  {
+    id: "thermo-11",
+    q: "Expression de l'entropie échangée $S_e$ avec une source de chaleur.",
+    a: "$S_e = \\frac{Q}{T_{source}}$."
+  },
+  {
+    id: "thermo-12",
+    q: "Qu'est-ce qu'une transformation isochore, isobare, isotherme et adiabatique ?",
+    a: "Isochore : $V=cst$. Isobare : $P=cst$. Isotherme : $T=cst$. Adiabatique : $Q=0$."
+  },
+  {
+    id: "thermo-13",
+    q: "Donner l'expression de la variation d'entropie d'un corps pur incompressible (solide/liquide).",
+    a: "$\\Delta S = C \\ln(\\frac{T_{finale}}{T_{initiale}})$."
+  },
+
+  // --- MACHINES THERMIQUES (CYCLES) ---
+  {
+    id: "thermo-14",
+    q: "Définir le rendement d'un moteur thermique.",
+    a: "$\\eta = \\frac{|W|}{Q_{chaude}} = 1 - \\frac{|Q_{froid}|}{Q_{chaude}}$."
+  },
+  {
+    id: "thermo-15",
+    q: "Quel est le rendement maximal (rendement de Carnot) pour un moteur ?",
+    a: "$\\eta_{Carnot} = 1 - \\frac{T_{froid}}{T_{chaud}}$."
+  },
+  {
+    id: "thermo-16",
+    q: "Définir l'efficacité $e_{PAC}$ d'une pompe à chaleur (PAC).",
+    a: "$e_{PAC} = \\frac{|Q_{chaud}|}{W}$."
+  },
+  {
+    id: "thermo-17",
+    q: "Définir l'efficacité $e_{f}$ d'un réfrigérateur.",
+    a: "$e_{f} = \\frac{Q_{froid}}{W}$."
+  },
+  {
+    id: "thermo-18",
+    q: "Sur un diagramme $(P, V)$ (Clapeyron), comment identifie-t-on un cycle moteur ?",
+    a: "Le cycle est parcouru dans le sens horaire."
+  },
+
+  // --- CHANGEMENTS D'ÉTAT ---
+  {
+    id: "thermo-19",
+    q: "Quelle est la condition de changement d'état d'un corps pur (ex: ébullition) ?",
+    a: "La température et la pression restent constantes tant que les deux phases coexistent."
+  },
+  {
+    id: "thermo-20",
+    q: "Définir le titre en vapeur $x$ d'un mélange liquide-vapeur.",
+    a: "$x = \\frac{m_{vapeur}}{m_{totale}}$. On utilise la règle des moments pour le lire sur un diagramme."
+  },
+  {
+    id: "thermo-21",
+    q: "Relation entre variation d'entropie et enthalpie lors d'un changement d'état à $T_{sat}$.",
+    a: "$\\Delta_{chg} S = \\frac{\\Delta_{chg} H}{T_{sat}} = \\frac{L}{T_{sat}}$ (où $L$ est la chaleur latente)."
+  },
+  {
+    id: "thermo-22",
+    q: "Expression de l'enthalpie massique $h$ d'un mélange diphasique de titre $x$.",
+    a: "$h_{melange} = (1-x)h_{liquide} + x h_{vapeur}$."
+  },
+
+  // --- IDENTITÉS THERMODYNAMIQUES ---
+  {
+    id: "thermo-23",
+    q: "Quelle est la première identité thermodynamique (fondamentale) ?",
+    a: "$dU = TdS - P dV$."
+  },
+  {
+    id: "thermo-24",
+    q: "Quelle est la deuxième identité thermodynamique (en enthalpie) ?",
+    a: "$dH = TdS + VdP$."
+  },
+  {
+    id: "thermo-25",
+    q: "Variation d'entropie pour un Gaz Parfait (variables T et P).",
+    a: "$\\Delta S = C_p \\ln(\\frac{T_2}{T_1}) - nR \\ln(\\frac{P_2}{P_1})$."
+  },
+
+  // --- SYSTÈMES OUVERTS (MACHINES INDUSTRIELLES) ---
+  {
+    id: "thermo-26",
+    q: "Donner le Premier Principe pour un système ouvert en régime permanent.",
+    a: "$\\Delta h + \\Delta e_c + \\Delta e_p = w_u + q$ (Grandeurs massiques, $w_u$ est le travail utile)."
+  },
+  {
+    id: "thermo-27",
+    q: "Quel est le travail utile massique $w_u$ dans une machine (turbine/compresseur) sans frottement ?",
+    a: "$w_u = \\int v dP$ (Travail de transvasement)."
+  },
+  {
+    id: "thermo-28",
+    q: "Puissance d'une Turbine ou d'un Compresseur adiabatique (Premier principe industriel).",
+    a: "$P_u = D_m \\Delta h$ (Débit massique $\\times$ variation d'enthalpie)."
+  },
+  {
+    id: "thermo-29",
+    q: "Qu'est-ce qu'une transformation polytropique ?",
+    a: "Transformation où $PV^k = cte$. Si $k=\\gamma$, c'est adiabatique."
+  },
+
+  // --- TRANSFERTS THERMIQUES (CONDUCTION & CONVECTION) ---
+  {
+    id: "thermo-30",
+    q: "Énoncer la Loi de Fourier (Conduction thermique).",
+    a: "$\\vec{j}_{th} = -\\lambda \\vec{\\nabla} T$ (Le flux va du chaud vers le froid)."
+  },
+  {
+    id: "thermo-31",
+    q: "Définir la résistance thermique $R_{th}$.",
+    a: "$R_{th} = \\frac{T_1 - T_2}{\\Phi}$ (Analogie loi d'Ohm). Unité : $K \\cdot W^{-1}$."
+  },
+  {
+    id: "thermo-32",
+    q: "Formule de la résistance thermique pour un mur plan (épaisseur $e$, surface $S$).",
+    a: "$R_{th} = \\frac{e}{\\lambda S}$."
+  },
+  {
+    id: "thermo-33",
+    q: "Formule de la résistance thermique pour une géométrie cylindrique (longueur $L$).",
+    a: "$R_{th} = \\frac{\\ln(R_2/R_1)}{2 \\pi \\lambda L}$."
+  },
+  {
+    id: "thermo-34",
+    q: "Loi de Newton pour la convection (échange fluide-paroi).",
+    a: "$\\Phi = h S (T_{paroi} - T_{fluide})$."
+  },
+  {
+    id: "thermo-35",
+    q: "Équation de la chaleur (diffusion thermique 1D sans source).",
+    a: "$\\frac{\\partial T}{\\partial t} = D \\frac{\\partial^2 T}{\\partial x^2}$ avec $D = \\frac{\\lambda}{\\rho c}$ (Diffusivité)."
+  },
+  {
+    id: "thermo-36",
+    q: "Bilan d'énergie sur un échangeur thermique adiabatique.",
+    a: "$D_{m1} \\Delta h_1 + D_{m2} \\Delta h_2 = 0$."
+  },
+  {
+    id: "thermo-37",
+    q: "Définir l'association de résistances thermiques en série.",
+    a: "$R_{eq} = R_1 + R_2 + ...$ (Les résistances s'ajoutent quand le flux traverse les parois successivement)."
+  }
+];
+
+
+
+
+
+/* =========================
+   localStorage keys
+   ========================= */
+const LS_KEY_PROGRESS = "thermo_flashcards_progress_v1";
+const LS_KEY_ORDER = "thermo_flashcards_order_v1";
+const LS_KEY_FILTER = "thermo_flashcards_filter_v1";
+
+/* =========================
+   State
+   ========================= */
+let baseCards = [...flashcardsData];
+let cards = [];
+let currentIndex = 0;
+let isFlipped = false;
+
+const cardElement = document.getElementById("cardElement");
+const statusPill = document.getElementById("statusPill");
+const filterSelect = document.getElementById("filterSelect");
+
+/* =========================
+   Progress storage
+   progressMap[id] = "known" | "review" | null
+   ========================= */
+function loadProgress() {
+    try {
+        return JSON.parse(localStorage.getItem(LS_KEY_PROGRESS)) || {};
+    } catch {
+        return {};
+    }
+}
+
+function saveProgress(progressMap) {
+    localStorage.setItem(LS_KEY_PROGRESS, JSON.stringify(progressMap));
+}
+
+/* =========================
+   Order storage (array of ids)
+   ========================= */
+function loadOrder() {
+    try {
+        return JSON.parse(localStorage.getItem(LS_KEY_ORDER)) || null;
+    } catch {
+        return null;
+    }
+}
+
+function saveOrder(orderIds) {
+    localStorage.setItem(LS_KEY_ORDER, JSON.stringify(orderIds));
+}
+
+/* =========================
+   Filter storage
+   ========================= */
+function loadFilter() {
+    return localStorage.getItem(LS_KEY_FILTER) || "all";
+}
+
+function saveFilter(value) {
+    localStorage.setItem(LS_KEY_FILTER, value);
+}
+
+/* =========================
+   Helpers
+   ========================= */
+function setStatusPill(state) {
+    statusPill.classList.remove("status-known", "status-unknown", "status-unset");
+
+    if (state === "known") {
+        statusPill.classList.add("status-known");
+        statusPill.textContent = "Maîtrisée";
+    } else if (state === "review") {
+        statusPill.classList.add("status-unknown");
+        statusPill.textContent = "À revoir";
+    } else {
+        statusPill.classList.add("status-unset");
+        statusPill.textContent = "Non notée";
+    }
+}
+
+function getCurrentCard() {
+    return cards[currentIndex];
+}
+
+/* =========================
+   Apply filter + order
+   ========================= */
+function rebuildCardsList(keepIndex = false) {
+    const progressMap = loadProgress();
+    const filter = filterSelect.value;
+
+    // base list (ordered)
+    const orderIds = loadOrder();
+    let ordered = [...baseCards];
+
+    if (Array.isArray(orderIds) && orderIds.length === baseCards.length) {
+        const map = new Map(baseCards.map(c => [c.id, c]));
+        ordered = orderIds.map(id => map.get(id)).filter(Boolean);
+    }
+
+    // filter
+    if (filter === "known") {
+        ordered = ordered.filter(c => progressMap[c.id] === "known");
+    } else if (filter === "review") {
+        ordered = ordered.filter(c => progressMap[c.id] !== "known");
+    }
+
+    // fallback if empty
+    if (ordered.length === 0) {
+        ordered = [...baseCards];
+    }
+
+    const oldId = keepIndex && cards[currentIndex] ? cards[currentIndex].id : null;
+
+    cards = ordered;
+
+    if (keepIndex && oldId) {
+        const newIndex = cards.findIndex(c => c.id === oldId);
+        currentIndex = newIndex >= 0 ? newIndex : 0;
+    } else {
+        currentIndex = 0;
+    }
+
+    updateCardContent();
+}
+
+/* =========================
+   UI update
+   ========================= */
+function updateStats() {
+    const progressMap = loadProgress();
+    const total = baseCards.length;
+    const known = baseCards.filter(c => progressMap[c.id] === "known").length;
+    const review = total - known;
+    const pct = total === 0 ? 0 : Math.round((known / total) * 100);
+
+    const statsArea = document.getElementById("statsArea");
+    statsArea.innerHTML = `
+        <span class="chip">🟢 Maîtrisées : <strong>${known}</strong> / ${total}</span>
+        <span class="chip">🟠 À revoir : <strong>${review}</strong> / ${total}</span>
+        <span class="chip">📊 ${pct}% maîtrisé</span>
+    `;
+}
+
+function updateCardContent() {
+    if (!cards || cards.length === 0) return;
+
+    const progressMap = loadProgress();
+    const card = getCurrentCard();
+
+    const qDiv = document.getElementById("questionContent");
+    const aDiv = document.getElementById("answerContent");
+
+    qDiv.innerHTML = card.q;
+    aDiv.innerHTML = card.a;
+
+    const status = progressMap[card.id] || null;
+    setStatusPill(status);
+
+    document.getElementById("currentCard").textContent = currentIndex + 1;
+    document.getElementById("totalCards").textContent = cards.length;
+
+    document.getElementById("progressFill").style.width =
+        ((currentIndex + 1) / cards.length) * 100 + "%";
+
+    updateStats();
+
+    if (window.MathJax) {
+        MathJax.typesetPromise([qDiv, aDiv]);
+    }
+}
+
+/* =========================
+   Actions
+   ========================= */
+function flipCard() {
+    isFlipped = !isFlipped;
+    cardElement.classList.toggle("is-flipped", isFlipped);
+}
+
+function nextCard(e) {
+    if (e) e.stopPropagation();
+    isFlipped = false;
+    cardElement.classList.remove("is-flipped");
+
+    setTimeout(() => {
+        currentIndex = (currentIndex + 1) % cards.length;
+        updateCardContent();
+    }, 200);
+}
+
+function previousCard(e) {
+    if (e) e.stopPropagation();
+    isFlipped = false;
+    cardElement.classList.remove("is-flipped");
+
+    setTimeout(() => {
+        currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+        updateCardContent();
+    }, 200);
+}
+
+function shuffleCards() {
+    isFlipped = false;
+    cardElement.classList.remove("is-flipped");
+
+    setTimeout(() => {
+        // shuffle order IDs and store it
+        const ids = [...baseCards.map(c => c.id)];
+        ids.sort(() => Math.random() - 0.5);
+        saveOrder(ids);
+
+        rebuildCardsList(false);
+    }, 250);
+}
+
+function resetOrder() {
+    localStorage.removeItem(LS_KEY_ORDER);
+    rebuildCardsList(false);
+}
+
+function resetProgress() {
+    if (!confirm("Reset complet : tu veux supprimer toutes tes cartes maîtrisées/à revoir ?")) return;
+    localStorage.removeItem(LS_KEY_PROGRESS);
+    rebuildCardsList(true);
+}
+
+function markKnow(e) {
+    if (e) e.stopPropagation();
+
+    const progressMap = loadProgress();
+    const card = getCurrentCard();
+    progressMap[card.id] = "known";
+    saveProgress(progressMap);
+
+    updateCardContent();
+    // auto-next pour révision rapide
+    setTimeout(() => nextCard(), 150);
+}
+
+function markDontKnow(e) {
+    if (e) e.stopPropagation();
+
+    const progressMap = loadProgress();
+    const card = getCurrentCard();
+    progressMap[card.id] = "review";
+    saveProgress(progressMap);
+
+    updateCardContent();
+    setTimeout(() => nextCard(), 150);
+}
+
+function applyFilter() {
+    const val = filterSelect.value;
+    saveFilter(val);
+    rebuildCardsList(false);
+}
+
+/* =========================
+   Keyboard shortcuts
+   ========================= */
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') nextCard();
+    if (e.key === 'ArrowLeft') previousCard();
+
+    if (e.key === ' ' || e.key === 'Enter') {
+        e.preventDefault();
+        flipCard();
+    }
+
+    // 1 = je sais pas / 2 = je sais
+    if (e.key === '1') markDontKnow();
+    if (e.key === '2') markKnow();
+});
+
+/* =========================
+   Mobile swipe
+   ========================= */
+let touchStartX = 0;
+const scene = document.querySelector('.card-scene');
+
+scene.addEventListener('touchstart', e => {
+    touchStartX = e.changedTouches[0].screenX;
+});
+
+scene.addEventListener('touchend', e => {
+    let touchEndX = e.changedTouches[0].screenX;
+    handleSwipe(touchStartX, touchEndX);
+});
+
+function handleSwipe(start, end) {
+    const threshold = 50;
+    if (start - end > threshold) nextCard();
+    if (end - start > threshold) previousCard();
+}
+
+/* =========================
+   Init
+   ========================= */
+(function init() {
+    // restore filter
+    const savedFilter = loadFilter();
+    filterSelect.value = savedFilter;
+
+    rebuildCardsList(false);
+})();
+</script></body>
+</html> 
