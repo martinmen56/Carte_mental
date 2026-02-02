@@ -35,7 +35,7 @@
             font-size:16px; font-weight:bold; cursor:pointer; transition:all 0.18s;
             box-shadow:0 4px 14px rgba(0,0,0,0.18);
         }
-        .btn-copy   { background:#fff; color:#1e40af; }
+        .btn-download { background:#fff; color:#1e40af; }
         .btn-preview { background:#10b981; color:white; }
         .btn:hover   { transform:translateY(-1px); box-shadow:0 6px 18px rgba(0,0,0,0.24); }
         .btn:active  { transform:translateY(1px); }
@@ -61,6 +61,12 @@
         <label>Titre du deck</label>
         <input type="text" id="title" placeholder="Ex: Thermodynamique – L2 Physique">
 
+        <label>Matière (pour l'index)</label>
+        <input type="text" id="subject" placeholder="Ex: Physique, Maths">
+
+        <label>Nom du fichier (sans .html)</label>
+        <input type="text" id="filename" placeholder="Ex: phy-thermo, maths-fourier">
+
         <label>
             Contenu (une carte par bloc Q:/A:)
             <button class="example-btn" onclick="loadExample()">Exemple Thermo</button>
@@ -69,7 +75,7 @@
         <div class="hint">Format strict : Q: …↵A: …↵↵(ligne vide entre cartes) – Supporte LaTeX ($…$ et $$…$$)</div>
 
         <div class="controls">
-            <button class="btn btn-copy"   onclick="copyCode()">📋 Copier HTML</button>
+            <button class="btn btn-download" onclick="downloadCode()">📥 Télécharger & Ajouter à l'index</button>
             <button class="btn btn-preview" onclick="updatePreview()">↻ Actualiser</button>
         </div>
     </div>
@@ -85,6 +91,8 @@
 
     function loadExample() {
         document.getElementById('title').value = "Thermodynamique";
+        document.getElementById('subject').value = "Physique";
+        document.getElementById('filename').value = "phy-thermo";
         document.getElementById('content').value = 
 `Q: Définir un système ouvert et un système fermé.
 A: Système fermé : n'échange que de l'énergie. Système ouvert : énergie + matière.
@@ -203,7 +211,6 @@ A: $$ dU = T\\,dS - P\\,dV $$`;
     <div class="top-panels">
         <div class="panel">
             <div class="panel-row">
-                <button class="btn" onclick="window.location.href='index.html'">🏠 Accueil</button>
                 <button class="btn" onclick="shuffleCards()">🎲 Mélanger</button>
                 <button class="btn secondary" onclick="resetOrder()">↩️ Ordre normal</button>
                 <button class="btn danger" onclick="resetProgress()">🧹 Reset progrès</button>
@@ -380,15 +387,34 @@ scene.addEventListener('touchend',e=>{let teX=e.changedTouches[0].screenX;
 </html>`;
     }
 
-    function copyCode() {
+    function downloadCode() {
         const html = buildHTML();
         if (html.includes("Aucune carte valide")) {
             alert("Aucune carte valide. Vérifie le format Q: … A: …");
             return;
         }
-        navigator.clipboard.writeText(html)
-            .then(()=>alert("Code copié ! Colle-le dans un fichier .html"))
-            .catch(()=>alert("Copie impossible – sélectionne manuellement."));
+
+        // Téléchargement du fichier
+        const title = document.getElementById('title').value.trim() || "flashcards";
+        const filename = (document.getElementById('filename').value.trim() || title.replace(/[^a-z0-9]/gi, '-').toLowerCase()) + ".html";
+        const blob = new Blob([html], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        // Ajout automatique à l'index via localStorage (pour affichage dynamique sur index.html)
+        const subject = document.getElementById('subject').value.trim() || "Autres";
+        const decks = JSON.parse(localStorage.getItem('custom_decks') || '[]');
+        const newDeck = { subject, title, filename, html };  // Stocke aussi le HTML pour preview ou ouverture directe
+        decks.push(newDeck);
+        localStorage.setItem('custom_decks', JSON.stringify(decks));
+
+        alert("Fichier téléchargé !\n\n1) Upload-le sur GitHub (Add file > Upload).\n2) Sur index.html, le lien apparaîtra automatiquement grâce à localStorage (rafraîchis la page).");
     }
 
     function updatePreview() {
@@ -403,6 +429,7 @@ scene.addEventListener('touchend',e=>{let teX=e.changedTouches[0].screenX;
 
     document.getElementById('content').addEventListener('input', updatePreviewSoon);
     document.getElementById('title').addEventListener('input', updatePreviewSoon);
+    document.getElementById('subject').addEventListener('input', updatePreviewSoon);
 
     setTimeout(updatePreview, 600);
 </script>
