@@ -116,7 +116,7 @@ const flashcardsData = [
   {
     "id": "card-001",
     "q": "Qu’est-ce qu’une fonction de plusieurs variables réelles ?",
-    "a": "Une fonction $f : \\mathbb{R}^n \\to \\mathbb{R}$ qui associe à $(x_1,\\dots,x_n)$ un réel $f(x_1,\\dots,x_n)$."
+    "a": "Une fonction $f:\\mathbb{R}^n\\to\\mathbb{R}$ qui associe à $(x_1,\\dots,x_n)$ un réel $f(x_1,\\dots,x_n)$."
   },
   {
     "id": "card-002",
@@ -131,7 +131,7 @@ const flashcardsData = [
   {
     "id": "card-004",
     "q": "Définition du gradient de $f(x,y)$ ?",
-    "a": "$\\nabla f(x,y)=\\left(\\frac{\\partial f}{\\partial x},\\frac{\\partial f}{\\partial y}\\right)$."
+    "a": "$\\displaystyle \\nabla f(x,y)=\\left(\\frac{\\partial f}{\\partial x}(x,y),\\frac{\\partial f}{\\partial y}(x,y)\\right)$."
   },
   {
     "id": "card-005",
@@ -146,92 +146,82 @@ const flashcardsData = [
   {
     "id": "card-007",
     "q": "Formule de Taylor à l’ordre 2 pour $f(x,y)$ au point $(a,b)$ ?",
-    "a": "$f(a+h,b+k)=f(a,b)+f_x(a,b)h+f_y(a,b)k+\\dfrac12\\big(f_{xx}(a,b)h^2+2f_{xy}(a,b)hk+f_{yy}(a,b)k^2\\big)+o(h^2+k^2)$."
+    "a": "$f(a+h,b+k)=f(a,b)+\\frac{\\partial f}{\\partial x}(a,b)h+\\frac{\\partial f}{\\partial y}(a,b)k$\n$+\\dfrac12\\Big(\\frac{\\partial^2 f}{\\partial x^2}(a,b)h^2+2\\frac{\\partial^2 f}{\\partial x\\partial y}(a,b)hk+\\frac{\\partial^2 f}{\\partial y^2}(a,b)k^2\\Big)+o(h^2+k^2)$."
   },
   {
     "id": "card-008",
-    "q": "À quoi sert la formule de Taylor d’ordre 2 ?",
-    "a": "À étudier le comportement local de $f$ et la nature des extrema."
+    "q": "Définition d’un extremum local en $(a,b)$ ?",
+    "a": "$f$ admet un minimum (resp. maximum) local en $(a,b)$ s’il existe un voisinage $V$ tel que\n$\\forall(x,y)\\in V,\\ f(a,b)\\le f(x,y)$ (resp. $f(a,b)\\ge f(x,y)$)."
   },
   {
     "id": "card-009",
-    "q": "Définition d’un extremum local en $(a,b)$ ?",
-    "a": "$f$ admet un minimum (resp. maximum) local en $(a,b)$ s’il existe un voisinage $V$ tel que $\\forall (x,y)\\in V$, $f(a,b)\\le f(x,y)$ (resp. $f(a,b)\\ge f(x,y)$)."
+    "q": "Définition d’un point critique de $f(x,y)$ ?",
+    "a": "Un point $(a,b)$ tel que\n$\\displaystyle \\frac{\\partial f}{\\partial x}(a,b)=0 \\quad \\text{et} \\quad \\frac{\\partial f}{\\partial y}(a,b)=0$."
   },
   {
     "id": "card-010",
-    "q": "Définition d’un point critique de $f(x,y)$ ?",
-    "a": "Un point $(a,b)$ tel que $\\nabla f(a,b)=(0,0)$."
-  },
-  {
-    "id": "card-011",
-    "q": "Condition nécessaire d’existence d’un extremum local ?",
+    "q": "Condition nécessaire pour qu’il y ait un extremum local ?",
     "a": "Le point doit être un point critique."
   },
   {
-    "id": "card-012",
+    "id": "card-011",
     "q": "Définition du discriminant $D$ en un point critique $(a,b)$ ?",
-    "a": "$D=f_{xx}(a,b)f_{yy}(a,b)-\\big(f_{xy}(a,b)\\big)^2$."
+    "a": "$D=\\frac{\\partial^2 f}{\\partial x^2}(a,b)\\frac{\\partial^2 f}{\\partial y^2}(a,b)-\\left(\\frac{\\partial^2 f}{\\partial x\\partial y}(a,b)\\right)^2$."
   },
   {
-    "id": "card-013",
-    "q": "Si $D>0$ et $f_{xx}(a,b)>0$, que conclure ?",
+    "id": "card-012",
+    "q": "Si $D>0$ et $\\dfrac{\\partial^2 f}{\\partial x^2}(a,b)>0$, que conclure ?",
     "a": "$f$ admet un minimum local en $(a,b)$."
   },
   {
-    "id": "card-014",
-    "q": "Si $D>0$ et $f_{xx}(a,b)<0$, que conclure ?",
+    "id": "card-013",
+    "q": "Si $D>0$ et $\\dfrac{\\partial^2 f}{\\partial x^2}(a,b)<0$, que conclure ?",
     "a": "$f$ admet un maximum local en $(a,b)$."
   },
   {
-    "id": "card-015",
+    "id": "card-014",
     "q": "Si $D<0$, que conclure ?",
     "a": "$(a,b)$ est un point selle (point col)."
   },
   {
-    "id": "card-016",
+    "id": "card-015",
     "q": "Si $D=0$, que conclure ?",
     "a": "On ne peut rien conclure."
   },
   {
-    "id": "card-017",
+    "id": "card-016",
     "q": "Définition d’une courbe définie par une équation implicite ?",
     "a": "L’ensemble des points $(x,y)$ tels que $f(x,y)=0$."
   },
   {
-    "id": "card-018",
+    "id": "card-017",
     "q": "Définition d’un point régulier d’une courbe $f(x,y)=0$ ?",
-    "a": "Un point $(x,y)$ tel que $\\nabla f(x,y)\\neq(0,0)$."
+    "a": "Un point $(x,y)$ tel que\n$\\nabla f(x,y)\\neq(0,0)$."
   },
   {
-    "id": "card-019",
+    "id": "card-018",
     "q": "Lien entre gradient et tangente à une courbe de niveau ?",
     "a": "Le gradient est orthogonal au vecteur tangent à la courbe."
   },
   {
-    "id": "card-020",
+    "id": "card-019",
     "q": "Définition d’une surface de l’espace par équation implicite ?",
     "a": "L’ensemble des points $(x,y,z)$ tels que $f(x,y,z)=0$."
   },
   {
-    "id": "card-021",
+    "id": "card-020",
     "q": "Définition d’un point régulier d’une surface ?",
-    "a": "Un point $(x,y,z)$ tel que $\\nabla f(x,y,z)\\neq(0,0,0)$."
+    "a": "Un point $(x,y,z)$ tel que\n$\\nabla f(x,y,z)\\neq(0,0,0)$."
+  },
+  {
+    "id": "card-021",
+    "q": "Équation du plan tangent à la surface $f(x,y,z)=0$ en $(x_0,y_0,z_0)$ ?",
+    "a": "$\\frac{\\partial f}{\\partial x}(x_0,y_0,z_0)(x-x_0)+\\frac{\\partial f}{\\partial y}(x_0,y_0,z_0)(y-y_0)+\\frac{\\partial f}{\\partial z}(x_0,y_0,z_0)(z-z_0)=0$."
   },
   {
     "id": "card-022",
-    "q": "Équation du plan tangent à la surface $f(x,y,z)=0$ en $(x_0,y_0,z_0)$ ?",
-    "a": "$f_x(x_0,y_0,z_0)(x-x_0)+f_y(x_0,y_0,z_0)(y-y_0)+f_z(x_0,y_0,z_0)(z-z_0)=0$."
-  },
-  {
-    "id": "card-023",
     "q": "Cas particulier d’une surface $z=g(x,y)$ : équation du plan tangent en $(x_0,y_0)$ ?",
-    "a": "$z=g(x_0,y_0)+g_x(x_0,y_0)(x-x_0)+g_y(x_0,y_0)(y-y_0)$."
-  },
-  {
-    "id": "card-024",
-    "q": "Interprétation géométrique du gradient sur une surface $z=g(x,y)$ ?",
-    "a": "Il est orthogonal aux lignes de niveau et indique la direction de plus grande pente."
+    "a": "$z=g(x_0,y_0)+\\frac{\\partial g}{\\partial x}(x_0,y_0)(x-x_0)+\\frac{\\partial g}{\\partial y}(x_0,y_0)(y-y_0)$."
   }
 ];
 
