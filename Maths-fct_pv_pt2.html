@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcards - Foctions de plusieurs variables pt 2</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+        body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-gradient(135deg,#2C75FF,#002FA7);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;overflow-x:hidden;color:white;}
+        .container{max-width:900px;width:100%;position:relative;z-index:1;}
+        .header{text-align:center;color:white;margin-bottom:25px;}
+        .header h1{font-size:2.2em;margin-bottom:8px;text-shadow:0 2px 5px rgba(0,0,0,0.2);}
+        .header p{opacity:0.95;}
+        .top-panels{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:18px;}
+        .panel{background:rgba(255,255,255,0.16);border:1px solid rgba(255,255,255,0.18);border-radius:18px;padding:12px 14px;color:white;backdrop-filter:blur(6px);box-shadow:0 8px 18px rgba(0,0,0,0.15);}
+        .panel-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;}
+        .btn{padding:10px 18px;border-radius:50px;font-weight:700;cursor:pointer;border:none;background:white;color:#2C75FF;box-shadow:0 4px 6px rgba(0,0,0,0.12);transition:transform 0.2s,opacity 0.2s;user-select:none;}
+        .btn:active{transform:scale(0.95);}
+        .btn.secondary{background:rgba(255,255,255,0.92);color:#0b2a88;}
+        .btn.danger{background:rgba(255,255,255,0.92);color:#b91c1c;}
+        .btn-know{background:linear-gradient(135deg,#10b981,#059669);color:white;}
+        .btn-dontknow{background:linear-gradient(135deg,#f59e0b,#d97706);color:white;}
+        .select{border:none;border-radius:50px;padding:10px 14px;font-weight:700;outline:none;cursor:pointer;background:white;color:#2C75FF;box-shadow:0 4px 6px rgba(0,0,0,0.12);}
+        .stats{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;font-weight:700;}
+        .chip{background:rgba(255,255,255,0.22);border:1px solid rgba(255,255,255,0.2);padding:6px 12px;border-radius:999px;color:white;font-size:14px;}
+        .card-scene{perspective:1000px;width:100%;height:450px;cursor:pointer;}
+        .card{width:100%;height:100%;position:relative;transition:transform 0.6s cubic-bezier(0.4,0.2,0.2,1);transform-style:preserve-3d;border-radius:25px;box-shadow:0 15px 35px rgba(0,0,0,0.2);}
+        .card.is-flipped{transform:rotateY(180deg);}
+        .card-face{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:25px;padding:40px;background:white;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
+        .card-face.back{transform:rotateY(180deg);background:#fdfdfd;}
+        .card-label{position:absolute;top:30px;font-size:13px;font-weight:900;padding:8px 20px;border-radius:20px;color:white;text-transform:uppercase;letter-spacing:1px;}
+        .bg-question{background:linear-gradient(135deg,#74D0F1,#0000FF);}
+        .bg-answer{background:linear-gradient(135deg,#10b981,#059669);}
+        .card-content{font-size:22px;line-height:1.6;color:#333;width:100%;overflow-y:auto;max-height:80%;white-space:pre-line;}
+        mjx-container{font-size:110% !important;outline:none;}
+        .card-hint{position:absolute;bottom:18px;font-size:14px;color:#aaa;width:100%;text-align:center;}
+        .status-pill{position:absolute;top:30px;right:30px;font-size:12px;font-weight:900;padding:8px 12px;border-radius:999px;color:white;text-transform:uppercase;letter-spacing:0.7px;box-shadow:0 8px 18px rgba(0,0,0,0.15);}
+        .status-unknown{background:linear-gradient(135deg,#f59e0b,#d97706);}
+        .status-known{background:linear-gradient(135deg,#10b981,#059669);}
+        .status-unset{background:linear-gradient(135deg,#64748b,#475569);}
+        .navigation{display:flex;justify-content:space-between;align-items:center;margin-top:22px;padding:0 10px;}
+        .nav-btn{width:50px;height:50px;border-radius:50%;border:none;background:linear-gradient(135deg,#74D0F1,#0000FF);color:white;font-size:20px;cursor:pointer;transition:transform 0.2s;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 10px rgba(0,0,0,0.2);}
+        .nav-btn:hover{transform:scale(1.1);}
+        .nav-btn:active{transform:scale(0.9);}
+        .counter{color:white;font-size:18px;font-weight:700;background:rgba(255,255,255,0.2);padding:5px 15px;border-radius:15px;}
+        .progress-bar{margin-top:20px;height:8px;background:rgba(0,0,0,0.2);border-radius:10px;overflow:hidden;}
+        .progress-fill{height:100%;background:linear-gradient(90deg,#74D0F1,#0000FF);width:0%;transition:width 0.3s ease-out;}
+        .keyboard-hint{text-align:center;color:rgba(255,255,255,0.6);font-size:12px;margin-top:10px;}
+        .knowbar{display:flex;gap:12px;justify-content:center;margin-top:18px;flex-wrap:wrap;}
+        @media (max-width:520px){.card-face{padding:28px;}.card-content{font-size:19px;}.status-pill{top:20px;right:20px;}}
+    </style>
+    <script>
+    window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']]},svg:{fontCache:'global'},startup:{typeset:false}};
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Foctions de plusieurs variables pt 2</h1>
+        <p>Flashcards + Révision active (localStorage)</p>
+    </div>
+
+    <div class="top-panels">
+        <div class="panel">
+            <div class="panel-row">
+            	<button class="btn" onclick="window.location.href='index.html'">🏠 Accueil</button>
+                <button class="btn" onclick="shuffleCards()">🎲 Mélanger</button>
+                <button class="btn secondary" onclick="resetOrder()">↩️ Ordre normal</button>
+                <button class="btn danger" onclick="resetProgress()">🧹 Reset progrès</button>
+                <select class="select" id="filterSelect" onchange="applyFilter()">
+                    <option value="all">📚 Toutes</option>
+                    <option value="review">🟠 À revoir</option>
+                    <option value="known">🟢 Maîtrisées</option>
+                </select>
+            </div>
+        </div>
+        <div class="panel">
+            <div class="stats" id="statsArea"><span class="chip">Chargement...</span></div>
+        </div>
+    </div>
+
+    <div class="card-scene" onclick="flipCard()">
+        <div class="card" id="cardElement">
+            <div class="card-face front">
+                <div class="card-label bg-question">Question</div>
+                <div class="status-pill status-unset" id="statusPill">Non notée</div>
+                <div class="card-content" id="questionContent"></div>
+                <div class="card-hint">Toucher / Espace / Entrée pour retourner</div>
+            </div>
+            <div class="card-face back">
+                <div class="card-label bg-answer">Réponse</div>
+                <div class="card-content" id="answerContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="knowbar">
+        <button class="btn btn-dontknow" onclick="markDontKnow(event)">🟠 Je sais pas</button>
+        <button class="btn btn-know" onclick="markKnow(event)">🟢 Je sais</button>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" onclick="previousCard(event)">←</button>
+        <div class="counter"><span id="currentCard">1</span> / <span id="totalCards">1</span></div>
+        <button class="nav-btn" onclick="nextCard(event)">→</button>
+    </div>
+
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+    <div class="keyboard-hint">Flèches : naviguer • Espace : retourner • 1 = pas • 2 = sais</div>
+</div>
+
+<script>
+const flashcardsData = [
+  {
+    "id": "card-001",
+    "q": "Qu’est-ce qu’une fonction de plusieurs variables réelles ?",
+    "a": "Une fonction $f : \\mathbb{R}^n \\to \\mathbb{R}$ qui associe à $(x_1,\\dots,x_n)$ un réel $f(x_1,\\dots,x_n)$."
+  },
+  {
+    "id": "card-002",
+    "q": "Définition de la dérivée partielle de $f(x,y)$ par rapport à $x$ ?",
+    "a": "$\\displaystyle \\frac{\\partial f}{\\partial x}(x,y)=\\lim_{h\\to0}\\frac{f(x+h,y)-f(x,y)}{h}$."
+  },
+  {
+    "id": "card-003",
+    "q": "Définition de la dérivée partielle de $f(x,y)$ par rapport à $y$ ?",
+    "a": "$\\displaystyle \\frac{\\partial f}{\\partial y}(x,y)=\\lim_{h\\to0}\\frac{f(x,y+h)-f(x,y)}{h}$."
+  },
+  {
+    "id": "card-004",
+    "q": "Définition du gradient de $f(x,y)$ ?",
+    "a": "$\\nabla f(x,y)=\\left(\\frac{\\partial f}{\\partial x},\\frac{\\partial f}{\\partial y}\\right)$."
+  },
+  {
+    "id": "card-005",
+    "q": "Interprétation géométrique du gradient ?",
+    "a": "Le gradient est orthogonal aux lignes de niveau et indique la direction de plus grande pente."
+  },
+  {
+    "id": "card-006",
+    "q": "Définition d’une ligne de niveau de $f(x,y)$ ?",
+    "a": "L’ensemble des points $(x,y)$ tels que $f(x,y)=c$."
+  },
+  {
+    "id": "card-007",
+    "q": "Formule de Taylor à l’ordre 2 pour $f(x,y)$ au point $(a,b)$ ?",
+    "a": "$f(a+h,b+k)=f(a,b)+f_x(a,b)h+f_y(a,b)k+\\dfrac12\\big(f_{xx}(a,b)h^2+2f_{xy}(a,b)hk+f_{yy}(a,b)k^2\\big)+o(h^2+k^2)$."
+  },
+  {
+    "id": "card-008",
+    "q": "À quoi sert la formule de Taylor d’ordre 2 ?",
+    "a": "À étudier le comportement local de $f$ et la nature des extrema."
+  },
+  {
+    "id": "card-009",
+    "q": "Définition d’un extremum local en $(a,b)$ ?",
+    "a": "$f$ admet un minimum (resp. maximum) local en $(a,b)$ s’il existe un voisinage $V$ tel que $\\forall (x,y)\\in V$, $f(a,b)\\le f(x,y)$ (resp. $f(a,b)\\ge f(x,y)$)."
+  },
+  {
+    "id": "card-010",
+    "q": "Définition d’un point critique de $f(x,y)$ ?",
+    "a": "Un point $(a,b)$ tel que $\\nabla f(a,b)=(0,0)$."
+  },
+  {
+    "id": "card-011",
+    "q": "Condition nécessaire d’existence d’un extremum local ?",
+    "a": "Le point doit être un point critique."
+  },
+  {
+    "id": "card-012",
+    "q": "Définition du discriminant $D$ en un point critique $(a,b)$ ?",
+    "a": "$D=f_{xx}(a,b)f_{yy}(a,b)-\\big(f_{xy}(a,b)\\big)^2$."
+  },
+  {
+    "id": "card-013",
+    "q": "Si $D>0$ et $f_{xx}(a,b)>0$, que conclure ?",
+    "a": "$f$ admet un minimum local en $(a,b)$."
+  },
+  {
+    "id": "card-014",
+    "q": "Si $D>0$ et $f_{xx}(a,b)<0$, que conclure ?",
+    "a": "$f$ admet un maximum local en $(a,b)$."
+  },
+  {
+    "id": "card-015",
+    "q": "Si $D<0$, que conclure ?",
+    "a": "$(a,b)$ est un point selle (point col)."
+  },
+  {
+    "id": "card-016",
+    "q": "Si $D=0$, que conclure ?",
+    "a": "On ne peut rien conclure."
+  },
+  {
+    "id": "card-017",
+    "q": "Définition d’une courbe définie par une équation implicite ?",
+    "a": "L’ensemble des points $(x,y)$ tels que $f(x,y)=0$."
+  },
+  {
+    "id": "card-018",
+    "q": "Définition d’un point régulier d’une courbe $f(x,y)=0$ ?",
+    "a": "Un point $(x,y)$ tel que $\\nabla f(x,y)\\neq(0,0)$."
+  },
+  {
+    "id": "card-019",
+    "q": "Lien entre gradient et tangente à une courbe de niveau ?",
+    "a": "Le gradient est orthogonal au vecteur tangent à la courbe."
+  },
+  {
+    "id": "card-020",
+    "q": "Définition d’une surface de l’espace par équation implicite ?",
+    "a": "L’ensemble des points $(x,y,z)$ tels que $f(x,y,z)=0$."
+  },
+  {
+    "id": "card-021",
+    "q": "Définition d’un point régulier d’une surface ?",
+    "a": "Un point $(x,y,z)$ tel que $\\nabla f(x,y,z)\\neq(0,0,0)$."
+  },
+  {
+    "id": "card-022",
+    "q": "Équation du plan tangent à la surface $f(x,y,z)=0$ en $(x_0,y_0,z_0)$ ?",
+    "a": "$f_x(x_0,y_0,z_0)(x-x_0)+f_y(x_0,y_0,z_0)(y-y_0)+f_z(x_0,y_0,z_0)(z-z_0)=0$."
+  },
+  {
+    "id": "card-023",
+    "q": "Cas particulier d’une surface $z=g(x,y)$ : équation du plan tangent en $(x_0,y_0)$ ?",
+    "a": "$z=g(x_0,y_0)+g_x(x_0,y_0)(x-x_0)+g_y(x_0,y_0)(y-y_0)$."
+  },
+  {
+    "id": "card-024",
+    "q": "Interprétation géométrique du gradient sur une surface $z=g(x,y)$ ?",
+    "a": "Il est orthogonal aux lignes de niveau et indique la direction de plus grande pente."
+  }
+];
+
+const LS_KEY_PROGRESS = "foctions de plusieurs variables pt 2_progress_v1";
+const LS_KEY_ORDER    = "foctions de plusieurs variables pt 2_order_v1";
+const LS_KEY_FILTER   = "foctions de plusieurs variables pt 2_filter_v1";
+
+let baseCards = [...flashcardsData];
+let cards = [];
+let currentIndex = 0;
+let isFlipped = false;
+
+const cardEl = document.getElementById("cardElement");
+const statusPill = document.getElementById("statusPill");
+const filterSelect = document.getElementById("filterSelect");
+
+function loadProgress(){try{return JSON.parse(localStorage.getItem(LS_KEY_PROGRESS))||{}}catch{return {}}}
+function saveProgress(m){localStorage.setItem(LS_KEY_PROGRESS,JSON.stringify(m))}
+function loadOrder(){try{return JSON.parse(localStorage.getItem(LS_KEY_ORDER))||null}catch{return null}}
+function saveOrder(o){localStorage.setItem(LS_KEY_ORDER,JSON.stringify(o))}
+function loadFilter(){return localStorage.getItem(LS_KEY_FILTER)||"all"}
+function saveFilter(v){localStorage.setItem(LS_KEY_FILTER,v)}
+
+function setStatusPill(state){
+    statusPill.classList.remove("status-known","status-unknown","status-unset");
+    if(state==="known"){statusPill.classList.add("status-known");statusPill.textContent="Maîtrisée";}
+    else if(state==="review"){statusPill.classList.add("status-unknown");statusPill.textContent="À revoir";}
+    else{statusPill.classList.add("status-unset");statusPill.textContent="Non notée";}
+}
+
+function getCurrentCard(){return cards[currentIndex];}
+
+function rebuildCardsList(keepIndex=false){
+    const progress = loadProgress();
+    const filter = filterSelect.value;
+    let ordered = [...baseCards];
+    const orderIds = loadOrder();
+    if(Array.isArray(orderIds)&&orderIds.length===baseCards.length){
+        const map = new Map(baseCards.map(c=>[c.id,c]));
+        ordered = orderIds.map(id=>map.get(id)).filter(Boolean);
+    }
+    if(filter==="known") ordered=ordered.filter(c=>progress[c.id]==="known");
+    else if(filter==="review") ordered=ordered.filter(c=>progress[c.id]!=="known");
+    if(ordered.length===0) ordered=[...baseCards];
+    const oldId = keepIndex && cards[currentIndex] ? cards[currentIndex].id : null;
+    cards = ordered;
+    if(keepIndex && oldId){
+        const ni = cards.findIndex(c=>c.id===oldId);
+        currentIndex = ni>=0 ? ni : 0;
+    } else currentIndex=0;
+    updateCardContent();
+}
+
+function updateStats(){
+    const p = loadProgress();
+    const t = baseCards.length;
+    const k = baseCards.filter(c=>p[c.id]==="known").length;
+    const r = t-k;
+    const pct = t===0?0:Math.round(k/t*100);
+    document.getElementById("statsArea").innerHTML=`
+        <span class="chip">🟢 Maîtrisées : <strong>${k}</strong> / ${t}</span>
+        <span class="chip">🟠 À revoir : <strong>${r}</strong> / ${t}</span>
+        <span class="chip">📊 ${pct}%</span>`;
+}
+
+function updateCardContent(){
+    if(!cards.length) return;
+    const p = loadProgress();
+    const c = getCurrentCard();
+    document.getElementById("questionContent").innerHTML = c.q;
+    document.getElementById("answerContent").innerHTML = c.a;
+    setStatusPill(p[c.id] || null);
+    document.getElementById("currentCard").textContent = currentIndex+1;
+    document.getElementById("totalCards").textContent = cards.length;
+    document.getElementById("progressFill").style.width = ((currentIndex+1)/cards.length*100)+"%";
+    updateStats();
+    if(window.MathJax) MathJax.typesetPromise();
+}
+
+function flipCard(){isFlipped=!isFlipped; cardEl.classList.toggle("is-flipped",isFlipped);}
+
+function nextCard(e){if(e)e.stopPropagation(); isFlipped=false; cardEl.classList.remove("is-flipped");
+    setTimeout(()=>{currentIndex=(currentIndex+1)%cards.length; updateCardContent();},180);}
+function previousCard(e){if(e)e.stopPropagation(); isFlipped=false; cardEl.classList.remove("is-flipped");
+    setTimeout(()=>{currentIndex=(currentIndex-1+cards.length)%cards.length; updateCardContent();},180);}
+
+function shuffleCards(){
+    isFlipped=false; cardEl.classList.remove("is-flipped");
+    setTimeout(()=>{
+        const ids=[...baseCards.map(c=>c.id)];
+        ids.sort(()=>Math.random()-0.5);
+        saveOrder(ids);
+        rebuildCardsList(false);
+    },220);
+}
+
+function resetOrder(){localStorage.removeItem(LS_KEY_ORDER); rebuildCardsList(false);}
+function resetProgress(){if(!confirm("Supprimer tout progrès ?"))return; localStorage.removeItem(LS_KEY_PROGRESS); rebuildCardsList(true);}
+
+function markKnow(e){if(e)e.stopPropagation();
+    const p=loadProgress(); p[getCurrentCard().id]="known"; saveProgress(p);
+    updateCardContent(); setTimeout(nextCard,140);}
+function markDontKnow(e){if(e)e.stopPropagation();
+    const p=loadProgress(); p[getCurrentCard().id]="review"; saveProgress(p);
+    updateCardContent(); setTimeout(nextCard,140);}
+
+function applyFilter(){saveFilter(filterSelect.value); rebuildCardsList(false);}
+
+document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight')nextCard();
+    if(e.key==='ArrowLeft')previousCard();
+    if(e.key===' '||e.key==='Enter'){e.preventDefault();flipCard();}
+    if(e.key==='1')markDontKnow();
+    if(e.key==='2')markKnow();
+});
+
+let tsX=0; const scene=document.querySelector('.card-scene');
+scene.addEventListener('touchstart',e=>{tsX=e.changedTouches[0].screenX;});
+scene.addEventListener('touchend',e=>{let teX=e.changedTouches[0].screenX;
+    if(tsX-teX>60)nextCard(); if(teX-tsX>60)previousCard();});
+
+(function init(){
+    filterSelect.value=loadFilter();
+    rebuildCardsList(false);
+})();
+</script>
+</body>
+</html>
