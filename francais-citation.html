@@ -3,360 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>francais-citations</title>
-
-<style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        -webkit-tap-highlight-color: transparent;
-    }
-
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #2C75FF, #002FA7);
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-        overflow-x: hidden;
-    }
-
-    .container {
-        max-width: 900px;
-        width: 100%;
-        position: relative;
-        z-index: 1;
-    }
-
-    .header {
-        text-align: center;
-        color: white;
-        margin-bottom: 25px;
-    }
-
-    .header h1 {
-        font-size: 2.2em;
-        margin-bottom: 8px;
-        text-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    }
-
-    .header p {
-        opacity: 0.95;
-    }
-
-    .top-panels {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 12px;
-        margin-bottom: 18px;
-    }
-
-    .panel {
-        background: rgba(255,255,255,0.16);
-        border: 1px solid rgba(255,255,255,0.18);
-        border-radius: 18px;
-        padding: 12px 14px;
-        color: white;
-        backdrop-filter: blur(6px);
-        box-shadow: 0 8px 18px rgba(0,0,0,0.15);
-    }
-
-    .panel-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .btn {
-        padding: 10px 18px;
-        border-radius: 50px;
-        font-weight: 700;
-        cursor: pointer;
-        border: none;
-        background: white;
-        color: #2C75FF;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.12);
-        transition: transform 0.2s, opacity 0.2s;
-        user-select: none;
-    }
-
-    .btn:active {
-        transform: scale(0.95);
-    }
-
-    .btn.secondary {
-        background: rgba(255,255,255,0.92);
-        color: #0b2a88;
-    }
-
-    .btn.danger {
-        background: rgba(255,255,255,0.92);
-        color: #b91c1c;
-    }
-
-    .btn-know {
-        background: linear-gradient(135deg, #10b981, #059669);
-        color: white;
-    }
-
-    .btn-dontknow {
-        background: linear-gradient(135deg, #f59e0b, #d97706);
-        color: white;
-    }
-
-    .select {
-        border: none;
-        border-radius: 50px;
-        padding: 10px 14px;
-        font-weight: 700;
-        outline: none;
-        cursor: pointer;
-        background: white;
-        color: #2C75FF;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.12);
-    }
-
-    .stats {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        justify-content: center;
-        font-weight: 700;
-    }
-
-    .chip {
-        background: rgba(255,255,255,0.22);
-        border: 1px solid rgba(255,255,255,0.2);
-        padding: 6px 12px;
-        border-radius: 999px;
-        color: white;
-        font-size: 14px;
-    }
-
-    /* --- CARTE --- */
-    .card-scene {
-        perspective: 1000px;
-        width: 100%;
-        height: 450px;
-        cursor: pointer;
-    }
-
-    .card {
-        width: 100%;
-        height: 100%;
-        position: relative;
-        transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
-        transform-style: preserve-3d;
-        border-radius: 25px;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-    }
-
-    .card.is-flipped {
-        transform: rotateY(180deg);
-    }
-
-    .card-face {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        backface-visibility: hidden;
-        -webkit-backface-visibility: hidden;
-        border-radius: 25px;
-        padding: 40px;
-        background: white;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-    }
-
-    .card-face.back {
-        transform: rotateY(180deg);
-        background: #fdfdfd;
-    }
-
-    .card-label {
-        position: absolute;
-        top: 30px;
-        font-size: 13px;
-        font-weight: 900;
-        padding: 8px 20px;
-        border-radius: 20px;
-        color: white;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-
-    .bg-question {
-        background: linear-gradient(135deg, #74D0F1, #0000FF);
-    }
-
-    .bg-answer {
-        background: linear-gradient(135deg, #10b981, #059669);
-    }
-
-    .card-content {
-        font-size: 22px;
-        line-height: 1.6;
-        color: #333;
-        width: 100%;
-        overflow-y: auto;
-        max-height: 80%;
-        white-space: pre-line;
-    }
-
-    mjx-container {
-        font-size: 110% !important;
-        outline: none;
-    }
-
-    .card-hint {
-        position: absolute;
-        bottom: 18px;
-        font-size: 14px;
-        color: #aaa;
-        width: 100%;
-        text-align: center;
-    }
-
-    /* --- BADGE ETAT CARTE --- */
-    .status-pill {
-        position: absolute;
-        top: 30px;
-        right: 30px;
-        font-size: 12px;
-        font-weight: 900;
-        padding: 8px 12px;
-        border-radius: 999px;
-        color: white;
-        text-transform: uppercase;
-        letter-spacing: 0.7px;
-        box-shadow: 0 8px 18px rgba(0,0,0,0.15);
-    }
-
-    .status-unknown {
-        background: linear-gradient(135deg, #f59e0b, #d97706);
-    }
-
-    .status-known {
-        background: linear-gradient(135deg, #10b981, #059669);
-    }
-
-    .status-unset {
-        background: linear-gradient(135deg, #64748b, #475569);
-    }
-
-    /* --- NAVIGATION --- */
-    .navigation {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 22px;
-        padding: 0 10px;
-    }
-
-    .nav-btn {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        border: none;
-        background: linear-gradient(135deg, #74D0F1, #0000FF);
-        color: white;
-        font-size: 20px;
-        cursor: pointer;
-        transition: transform 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    }
-
-    .nav-btn:hover {
-        transform: scale(1.1);
-    }
-
-    .nav-btn:active {
-        transform: scale(0.9);
-    }
-
-    .counter {
-        color: white;
-        font-size: 18px;
-        font-weight: 700;
-        background: rgba(255,255,255,0.2);
-        padding: 5px 15px;
-        border-radius: 15px;
-    }
-
-    .progress-bar {
-        margin-top: 20px;
-        height: 8px;
-        background: rgba(0,0,0,0.2);
-        border-radius: 10px;
-        overflow: hidden;
-    }
-
-    .progress-fill {
-        height: 100%;
-        background: linear-gradient(90deg, #74D0F1, #0000FF);
-        width: 0%;
-        transition: width 0.3s ease-out;
-    }
-
-    .keyboard-hint {
-        text-align: center;
-        color: rgba(255,255,255,0.6);
-        font-size: 12px;
-        margin-top: 10px;
-    }
-
-    /* --- BOUTONS JE SAIS / JE SAIS PAS --- */
-    .knowbar {
-        display: flex;
-        gap: 12px;
-        justify-content: center;
-        margin-top: 18px;
-        flex-wrap: wrap;
-    }
-
-    @media (max-width: 520px) {
-        .card-face { padding: 28px; }
-        .card-content { font-size: 19px; }
-        .status-pill { top: 20px; right: 20px; }
-    }
-</style>
-
-
-</head><script>
-  window.MathJax = {
-    tex: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']],
-        displayMath: [['$$', '$$'], ['\\[', '\\]']]
-    },
-    svg: { fontCache: 'global' },
-    startup: { typeset: false }
-  };
-</script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script><body>
-    <div class="container">
-        <div class="header">
-            <h1>🇫🇷 Citation Français</h1>
-            <p>Flashcards + Révision intelligente (localStorage)</p>
-        </div>
+    <title>Flashcards - Citations concours 2026</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+        body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-gradient(135deg,#2C75FF,#002FA7);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;overflow-x:hidden;color:white;}
+        .container{max-width:900px;width:100%;position:relative;z-index:1;}
+        .header{text-align:center;color:white;margin-bottom:25px;}
+        .header h1{font-size:2.2em;margin-bottom:8px;text-shadow:0 2px 5px rgba(0,0,0,0.2);}
+        .header p{opacity:0.95;}
+        .top-panels{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:18px;}
+        .panel{background:rgba(255,255,255,0.16);border:1px solid rgba(255,255,255,0.18);border-radius:18px;padding:12px 14px;color:white;backdrop-filter:blur(6px);box-shadow:0 8px 18px rgba(0,0,0,0.15);}
+        .panel-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;}
+        .btn{padding:10px 18px;border-radius:50px;font-weight:700;cursor:pointer;border:none;background:white;color:#2C75FF;box-shadow:0 4px 6px rgba(0,0,0,0.12);transition:transform 0.2s,opacity 0.2s;user-select:none;}
+        .btn:active{transform:scale(0.95);}
+        .btn.secondary{background:rgba(255,255,255,0.92);color:#0b2a88;}
+        .btn.danger{background:rgba(255,255,255,0.92);color:#b91c1c;}
+        .btn-know{background:linear-gradient(135deg,#10b981,#059669);color:white;}
+        .btn-dontknow{background:linear-gradient(135deg,#f59e0b,#d97706);color:white;}
+        .select{border:none;border-radius:50px;padding:10px 14px;font-weight:700;outline:none;cursor:pointer;background:white;color:#2C75FF;box-shadow:0 4px 6px rgba(0,0,0,0.12);}
+        .stats{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;font-weight:700;}
+        .chip{background:rgba(255,255,255,0.22);border:1px solid rgba(255,255,255,0.2);padding:6px 12px;border-radius:999px;color:white;font-size:14px;}
+        .card-scene{perspective:1000px;width:100%;height:450px;cursor:pointer;}
+        .card{width:100%;height:100%;position:relative;transition:transform 0.6s cubic-bezier(0.4,0.2,0.2,1);transform-style:preserve-3d;border-radius:25px;box-shadow:0 15px 35px rgba(0,0,0,0.2);}
+        .card.is-flipped{transform:rotateY(180deg);}
+        .card-face{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:25px;padding:40px;background:white;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}
+        .card-face.back{transform:rotateY(180deg);background:#fdfdfd;}
+        .card-label{position:absolute;top:30px;font-size:13px;font-weight:900;padding:8px 20px;border-radius:20px;color:white;text-transform:uppercase;letter-spacing:1px;}
+        .bg-question{background:linear-gradient(135deg,#74D0F1,#0000FF);}
+        .bg-answer{background:linear-gradient(135deg,#10b981,#059669);}
+        .card-content{font-size:22px;line-height:1.6;color:#333;width:100%;overflow-y:auto;max-height:80%;white-space:pre-line;}
+        mjx-container{font-size:110% !important;outline:none;}
+        .card-hint{position:absolute;bottom:18px;font-size:14px;color:#aaa;width:100%;text-align:center;}
+        .status-pill{position:absolute;top:30px;right:30px;font-size:12px;font-weight:900;padding:8px 12px;border-radius:999px;color:white;text-transform:uppercase;letter-spacing:0.7px;box-shadow:0 8px 18px rgba(0,0,0,0.15);}
+        .status-unknown{background:linear-gradient(135deg,#f59e0b,#d97706);}
+        .status-known{background:linear-gradient(135deg,#10b981,#059669);}
+        .status-unset{background:linear-gradient(135deg,#64748b,#475569);}
+        .navigation{display:flex;justify-content:space-between;align-items:center;margin-top:22px;padding:0 10px;}
+        .nav-btn{width:50px;height:50px;border-radius:50%;border:none;background:linear-gradient(135deg,#74D0F1,#0000FF);color:white;font-size:20px;cursor:pointer;transition:transform 0.2s;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 10px rgba(0,0,0,0.2);}
+        .nav-btn:hover{transform:scale(1.1);}
+        .nav-btn:active{transform:scale(0.9);}
+        .counter{color:white;font-size:18px;font-weight:700;background:rgba(255,255,255,0.2);padding:5px 15px;border-radius:15px;}
+        .progress-bar{margin-top:20px;height:8px;background:rgba(0,0,0,0.2);border-radius:10px;overflow:hidden;}
+        .progress-fill{height:100%;background:linear-gradient(90deg,#74D0F1,#0000FF);width:0%;transition:width 0.3s ease-out;}
+        .keyboard-hint{text-align:center;color:rgba(255,255,255,0.6);font-size:12px;margin-top:10px;}
+        .knowbar{display:flex;gap:12px;justify-content:center;margin-top:18px;flex-wrap:wrap;}
+        @media (max-width:520px){.card-face{padding:28px;}.card-content{font-size:19px;}.status-pill{top:20px;right:20px;}}
+    </style>
+    <script>
+    window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']]},svg:{fontCache:'global'},startup:{typeset:false}};
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Citations concours 2026</h1>
+        <p>Flashcards + Révision active (localStorage)</p>
+    </div>
 
     <div class="top-panels">
         <div class="panel">
             <div class="panel-row">
-				<button class="btn" onclick="window.location.href='index.html'">🏠 Accueil</button>
+            	<button class="btn" onclick="window.location.href='index.html'">🏠 Accueil</button>
                 <button class="btn" onclick="shuffleCards()">🎲 Mélanger</button>
                 <button class="btn secondary" onclick="resetOrder()">↩️ Ordre normal</button>
                 <button class="btn danger" onclick="resetProgress()">🧹 Reset progrès</button>
-
                 <select class="select" id="filterSelect" onchange="applyFilter()">
                     <option value="all">📚 Toutes</option>
                     <option value="review">🟠 À revoir</option>
@@ -364,29 +75,23 @@
                 </select>
             </div>
         </div>
-
         <div class="panel">
-            <div class="stats" id="statsArea">
-                <span class="chip">Chargement...</span>
-            </div>
+            <div class="stats" id="statsArea"><span class="chip">Chargement...</span></div>
         </div>
     </div>
 
     <div class="card-scene" onclick="flipCard()">
         <div class="card" id="cardElement">
-
             <div class="card-face front">
                 <div class="card-label bg-question">Question</div>
                 <div class="status-pill status-unset" id="statusPill">Non notée</div>
                 <div class="card-content" id="questionContent"></div>
-                <div class="card-hint">Toucher ou Espace pour retourner</div>
+                <div class="card-hint">Toucher / Espace / Entrée pour retourner</div>
             </div>
-
             <div class="card-face back">
                 <div class="card-label bg-answer">Réponse</div>
                 <div class="card-content" id="answerContent"></div>
             </div>
-
         </div>
     </div>
 
@@ -397,478 +102,321 @@
 
     <div class="navigation">
         <button class="nav-btn" onclick="previousCard(event)">←</button>
-        <div class="counter">
-            <span id="currentCard">1</span> / <span id="totalCards">1</span>
-        </div>
+        <div class="counter"><span id="currentCard">1</span> / <span id="totalCards">1</span></div>
         <button class="nav-btn" onclick="nextCard(event)">→</button>
     </div>
 
-    <div class="progress-bar">
-        <div class="progress-fill" id="progressFill"></div>
-    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
 
-    <div class="keyboard-hint">
-        ⌨️ Flèches : naviguer • Espace : retourner • 1 = Je sais pas • 2 = Je sais
-    </div>
+    <div class="keyboard-hint">Flèches : naviguer • Espace : retourner • 1 = pas • 2 = sais</div>
 </div>
 
-
 <script>
-
-
-const flashcardsData =  [
-    {
-			id:"citation1",
-        q: "II.1 Expérience sensible et esthétique – Jules Verne",
-        a: "« Quel spectacle ! Quelle plume le pourrait décrire ! » (Vingt mille lieues sous les mers, I, XIV, p. ~141 éd. GF-Flammarion/Folio)\n\nContexte : Admiration devant le spectacle grandiose et lumineux des fonds marins."
-    },
-    {
-			id:"citation2",
-        q: "II.1 Expérience sensible et esthétique – Marlen Haushofer",
-        a: "« Rien ne pousse ni ne presse. Je suis la seule à être impatiente dans cette forêt et à en souffrir. » (Le Mur invisible, Babel/Actes Sud, p. ~143)\n\nContexte : Beauté simple, dépouillée, sans artifice de la nature."
-    },
-    {
-			id:"citation3",
-        q: "II.1 Expérience sensible et esthétique – Marlen Haushofer (dialogue)",
-        a: "« La forêt n'est jamais entièrement silencieuse. » (Le Mur invisible, p. ~140-160)\n\nContexte : Le paysage parle à travers sons et signes dans la solitude."
-    },
-    {
-			id:"citation4",
-        q: "II.1 Expérience sensible et esthétique – Georges Canguilhem",
-        a: "« Le normal n'est pas un fait objectif, c'est une valeur. » (Le Normal et le Pathologique, PUF, p. ~156)\n\nContexte : Toute perception de la nature est normative, pas de regard innocent."
-    },
-    {
-			id:"citation5",
-        q: "II.2 Expérience scientifique – Jules Verne",
-        a: "« Je notais soigneusement… » / « J'inscrivis avec soin… » (Vingt mille lieues sous les mers, chap. XIV-XVII, p. ~120-160)\n\nContexte : Observation précise, mesure et catalogage scientifique."
-    },
-    {
-			id:"citation6",
-        q: "II.2 Expérience scientifique – Georges Canguilhem",
-        a: "« Le normal n'est pas un fait objectif, c'est une valeur. » (Le Normal et le Pathologique, p. ~77-156)\n\nContexte : La science biologique juge et évalue selon des normes, non neutre."
-    },
-    {
-	     id:"citation7",
-        q: "II.3 Expérience vitale et corporelle – Marlen Haushofer",
-        a: "« Je suis seule et je dois essayer de survivre aux longs et sombres mois d'hiver. » (Le Mur invisible, p. 9)\n\n« Ce n'est que lorsque la connaissance d'une chose se répand lentement à travers le corps qu'on la sait vraiment. » (p. ~140-160)\n\nContexte : Lutte quotidienne + corps qui décide et apprend la survie."
-    },
-    {
-			id:"citation8",
-        q: "II.3 Expérience vitale et corporelle – Georges Canguilhem",
-        a: "« Vivre, c'est poser des normes » / instituer des normes dans un milieu (Le Normal et le Pathologique, p. ~156-206)\n\nContexte : Normativité vitale ; la vie est précaire et adapte ses règles."
-    },
-    {
-			id:"citation9",
-        q: "III.4 Nature indifférente et amorale – Marlen Haushofer",
-        a: "« C'est comme si la forêt avait commencé à allonger en moi ses racines […] la forêt ne veut pas que les hommes reviennent. » (Le Mur invisible, p. ~305)\n\n« Aimer et prendre soin d'un être est une tâche très pénible et beaucoup plus difficile que tuer ou détruire. » (p. ~200-250)\n\nContexte : Nature implacable, sans exception ni morale."
-    },
-    {
-			id:"citation10",
-        q: "III.4 Nature indifférente et amorale – Georges Canguilhem",
-        a: "La vie suit ses normes biologiques, non des valeurs morales humaines (idée centrale du Normal et du Pathologique)\n\nContexte : La vie n'est pas morale."
-    },
-    {
-			id:"citation11",
-        q: "III.5 Nature dangereuse et hostile – Jules Verne",
-        a: "L'océan comme « force terrible » (Vingt mille lieues sous les mers, Partie II chap. XIII-XIV)\n\nContexte : Puissance impitoyable, tempêtes, dangers permanents."
-    },
-    {
-			id:"citation12",
-        q: "III.5 Nature dangereuse et hostile – Marlen Haushofer",
-        a: "Peur permanente des vipères, pièges, faim, froid (Le Mur invisible, p. ~81-97 et récurrent)\n\nContexte : Crainte constante face à la menace naturelle."
-    },
-    {
-			id:"citation13",
-        q: "III.6 Nature imprévisible et chaotique – Marlen Haushofer",
-        a: "« Il était incontestable que pendant la nuit un mur invisible était descendu… » (Le Mur invisible, p. 26)\n\nContexte : Chaos initial inexplicable."
-    },
-    {
-			id:"citation14",
-        q: "III.6 Nature imprévisible et chaotique – Jules Verne",
-        a: "« L'inconnu nous entourait » (Vingt mille lieues sous les mers, récurrent dans les profondeurs et pôles)\n\nContexte : Mystère persistant malgré la science."
-    },
-    {
-			id:"citation15",
-        q: "IV.7 Technique comme prolongation vitale – Jules Verne",
-        a: "Le Nautilus permet de vivre dans l'hostile (Vingt mille lieues sous les mers, Partie I chap. XII-XIV)\n\nContexte : Technique comme médiation de survie."
-    },
-    {
-			id:"citation16",
-        q: "IV.7 Technique comme prolongation vitale – Georges Canguilhem",
-        a: "La technique prolonge l'adaptation vitale (idée de La Connaissance de la vie)\n\nContexte : Technique = création de la vie."
-    },
-    {
-			id:"citation17",
-        q: "IV.8 Illusion de domination – Jules Verne",
-        a: "Nemo se considère comme maître absolu (Vingt mille lieues sous les mers, attitude récurrente)\n\nContexte : Illusion humaine de contrôler la nature."
-    },
-    {
-			id:"citation18",
-        q: "IV.8 Illusion de domination – Marlen Haushofer",
-        a: "La forêt reconquiert, l'homme ne domine rien (Le Mur invisible, p. ~305 et fin)\n\nContexte : Impuissance face à la nature plus forte."
-    },
-    {
-			id:"citation19",
-        q: "V.9 Solitude – Marlen Haushofer",
-        a: "« Je suis seule… » (Le Mur invisible, p. 9 et répété)\n\nContexte : Solitude fondamentale révélée par la nature."
-    },
-    {
-			id:"citation20",
-        q: "V.9 Solitude – Jules Verne",
-        a: "Nemo fuit les hommes (Vingt mille lieues sous les mers, motif central)\n\nContexte : Nature comme refuge contre la société."
-    },
-    {
-			id:"citation21",
-        q: "V.10 Liberté ambivalente – Marlen Haushofer",
-        a: "Libre des contraintes sociales mais prisonnière des lois naturelles (sens global du roman)\n\nContexte : Liberté et prison simultanées."
-    },
-    {
-			id:"citation22",
-        q: "V.10 Liberté ambivalente – Georges Canguilhem",
-        a: "Être libre = poser ses propres normes (Le Normal et le Pathologique)\n\nContexte : Liberté comme normativité vitale active."
-    },
-    {
- 			id:"citation23",
-        q: "V.11 Violence et nécessité – Marlen Haushofer",
-        a: "« Aimer et prendre soin d'un être est une tâche très pénible et beaucoup plus difficile que tuer ou détruire. » (Le Mur invisible, p. ~200-250)\n\nContexte : Tuer pour vivre devient nécessaire."
-    },
-    {
-			id:"citation24",
-        q: "V.11 Violence et nécessité – Jules Verne",
-        a: "Nécessité de la chasse/pêche pour la survie (Vingt mille lieues sous les mers, plusieurs passages)\n\nContexte : Violence justifiée par la survie."
-    },
-    {
-			id:"citation25",
-        q: "VI.12 Humilité et égalité des vivants – Jules Verne",
-        a: "L'homme insignifiant face à l'immensité océanique (Vingt mille lieues sous les mers, Partie I chap. XIV)\n\nContexte : Grandeur de la nature réduit l'homme à sa petitesse."
-    },
-    {
-			id:"citation26",
-        q: "VI.12 Humilité et égalité des vivants – Marlen Haushofer",
-        a: "« Je n'étais qu'un être vivant parmi d'autres. » (Le Mur invisible, sens très présent fin du roman, p. ~300-350)\n\nContexte : Égalité biologique avec les animaux."
-    },
-    {
-			id:"citation27",
-        q: "VI.13 Patience et temps – Marlen Haushofer",
-        a: "« J'ai appris à attendre » / le temps s'étire dans la forêt (Le Mur invisible, p. ~143)\n\nContexte : Rythme lent imposé par la nature."
-    },
-    {
-			id:"citation28",
-        q: "VI.14 Vérité et lucidité – Georges Canguilhem",
-        a: "La vérité est normative (Le Normal et le Pathologique, p. ~156)\n\nContexte : Vérité dépend des critères humains."
-    },
-    {
-		  id:"citation29",
-        q: "VI.14 Vérité et lucidité – Marlen Haushofer",
-        a: "« Tout ce que j'avais pensé ou fait dans le passé n'avait été qu'une imitation sans valeur. » (Le Mur invisible, sens de la lucidité finale)\n\nContexte : Clarté sur soi et le monde acquise dans la nature."
-    }
+const flashcardsData = [
+  {
+    "id": "card-001",
+    "q": "I.C.1 - Mystère et altérité",
+    "a": "« si solide qu’ait été notre habitude de voir les églantines fleurir sur l’églantier, les têtards se changer en grenouilles […], il suffit d’une déception de cette confiance […] pour qu’une crainte radicale s’empare de nous » p.219 – Canguilhem : rupture de la norme habituelle provoque une peur fondamentale face au mystère du vivant."
+  },
+  {
+    "id": "card-002",
+    "q": "I.C.2 - Mystère et altérité",
+    "a": "« La connaissance consiste concrètement dans la recherche de la sécurité par réduction des obstacles […] Elle est donc une méthode générale pour la résolution directe ou indirecte des tensions entre l’homme et le milieu » p.12 – La science vise à domestiquer le mystère et l’altérité du milieu."
+  },
+  {
+    "id": "card-003",
+    "q": "I.C.3 - Mystère et altérité",
+    "a": "« La mort c’est la menace permanente et inconditionnelle de décomposition de l’organisme […]. Mais la monstruosité c’est la menace accidentelle et conditionnelle d’inachèvement ou de distorsion […] » p.221 – Distinction entre mort (externe) et monstruosité (interne) : deux formes d’altérité menaçant le vivant."
+  },
+  {
+    "id": "card-004",
+    "q": "I.V.1 - Mystère et altérité",
+    "a": "« Les grandes profondeurs de l’océan nous sont totalement inconnues. […] Que se passe-t-il dans ces abîmes reculés ? […] On saurait à peine le conjecturer. » – Verne : l’abîme océanique incarne une altérité radicale et insondable."
+  },
+  {
+    "id": "card-005",
+    "q": "I.H.1 - Mystère et altérité",
+    "a": "« la forêt n’est jamais entièrement silencieuse. On la croit silencieuse, alors qu’elle recèle des bruits innombrables. […] Cette disparition des bruits familiers m’effraya » p.104 – Haushofer : altérité sensorielle de la forêt, effroi face à l’inconnu perçu comme menace."
+  },
+  {
+    "id": "card-006",
+    "q": "II.C.1 - Nature comme adversaire",
+    "a": "« L’adaptation c’est un effort renouvelé de la vie pour continuer à “coller” à un milieu indifférent. » p.174 – Canguilhem : le milieu est fondamentalement indifférent, hostile par défaut."
+  },
+  {
+    "id": "card-007",
+    "q": "II.C.2 - Nature comme adversaire",
+    "a": "« Le premier milieu dans lequel vit un organisme, c’est un entourage de vivants qui sont pour lui des ennemis ou des alliés, des proies ou des prédateurs. » p.175 – Nature comme champ de conflits permanents."
+  },
+  {
+    "id": "card-008",
+    "q": "II.H.1 - Nature comme adversaire",
+    "a": "« par moments, j’avais l’impression que la nature ne constituait pour ses créatures qu’un immense piège. » p.280 – Haushofer : vision de la nature comme piège implacable."
+  },
+  {
+    "id": "card-009",
+    "q": "III.C.1 - La Nature sauvage",
+    "a": "« ce sont les routes de l’homme qui traversent le milieu du hérisson » p.49 – Canguilhem : appropriation humaine du milieu animal par l’infrastructure."
+  },
+  {
+    "id": "card-010",
+    "q": "III.C.2 - La Nature sauvage",
+    "a": "Les expériences en laboratoire sont objectives car elles ne sont pas dans les mêmes conditions qu’en milieu sauvage. p.188 – Critique de la décontextualisation scientifique du sauvage."
+  },
+  {
+    "id": "card-011",
+    "q": "III.V.1 - La Nature sauvage",
+    "a": "« ce sont des sauvages » p.148 – Verne : perception coloniale de la nature indigène comme non domestiquée."
+  },
+  {
+    "id": "card-012",
+    "q": "IV.C.1 - La Nature généreuse",
+    "a": "« producteur d’excitations dont le nombre est théoriquement illimité » p.185 – Canguilhem : la nature foisonne d’opportunités vitales."
+  },
+  {
+    "id": "card-013",
+    "q": "IV.C.2 - La Nature généreuse",
+    "a": "« ce qui apparait comme un milieu unique plusieurs vivants prélève de façon incomparable leur milieu spécifique et singulier » p.195 – Ici, Canguilhem affirme que, bien que l’on puisse croire que l’environnement soit commun à toutes les espèces, chaque espèce l’expérimente et l’utilise de manière singulière en fonction de ses besoins et de ses particularités."
+  },
+  {
+    "id": "card-014",
+    "q": "IV.C.3 - La Nature généreuse",
+    "a": "« La santé […]. Ce qui la caractérise c’est la capacité de tolérer des variations » p.215 – Résilience et générosité adaptative du vivant."
+  },
+  {
+    "id": "card-015",
+    "q": "IV.V.1 - La Nature généreuse",
+    "a": "« la mer fournit à tous mes besoins. » p.71 – Nemo : autosuffisance totale grâce à la générosité marine."
+  },
+  {
+    "id": "card-016",
+    "q": "IV.V.2 - La Nature généreuse",
+    "a": "« Voilà une île. Sur cette île, il y a des arbres. Sous ces arbres, des animaux terrestres, des porteurs de côtelettes et de rosbifs, auxquels je donnerais volontiers quelques coups de dent. » p.136 – Pour Ned Land, la nature n’est pas un objet de contemplation, mais une ressource charnelle abondante."
+  },
+  {
+    "id": "card-017",
+    "q": "IV.V.3 - La Nature généreuse",
+    "a": "« des guirlandes de lianes, vrais hamacs naturels que berçait une brise légère. » p.137 – En Papouasie, Verne souligne que la nature crée des objets utiles (« vrais » = authentiques) mieux que l’homme."
+  },
+  {
+    "id": "card-018",
+    "q": "IV.V.4 - La Nature généreuse",
+    "a": "« C’est une pâtisserie délicate » p.139 – La nature produit des ressources agréables et raffinées."
+  },
+  {
+    "id": "card-019",
+    "q": "IV.H.1 - La Nature généreuse",
+    "a": "Bella nourrit tout le monde – Haushofer : Bella incarne la générosité animale simple et quotidienne dans la survie."
+  },
+  {
+    "id": "card-020",
+    "q": "V.C.1 - L’émotion devant la nature",
+    "a": "« Décomposer, réduire, expliquer, identifier, mesurer, mettre sous équations, ce doit bien être un bénéfice du côté de l’intelligence puisque, manifestement, c’est une perte pour la jouissance. On ne jouit non des lois de la nature, mais de la nature » p.11 – Science vs. émotion : la réduction tue la jouissance esthétique."
+  },
+  {
+    "id": "card-021",
+    "q": "V.C.2 - L’émotion devant la nature",
+    "a": "« L’animal et la plante méritent tout aussi justement d’être admirés que critiqués. » p.207 – Canguilhem (via Tessier) : invitation à admirer le vivant plutôt que de le juger uniquement."
+  },
+  {
+    "id": "card-022",
+    "q": "V.V.1 - L’émotion devant la nature",
+    "a": "« Sur toutes les merveilles entassées dans ce musée. […] tous les trésors de la nature et de l’art » p.75 – Aronnax émerveillé par la collection du Nautilus."
+  },
+  {
+    "id": "card-023",
+    "q": "V.V.2 - L’émotion devant la nature",
+    "a": "« Les mots sont impuissants à raconter de telles merveilles ! » p.108 – Après l’excursion en scaphandre : émerveillement ineffable."
+  },
+  {
+    "id": "card-024",
+    "q": "V.H.1 - L’émotion devant la nature",
+    "a": "« Pour la première fois de ma vie je me sentais apaisée, non pas contente ou heureuse, mais apaisée. Cela avait un rapport avec les étoiles » p.222 – Haushofer : apaisement profond face à la nature cosmique."
+  },
+  {
+    "id": "card-025",
+    "q": "VI.V.1 - Technique comme prolongation vitale",
+    "a": "Le Nautilus permet de vivre dans l’hostile (Partie I chap. XII-XIV) – Verne : la technique (sous-marin) prolonge et protège la vie humaine dans un milieu hostile."
+  },
+  {
+    "id": "card-026",
+    "q": "VI.C.1 - Technique comme prolongation vitale",
+    "a": "La technique prolonge l’adaptation vitale (idée centrale de La Connaissance de la vie) – Canguilhem : la technique est une extension de la normativité vitale."
+  },
+  {
+    "id": "card-027",
+    "q": "VI.V.2 - Illusion de domination",
+    "a": "Nemo se considère comme maître absolu (attitude récurrente) – Verne : illusion humaine de dominer totalement la nature via la technique."
+  },
+  {
+    "id": "card-028",
+    "q": "VI.H.1 - Illusion de domination",
+    "a": "La forêt reconquiert, l’homme ne domine rien (p. ~305 et fin) – Haushofer : la nature reprend ses droits, impuissance humaine."
+  },
+  {
+    "id": "card-029",
+    "q": "VI.H.2 - Solitude",
+    "a": "« Je suis seule… » (répété, p. 9 et tout au long) – Haushofer : solitude fondamentale révélée par l’isolement dans la nature."
+  },
+  {
+    "id": "card-030",
+    "q": "VI.V.3 - Solitude",
+    "a": "Nemo fuit les hommes (motif central) – Verne : la nature comme refuge solitaire contre la société."
+  },
+  {
+    "id": "card-031",
+    "q": "VI.H.3 - Liberté ambivalente",
+    "a": "Libre des contraintes sociales mais prisonnière des lois naturelles (sens global du roman) – Haushofer : liberté et prison simultanées face à la nature."
+  },
+  {
+    "id": "card-032",
+    "q": "VI.C.2 - Liberté ambivalente",
+    "a": "Être libre = poser ses propres normes (Le Normal et le Pathologique) – Canguilhem : liberté comme normativité vitale active."
+  },
+  {
+    "id": "card-033",
+    "q": "VI.H.4 - Violence et nécessité",
+    "a": "« Aimer et prendre soin d’un être est une tâche très pénible et beaucoup plus difficile que tuer ou détruire. » (p. ~200-250) – Haushofer : tuer pour survivre devient une nécessité morale ambiguë."
+  },
+  {
+    "id": "card-034",
+    "q": "VI.V.4 - Violence et nécessité",
+    "a": "Nécessité de la chasse/pêche pour la survie (plusieurs passages) – Verne : violence justifiée par les besoins vitaux."
+  },
+  {
+    "id": "card-035",
+    "q": "VI.V.5 - Humilité et égalité des vivants",
+    "a": "L’homme insignifiant face à l’immensité océanique (Partie I chap. XIV) – Verne : grandeur de la nature réduit l’homme à sa petitesse."
+  },
+  {
+    "id": "card-036",
+    "q": "VI.H.5 - Humilité et égalité des vivants",
+    "a": "« Je n’étais qu’un être vivant parmi d’autres. » (sens très présent fin du roman, p. ~300-350) – Haushofer : égalité biologique avec les animaux"
+  }
 ];
 
+const LS_KEY_PROGRESS = "citations concours 2026_progress_v1";
+const LS_KEY_ORDER    = "citations concours 2026_order_v1";
+const LS_KEY_FILTER   = "citations concours 2026_filter_v1";
 
-/* =========================
-   localStorage keys
-   ========================= */
-const LS_KEY_PROGRESS = "citation_flashcards_progress_v1";
-const LS_KEY_ORDER = "citat_flashcards_order_v1";
-const LS_KEY_FILTER = "fourier_flashcards_filter_v1";
-
-/* =========================
-   State
-   ========================= */
 let baseCards = [...flashcardsData];
 let cards = [];
 let currentIndex = 0;
 let isFlipped = false;
 
-const cardElement = document.getElementById("cardElement");
+const cardEl = document.getElementById("cardElement");
 const statusPill = document.getElementById("statusPill");
 const filterSelect = document.getElementById("filterSelect");
 
-/* =========================
-   Progress storage
-   progressMap[id] = "known" | "review" | null
-   ========================= */
-function loadProgress() {
-    try {
-        return JSON.parse(localStorage.getItem(LS_KEY_PROGRESS)) || {};
-    } catch {
-        return {};
-    }
+function loadProgress(){try{return JSON.parse(localStorage.getItem(LS_KEY_PROGRESS))||{}}catch{return {}}}
+function saveProgress(m){localStorage.setItem(LS_KEY_PROGRESS,JSON.stringify(m))}
+function loadOrder(){try{return JSON.parse(localStorage.getItem(LS_KEY_ORDER))||null}catch{return null}}
+function saveOrder(o){localStorage.setItem(LS_KEY_ORDER,JSON.stringify(o))}
+function loadFilter(){return localStorage.getItem(LS_KEY_FILTER)||"all"}
+function saveFilter(v){localStorage.setItem(LS_KEY_FILTER,v)}
+
+function setStatusPill(state){
+    statusPill.classList.remove("status-known","status-unknown","status-unset");
+    if(state==="known"){statusPill.classList.add("status-known");statusPill.textContent="Maîtrisée";}
+    else if(state==="review"){statusPill.classList.add("status-unknown");statusPill.textContent="À revoir";}
+    else{statusPill.classList.add("status-unset");statusPill.textContent="Non notée";}
 }
 
-function saveProgress(progressMap) {
-    localStorage.setItem(LS_KEY_PROGRESS, JSON.stringify(progressMap));
-}
+function getCurrentCard(){return cards[currentIndex];}
 
-/* =========================
-   Order storage (array of ids)
-   ========================= */
-function loadOrder() {
-    try {
-        return JSON.parse(localStorage.getItem(LS_KEY_ORDER)) || null;
-    } catch {
-        return null;
-    }
-}
-
-function saveOrder(orderIds) {
-    localStorage.setItem(LS_KEY_ORDER, JSON.stringify(orderIds));
-}
-
-/* =========================
-   Filter storage
-   ========================= */
-function loadFilter() {
-    return localStorage.getItem(LS_KEY_FILTER) || "all";
-}
-
-function saveFilter(value) {
-    localStorage.setItem(LS_KEY_FILTER, value);
-}
-
-/* =========================
-   Helpers
-   ========================= */
-function setStatusPill(state) {
-    statusPill.classList.remove("status-known", "status-unknown", "status-unset");
-
-    if (state === "known") {
-        statusPill.classList.add("status-known");
-        statusPill.textContent = "Maîtrisée";
-    } else if (state === "review") {
-        statusPill.classList.add("status-unknown");
-        statusPill.textContent = "À revoir";
-    } else {
-        statusPill.classList.add("status-unset");
-        statusPill.textContent = "Non notée";
-    }
-}
-
-function getCurrentCard() {
-    return cards[currentIndex];
-}
-
-/* =========================
-   Apply filter + order
-   ========================= */
-function rebuildCardsList(keepIndex = false) {
-    const progressMap = loadProgress();
+function rebuildCardsList(keepIndex=false){
+    const progress = loadProgress();
     const filter = filterSelect.value;
-
-    // base list (ordered)
-    const orderIds = loadOrder();
     let ordered = [...baseCards];
-
-    if (Array.isArray(orderIds) && orderIds.length === baseCards.length) {
-        const map = new Map(baseCards.map(c => [c.id, c]));
-        ordered = orderIds.map(id => map.get(id)).filter(Boolean);
+    const orderIds = loadOrder();
+    if(Array.isArray(orderIds)&&orderIds.length===baseCards.length){
+        const map = new Map(baseCards.map(c=>[c.id,c]));
+        ordered = orderIds.map(id=>map.get(id)).filter(Boolean);
     }
-
-    // filter
-    if (filter === "known") {
-        ordered = ordered.filter(c => progressMap[c.id] === "known");
-    } else if (filter === "review") {
-        ordered = ordered.filter(c => progressMap[c.id] !== "known");
-    }
-
-    // fallback if empty
-    if (ordered.length === 0) {
-        ordered = [...baseCards];
-    }
-
+    if(filter==="known") ordered=ordered.filter(c=>progress[c.id]==="known");
+    else if(filter==="review") ordered=ordered.filter(c=>progress[c.id]!=="known");
+    if(ordered.length===0) ordered=[...baseCards];
     const oldId = keepIndex && cards[currentIndex] ? cards[currentIndex].id : null;
-
     cards = ordered;
-
-    if (keepIndex && oldId) {
-        const newIndex = cards.findIndex(c => c.id === oldId);
-        currentIndex = newIndex >= 0 ? newIndex : 0;
-    } else {
-        currentIndex = 0;
-    }
-
+    if(keepIndex && oldId){
+        const ni = cards.findIndex(c=>c.id===oldId);
+        currentIndex = ni>=0 ? ni : 0;
+    } else currentIndex=0;
     updateCardContent();
 }
 
-/* =========================
-   UI update
-   ========================= */
-function updateStats() {
-    const progressMap = loadProgress();
-    const total = baseCards.length;
-    const known = baseCards.filter(c => progressMap[c.id] === "known").length;
-    const review = total - known;
-    const pct = total === 0 ? 0 : Math.round((known / total) * 100);
-
-    const statsArea = document.getElementById("statsArea");
-    statsArea.innerHTML = `
-        <span class="chip">🟢 Maîtrisées : <strong>${known}</strong> / ${total}</span>
-        <span class="chip">🟠 À revoir : <strong>${review}</strong> / ${total}</span>
-        <span class="chip">📊 ${pct}% maîtrisé</span>
-    `;
+function updateStats(){
+    const p = loadProgress();
+    const t = baseCards.length;
+    const k = baseCards.filter(c=>p[c.id]==="known").length;
+    const r = t-k;
+    const pct = t===0?0:Math.round(k/t*100);
+    document.getElementById("statsArea").innerHTML=`
+        <span class="chip">🟢 Maîtrisées : <strong>${k}</strong> / ${t}</span>
+        <span class="chip">🟠 À revoir : <strong>${r}</strong> / ${t}</span>
+        <span class="chip">📊 ${pct}%</span>`;
 }
 
-function updateCardContent() {
-    if (!cards || cards.length === 0) return;
-
-    const progressMap = loadProgress();
-    const card = getCurrentCard();
-
-    const qDiv = document.getElementById("questionContent");
-    const aDiv = document.getElementById("answerContent");
-
-    qDiv.innerHTML = card.q;
-    aDiv.innerHTML = card.a;
-
-    const status = progressMap[card.id] || null;
-    setStatusPill(status);
-
-    document.getElementById("currentCard").textContent = currentIndex + 1;
+function updateCardContent(){
+    if(!cards.length) return;
+    const p = loadProgress();
+    const c = getCurrentCard();
+    document.getElementById("questionContent").innerHTML = c.q;
+    document.getElementById("answerContent").innerHTML = c.a;
+    setStatusPill(p[c.id] || null);
+    document.getElementById("currentCard").textContent = currentIndex+1;
     document.getElementById("totalCards").textContent = cards.length;
-
-    document.getElementById("progressFill").style.width =
-        ((currentIndex + 1) / cards.length) * 100 + "%";
-
+    document.getElementById("progressFill").style.width = ((currentIndex+1)/cards.length*100)+"%";
     updateStats();
-
-    if (window.MathJax) {
-        MathJax.typesetPromise([qDiv, aDiv]);
-    }
+    if(window.MathJax) MathJax.typesetPromise();
 }
 
-/* =========================
-   Actions
-   ========================= */
-function flipCard() {
-    isFlipped = !isFlipped;
-    cardElement.classList.toggle("is-flipped", isFlipped);
-}
+function flipCard(){isFlipped=!isFlipped; cardEl.classList.toggle("is-flipped",isFlipped);}
 
-function nextCard(e) {
-    if (e) e.stopPropagation();
-    isFlipped = false;
-    cardElement.classList.remove("is-flipped");
+function nextCard(e){if(e)e.stopPropagation(); isFlipped=false; cardEl.classList.remove("is-flipped");
+    setTimeout(()=>{currentIndex=(currentIndex+1)%cards.length; updateCardContent();},180);}
+function previousCard(e){if(e)e.stopPropagation(); isFlipped=false; cardEl.classList.remove("is-flipped");
+    setTimeout(()=>{currentIndex=(currentIndex-1+cards.length)%cards.length; updateCardContent();},180);}
 
-    setTimeout(() => {
-        currentIndex = (currentIndex + 1) % cards.length;
-        updateCardContent();
-    }, 200);
-}
-
-function previousCard(e) {
-    if (e) e.stopPropagation();
-    isFlipped = false;
-    cardElement.classList.remove("is-flipped");
-
-    setTimeout(() => {
-        currentIndex = (currentIndex - 1 + cards.length) % cards.length;
-        updateCardContent();
-    }, 200);
-}
-
-function shuffleCards() {
-    isFlipped = false;
-    cardElement.classList.remove("is-flipped");
-
-    setTimeout(() => {
-        // shuffle order IDs and store it
-        const ids = [...baseCards.map(c => c.id)];
-        ids.sort(() => Math.random() - 0.5);
+function shuffleCards(){
+    isFlipped=false; cardEl.classList.remove("is-flipped");
+    setTimeout(()=>{
+        const ids=[...baseCards.map(c=>c.id)];
+        ids.sort(()=>Math.random()-0.5);
         saveOrder(ids);
-
         rebuildCardsList(false);
-    }, 250);
+    },220);
 }
 
-function resetOrder() {
-    localStorage.removeItem(LS_KEY_ORDER);
-    rebuildCardsList(false);
-}
+function resetOrder(){localStorage.removeItem(LS_KEY_ORDER); rebuildCardsList(false);}
+function resetProgress(){if(!confirm("Supprimer tout progrès ?"))return; localStorage.removeItem(LS_KEY_PROGRESS); rebuildCardsList(true);}
 
-function resetProgress() {
-    if (!confirm("Reset complet : tu veux supprimer toutes tes cartes maîtrisées/à revoir ?")) return;
-    localStorage.removeItem(LS_KEY_PROGRESS);
-    rebuildCardsList(true);
-}
+function markKnow(e){if(e)e.stopPropagation();
+    const p=loadProgress(); p[getCurrentCard().id]="known"; saveProgress(p);
+    updateCardContent(); setTimeout(nextCard,140);}
+function markDontKnow(e){if(e)e.stopPropagation();
+    const p=loadProgress(); p[getCurrentCard().id]="review"; saveProgress(p);
+    updateCardContent(); setTimeout(nextCard,140);}
 
-function markKnow(e) {
-    if (e) e.stopPropagation();
+function applyFilter(){saveFilter(filterSelect.value); rebuildCardsList(false);}
 
-    const progressMap = loadProgress();
-    const card = getCurrentCard();
-    progressMap[card.id] = "known";
-    saveProgress(progressMap);
-
-    updateCardContent();
-    // auto-next pour révision rapide
-    setTimeout(() => nextCard(), 150);
-}
-
-function markDontKnow(e) {
-    if (e) e.stopPropagation();
-
-    const progressMap = loadProgress();
-    const card = getCurrentCard();
-    progressMap[card.id] = "review";
-    saveProgress(progressMap);
-
-    updateCardContent();
-    setTimeout(() => nextCard(), 150);
-}
-
-function applyFilter() {
-    const val = filterSelect.value;
-    saveFilter(val);
-    rebuildCardsList(false);
-}
-
-/* =========================
-   Keyboard shortcuts
-   ========================= */
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowRight') nextCard();
-    if (e.key === 'ArrowLeft') previousCard();
-
-    if (e.key === ' ' || e.key === 'Enter') {
-        e.preventDefault();
-        flipCard();
-    }
-
-    // 1 = je sais pas / 2 = je sais
-    if (e.key === '1') markDontKnow();
-    if (e.key === '2') markKnow();
+document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight')nextCard();
+    if(e.key==='ArrowLeft')previousCard();
+    if(e.key===' '||e.key==='Enter'){e.preventDefault();flipCard();}
+    if(e.key==='1')markDontKnow();
+    if(e.key==='2')markKnow();
 });
 
-/* =========================
-   Mobile swipe
-   ========================= */
-let touchStartX = 0;
-const scene = document.querySelector('.card-scene');
+let tsX=0; const scene=document.querySelector('.card-scene');
+scene.addEventListener('touchstart',e=>{tsX=e.changedTouches[0].screenX;});
+scene.addEventListener('touchend',e=>{let teX=e.changedTouches[0].screenX;
+    if(tsX-teX>60)nextCard(); if(teX-tsX>60)previousCard();});
 
-scene.addEventListener('touchstart', e => {
-    touchStartX = e.changedTouches[0].screenX;
-});
-
-scene.addEventListener('touchend', e => {
-    let touchEndX = e.changedTouches[0].screenX;
-    handleSwipe(touchStartX, touchEndX);
-});
-
-function handleSwipe(start, end) {
-    const threshold = 50;
-    if (start - end > threshold) nextCard();
-    if (end - start > threshold) previousCard();
-}
-
-/* =========================
-   Init
-   ========================= */
-(function init() {
-    // restore filter
-    const savedFilter = loadFilter();
-    filterSelect.value = savedFilter;
-
+(function init(){
+    filterSelect.value=loadFilter();
     rebuildCardsList(false);
 })();
-</script></body>
-</html> 
+</script>
+</body>
+</html>
