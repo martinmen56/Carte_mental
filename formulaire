@@ -1,0 +1,2126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formulaire Complet TSI — CCS</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script>
+MathJax = {
+  tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']], tags: 'none' },
+  options: { skipHtmlTags: ['script','noscript','style','textarea'] }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.min.js"></script>
+<style>
+:root {
+  --bg: #faf8f4;
+  --surface: #ffffff;
+  --card: #ffffff;
+  --border: #e8e2d8;
+  --border2: #d4cbbf;
+  --text: #1a1610;
+  --muted: #8a7f72;
+  --muted2: #b5a99a;
+
+  --math:   #1a3a5c;
+  --physic: #5c1a1a;
+  --elec:   #1a4a2a;
+  --thermo: #4a2a1a;
+  --si:     #2a1a4a;
+  --chim:   #1a3a4a;
+
+  --math-bg:   #eef3f8;
+  --physic-bg: #f8eeee;
+  --elec-bg:   #eef5f0;
+  --thermo-bg: #f5f0ee;
+  --si-bg:     #f0eef5;
+  --chim-bg:   #eef3f5;
+
+  --math-acc:   #2563b0;
+  --physic-acc: #c04040;
+  --elec-acc:   #2a7a3a;
+  --thermo-acc: #c06030;
+  --si-acc:     #6030c0;
+  --chim-acc:   #208080;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ── HEADER ── */
+.hero {
+  background: var(--text);
+  color: var(--bg);
+  padding: 56px 40px 44px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 300px; height: 300px;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 50%;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -80px; left: 40%;
+  width: 200px; height: 200px;
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 50%;
+}
+.hero-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 20px;
+}
+.hero h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(2.8rem, 6vw, 5rem);
+  line-height: 1;
+  letter-spacing: -1px;
+  margin-bottom: 8px;
+}
+.hero h1 em {
+  font-style: italic;
+  color: rgba(255,255,255,0.5);
+}
+.hero-sub {
+  font-size: 13px;
+  color: rgba(255,255,255,0.45);
+  margin-top: 16px;
+  max-width: 500px;
+}
+.hero-chips {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-top: 24px;
+}
+.chip {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  padding: 5px 12px;
+  border-radius: 2px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+}
+.chip-math   { background: rgba(37,99,176,0.2);  color: #80b0e8; border-color: rgba(37,99,176,0.3); }
+.chip-physic { background: rgba(192,64,64,0.2);  color: #e89090; border-color: rgba(192,64,64,0.3); }
+.chip-elec   { background: rgba(42,122,58,0.2);  color: #80c890; border-color: rgba(42,122,58,0.3); }
+.chip-thermo { background: rgba(192,96,48,0.2);  color: #e8b080; border-color: rgba(192,96,48,0.3); }
+.chip-si     { background: rgba(96,48,192,0.2);  color: #b090e8; border-color: rgba(96,48,192,0.3); }
+.chip-chim   { background: rgba(32,128,128,0.2); color: #80c8c8; border-color: rgba(32,128,128,0.3); }
+.chip:hover { opacity: 0.8; transform: translateY(-1px); }
+
+/* ── SEARCH ── */
+.search-wrap {
+  padding: 20px 40px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 100;
+  display: flex; gap: 12px; align-items: center;
+}
+.search-input {
+  flex: 1;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  padding: 10px 16px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+}
+.search-input:focus { border-color: var(--math-acc); }
+.search-input::placeholder { color: var(--muted2); }
+.search-count {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* ── LAYOUT ── */
+.main { display: flex; min-height: calc(100vh - 200px); }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 24px 0;
+  position: sticky;
+  top: 65px;
+  height: calc(100vh - 65px);
+  overflow-y: auto;
+}
+.sidebar-section { margin-bottom: 4px; }
+.sidebar-heading {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted2);
+  padding: 16px 20px 6px;
+}
+.sidebar-link {
+  display: block;
+  padding: 7px 20px;
+  font-size: 12.5px;
+  color: var(--muted);
+  text-decoration: none;
+  cursor: pointer;
+  border-left: 2px solid transparent;
+  transition: all 0.15s;
+}
+.sidebar-link:hover { color: var(--text); background: var(--bg); }
+.sidebar-link.active { color: var(--text); font-weight: 600; }
+.sidebar-link[data-cat="math"].active   { border-color: var(--math-acc);   color: var(--math-acc); }
+.sidebar-link[data-cat="physic"].active { border-color: var(--physic-acc); color: var(--physic-acc); }
+.sidebar-link[data-cat="elec"].active   { border-color: var(--elec-acc);   color: var(--elec-acc); }
+.sidebar-link[data-cat="thermo"].active { border-color: var(--thermo-acc); color: var(--thermo-acc); }
+.sidebar-link[data-cat="si"].active     { border-color: var(--si-acc);     color: var(--si-acc); }
+.sidebar-link[data-cat="chim"].active   { border-color: var(--chim-acc);   color: var(--chim-acc); }
+
+/* ── CONTENT ── */
+.content {
+  flex: 1;
+  padding: 40px;
+  max-width: 900px;
+}
+
+/* ── CHAPTER ── */
+.chapter { margin-bottom: 56px; scroll-margin-top: 80px; }
+.chapter-header {
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--border);
+}
+.chapter-icon {
+  width: 44px; height: 44px;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.chapter-meta { flex: 1; }
+.chapter-cat {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.chapter-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.7rem;
+  letter-spacing: -0.5px;
+  line-height: 1.1;
+}
+/* Category colors */
+.cat-math   .chapter-icon { background: var(--math-bg);   }
+.cat-math   .chapter-cat  { color: var(--math-acc);  }
+.cat-math   .chapter-header { border-color: var(--math-acc); }
+
+.cat-physic .chapter-icon { background: var(--physic-bg); }
+.cat-physic .chapter-cat  { color: var(--physic-acc); }
+.cat-physic .chapter-header { border-color: var(--physic-acc); }
+
+.cat-elec   .chapter-icon { background: var(--elec-bg);   }
+.cat-elec   .chapter-cat  { color: var(--elec-acc);  }
+.cat-elec   .chapter-header { border-color: var(--elec-acc); }
+
+.cat-thermo .chapter-icon { background: var(--thermo-bg); }
+.cat-thermo .chapter-cat  { color: var(--thermo-acc); }
+.cat-thermo .chapter-header { border-color: var(--thermo-acc); }
+
+.cat-si     .chapter-icon { background: var(--si-bg);     }
+.cat-si     .chapter-cat  { color: var(--si-acc);    }
+.cat-si     .chapter-header { border-color: var(--si-acc); }
+
+.cat-chim   .chapter-icon { background: var(--chim-bg);   }
+.cat-chim   .chapter-cat  { color: var(--chim-acc);  }
+.cat-chim   .chapter-header { border-color: var(--chim-acc); }
+
+/* ── FORMULA CARD ── */
+.fcard {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin-bottom: 14px;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+}
+.fcard:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+.fcard-head {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+.fcard-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  flex: 1;
+}
+.fcard-toggle {
+  font-size: 11px;
+  color: var(--muted2);
+  transition: transform 0.2s;
+}
+.fcard.collapsed .fcard-toggle { transform: rotate(-90deg); }
+.fcard.collapsed .fcard-body { display: none; }
+.fcard-body { padding: 0; }
+
+/* ── FORMULA ROW ── */
+.frow {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 12px;
+  padding: 11px 16px;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+  align-items: start;
+}
+.frow:last-child { border-bottom: none; }
+.frow:hover { background: rgba(0,0,0,0.015); }
+.flabel {
+  font-family: 'DM Mono', monospace;
+  font-size: 10.5px;
+  color: var(--muted);
+  padding-top: 3px;
+  line-height: 1.4;
+}
+.fval { line-height: 1.9; }
+.fval .MathJax { font-size: 1em !important; }
+.fnote {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+/* ── DEMO CARD ── */
+.demo-card {
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+.demo-head {
+  padding: 10px 16px;
+  display: flex; align-items: center; gap: 10px;
+  cursor: pointer;
+}
+.demo-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 2px;
+  background: var(--math-bg);
+  color: var(--math-acc);
+  flex-shrink: 0;
+}
+.demo-title { font-size: 12.5px; font-weight: 600; flex: 1; }
+.demo-toggle { font-size: 11px; color: var(--muted2); transition: transform 0.2s; }
+.demo-card.collapsed .demo-toggle { transform: rotate(-90deg); }
+.demo-card.collapsed .demo-body { display: none; }
+.demo-body {
+  padding: 16px;
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+  font-size: 13px;
+  line-height: 2;
+}
+.demo-step {
+  margin-bottom: 10px;
+  padding-left: 12px;
+  border-left: 2px solid var(--border2);
+}
+.demo-step-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: var(--muted2);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+/* ── ALERT ── */
+.alert {
+  border-radius: 4px;
+  padding: 10px 14px;
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 10px 16px 12px;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.alert-icon { flex-shrink: 0; font-size: 14px; margin-top: 1px; }
+.alert-math   { background: var(--math-bg);   border-left: 3px solid var(--math-acc);   color: var(--math); }
+.alert-physic { background: var(--physic-bg); border-left: 3px solid var(--physic-acc); color: var(--physic); }
+.alert-elec   { background: var(--elec-bg);   border-left: 3px solid var(--elec-acc);   color: var(--elec); }
+.alert-thermo { background: var(--thermo-bg); border-left: 3px solid var(--thermo-acc); color: var(--thermo); }
+.alert-si     { background: var(--si-bg);     border-left: 3px solid var(--si-acc);     color: var(--si); }
+
+/* ── TABLE ── */
+.ftable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+.ftable th {
+  font-family: 'DM Mono', monospace;
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+.ftable td {
+  padding: 9px 12px;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+  vertical-align: middle;
+  line-height: 1.8;
+}
+.ftable tr:last-child td { border-bottom: none; }
+.ftable tr:hover td { background: rgba(0,0,0,0.015); }
+
+/* ── HIDDEN ── */
+.hidden { display: none !important; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .content { padding: 20px; }
+  .hero { padding: 32px 20px; }
+  .search-wrap { padding: 12px 20px; }
+  .frow { grid-template-columns: 1fr; gap: 4px; }
+  .flabel { padding-top: 0; color: var(--muted2); font-size: 10px; }
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-tag">Concours Centrale-Supélec · Filière TSI · Programme Complet</div>
+  <h1>Formulaire <em>intégral</em></h1>
+  <p class="hero-sub">Toutes les matières scientifiques · Formules, théorèmes et démonstrations clés pour le CCS</p>
+  <div class="hero-chips">
+    <span class="chip chip-math"   onclick="scrollTo('math')">∑ Mathématiques</span>
+    <span class="chip chip-physic" onclick="scrollTo('physic')">⚡ Physique</span>
+    <span class="chip chip-elec"   onclick="scrollTo('elec')">🔌 Électrocinétique</span>
+    <span class="chip chip-thermo" onclick="scrollTo('thermo')">🔥 Thermodynamique</span>
+    <span class="chip chip-si"     onclick="scrollTo('si')">⚙️ SI</span>
+    <span class="chip chip-chim"   onclick="scrollTo('chim')">🧪 Chimie</span>
+  </div>
+</div>
+
+<div class="search-wrap">
+  <input class="search-input" type="text" id="searchBox" placeholder="Rechercher une formule, un théorème, une démo..." oninput="doSearch(this.value)">
+  <span class="search-count" id="searchCount"></span>
+</div>
+
+<div class="main">
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-heading">Mathématiques</div>
+    <a class="sidebar-link" data-cat="math" onclick="scrollTo('m-analyse')">Analyse & Limites</a>
+    <a class="sidebar-link" data-cat="math" onclick="scrollTo('m-derivees')">Dérivées</a>
+    <a class="sidebar-link" data-cat="math" onclick="scrollTo('m-integrales')">Intégrales</a>
+    <a class="sidebar-link" data-cat="math" onclick="scrollTo('m-suites')">Suites & Séries</a>
+    <a class="sidebar-link" data-cat="math" onclick="scrollTo('m-complexes')">Nombres complexes</a>
+    <a class="sidebar-link" data-cat="math" onclick="scrollTo('m-eq-diff')">Équations diff.</a>
+    <a class="sidebar-link" data-cat="math" onclick="scrollTo('m-algebre')">Algèbre linéaire</a>
+    <a class="sidebar-link" data-cat="math" onclick="scrollTo('m-proba')">Probabilités</a>
+    <a class="sidebar-link" data-cat="math" onclick="scrollTo('m-demos')">Démonstrations CCS</a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-heading">Physique</div>
+    <a class="sidebar-link" data-cat="physic" onclick="scrollTo('p-mecanique')">Mécanique</a>
+    <a class="sidebar-link" data-cat="physic" onclick="scrollTo('p-ondes')">Ondes & Optique</a>
+    <a class="sidebar-link" data-cat="physic" onclick="scrollTo('p-em')">Électromagnétisme</a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-heading">Électrocinétique</div>
+    <a class="sidebar-link" data-cat="elec" onclick="scrollTo('e-bases')">Bases & Lois</a>
+    <a class="sidebar-link" data-cat="elec" onclick="scrollTo('e-transitoire')">Régimes transitoires</a>
+    <a class="sidebar-link" data-cat="elec" onclick="scrollTo('e-sinusoidal')">Régime sinusoïdal</a>
+    <a class="sidebar-link" data-cat="elec" onclick="scrollTo('e-filtres')">Filtres</a>
+    <a class="sidebar-link" data-cat="elec" onclick="scrollTo('e-aop')">Amplificateurs</a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-heading">Thermodynamique</div>
+    <a class="sidebar-link" data-cat="thermo" onclick="scrollTo('t-principes')">1er & 2e Principes</a>
+    <a class="sidebar-link" data-cat="thermo" onclick="scrollTo('t-gaz')">Gaz parfaits</a>
+    <a class="sidebar-link" data-cat="thermo" onclick="scrollTo('t-machines')">Machines thermiques</a>
+    <a class="sidebar-link" data-cat="thermo" onclick="scrollTo('t-thermo-chim')">Thermo chimique</a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-heading">Sciences Ingénieur</div>
+    <a class="sidebar-link" data-cat="si" onclick="scrollTo('si-asserv')">Asservissements</a>
+    <a class="sidebar-link" data-cat="si" onclick="scrollTo('si-meca')">Mécanique SI</a>
+    <a class="sidebar-link" data-cat="si" onclick="scrollTo('si-electro')">Électrotechnique</a>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-heading">Chimie</div>
+    <a class="sidebar-link" data-cat="chim" onclick="scrollTo('c-acide')">Acides-Bases</a>
+    <a class="sidebar-link" data-cat="chim" onclick="scrollTo('c-redox')">Oxydo-réduction</a>
+    <a class="sidebar-link" data-cat="chim" onclick="scrollTo('c-cinetique')">Cinétique</a>
+    <a class="sidebar-link" data-cat="chim" onclick="scrollTo('c-orga')">Chimie organique</a>
+  </div>
+</nav>
+
+<div class="content" id="content">
+
+<!-- ═══════════════════════════════════════════════════════
+     MATHÉMATIQUES
+═══════════════════════════════════════════════════════ -->
+
+<div class="chapter cat-math" id="m-analyse">
+  <div class="chapter-header">
+    <div class="chapter-icon">∞</div>
+    <div class="chapter-meta">
+      <div class="chapter-cat">Mathématiques</div>
+      <div class="chapter-title">Analyse — Limites & Continuité</div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="limite croissance comparée exponentielle logarithme">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Croissances comparées (indispensables CCS)</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow">
+        <div class="flabel">ln vs puissance</div>
+        <div class="fval">\(\displaystyle\lim_{x\to+\infty}\frac{\ln x}{x^\alpha} = 0\quad (\alpha>0)\)
+          <div class="fnote">Le logarithme est dominé par toute puissance positive</div>
+        </div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Puissance vs exp</div>
+        <div class="fval">\(\displaystyle\lim_{x\to+\infty}\frac{x^n}{e^x} = 0\quad (n\in\mathbb{N})\)
+          <div class="fnote">L'exponentielle domine toute puissance</div>
+        </div>
+      </div>
+      <div class="frow">
+        <div class="flabel">En 0+</div>
+        <div class="fval">\(\displaystyle\lim_{x\to 0^+} x^\alpha\ln x = 0\quad (\alpha>0)\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Forme \(1^\infty\)</div>
+        <div class="fval">\(\displaystyle\lim_{n\to\infty}\left(1+\frac{a}{n}\right)^n = e^a\)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="développement limité Taylor DL équivalent">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Développements limités en 0 — DL usuels</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <table class="ftable">
+        <thead><tr><th>Fonction</th><th>DL à l'ordre n en 0</th></tr></thead>
+        <tbody>
+          <tr><td>\(e^x\)</td><td>\(1 + x + \dfrac{x^2}{2!} + \dfrac{x^3}{3!} + \cdots + \dfrac{x^n}{n!} + o(x^n)\)</td></tr>
+          <tr><td>\(\ln(1+x)\)</td><td>\(x - \dfrac{x^2}{2} + \dfrac{x^3}{3} - \cdots + (-1)^{n-1}\dfrac{x^n}{n} + o(x^n)\)</td></tr>
+          <tr><td>\(\sin x\)</td><td>\(x - \dfrac{x^3}{6} + \dfrac{x^5}{120} - \cdots + o(x^{2n})\)</td></tr>
+          <tr><td>\(\cos x\)</td><td>\(1 - \dfrac{x^2}{2} + \dfrac{x^4}{24} - \cdots + o(x^{2n+1})\)</td></tr>
+          <tr><td>\(\tan x\)</td><td>\(x + \dfrac{x^3}{3} + \dfrac{2x^5}{15} + o(x^5)\)</td></tr>
+          <tr><td>\((1+x)^\alpha\)</td><td>\(1 + \alpha x + \dfrac{\alpha(\alpha-1)}{2}x^2 + \cdots + o(x^n)\)</td></tr>
+          <tr><td>\(\dfrac{1}{1-x}\)</td><td>\(1 + x + x^2 + x^3 + \cdots + x^n + o(x^n)\)</td></tr>
+          <tr><td>\(\arctan x\)</td><td>\(x - \dfrac{x^3}{3} + \dfrac{x^5}{5} - \cdots + o(x^{2n})\)</td></tr>
+          <tr><td>\(\sinh x\)</td><td>\(x + \dfrac{x^3}{6} + \dfrac{x^5}{120} + o(x^5)\)</td></tr>
+          <tr><td>\(\cosh x\)</td><td>\(1 + \dfrac{x^2}{2} + \dfrac{x^4}{24} + o(x^4)\)</td></tr>
+        </tbody>
+      </table>
+      <div class="alert alert-math">
+        <span class="alert-icon">💡</span>
+        <span>Règle d'or CCS : pour les équivalents, garder uniquement le premier terme non nul du DL. Ex : \(\sin x \sim x\), \(1-\cos x \sim x^2/2\).</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="théorème valeurs intermédiaires Rolle accroissements finis bijection">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Théorèmes fondamentaux d'analyse</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow">
+        <div class="flabel">TVI</div>
+        <div class="fval">Si \(f\) continue sur \([a,b]\) et \(f(a)\cdot f(b) < 0\), alors \(\exists\, c\in]a,b[\) tel que \(f(c)=0\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Rolle</div>
+        <div class="fval">Si \(f\) continue sur \([a,b]\), dérivable sur \(]a,b[\), et \(f(a)=f(b)\), alors \(\exists\, c\in]a,b[\) tel que \(f'(c)=0\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">TAF</div>
+        <div class="fval">\(\exists\, c\in]a,b[:\; f'(c) = \dfrac{f(b)-f(a)}{b-a}\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Inégalité des AI</div>
+        <div class="fval">\(|f(b)-f(a)| \leq \sup_{[a,b]}|f'| \cdot |b-a|\)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DÉRIVÉES -->
+<div class="chapter cat-math" id="m-derivees">
+  <div class="chapter-header">
+    <div class="chapter-icon">∂</div>
+    <div class="chapter-meta">
+      <div class="chapter-cat">Mathématiques</div>
+      <div class="chapter-title">Dérivation</div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="dérivée formule tableau composée produit quotient">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Formules de dérivation</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <table class="ftable">
+        <thead><tr><th>Fonction \(f\)</th><th>Dérivée \(f'\)</th></tr></thead>
+        <tbody>
+          <tr><td>\(x^n\)</td><td>\(nx^{n-1}\)</td></tr>
+          <tr><td>\(e^{ax}\)</td><td>\(ae^{ax}\)</td></tr>
+          <tr><td>\(\ln|x|\)</td><td>\(1/x\)</td></tr>
+          <tr><td>\(a^x\)</td><td>\(a^x\ln a\)</td></tr>
+          <tr><td>\(\sin x\)</td><td>\(\cos x\)</td></tr>
+          <tr><td>\(\cos x\)</td><td>\(-\sin x\)</td></tr>
+          <tr><td>\(\tan x\)</td><td>\(1+\tan^2 x = 1/\cos^2 x\)</td></tr>
+          <tr><td>\(\arcsin x\)</td><td>\(1/\sqrt{1-x^2}\)</td></tr>
+          <tr><td>\(\arccos x\)</td><td>\(-1/\sqrt{1-x^2}\)</td></tr>
+          <tr><td>\(\arctan x\)</td><td>\(1/(1+x^2)\)</td></tr>
+          <tr><td>\(\sinh x\)</td><td>\(\cosh x\)</td></tr>
+          <tr><td>\(\cosh x\)</td><td>\(\sinh x\)</td></tr>
+          <tr><td>\(\tanh x\)</td><td>\(1/\cosh^2 x = 1-\tanh^2 x\)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="règle produit quotient composée chain rule">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Règles de calcul</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow">
+        <div class="flabel">Produit</div>
+        <div class="fval">\((uv)' = u'v + uv'\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Quotient</div>
+        <div class="fval">\(\left(\dfrac{u}{v}\right)' = \dfrac{u'v - uv'}{v^2}\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Composée</div>
+        <div class="fval">\((f\circ g)'(x) = f'(g(x))\cdot g'(x)\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Réciproque</div>
+        <div class="fval">\((f^{-1})'(y) = \dfrac{1}{f'(f^{-1}(y))}\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Leibniz</div>
+        <div class="fval">\((uv)^{(n)} = \displaystyle\sum_{k=0}^n \binom{n}{k}u^{(k)}v^{(n-k)}\)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- INTÉGRALES -->
+<div class="chapter cat-math" id="m-integrales">
+  <div class="chapter-header">
+    <div class="chapter-icon">∫</div>
+    <div class="chapter-meta">
+      <div class="chapter-cat">Mathématiques</div>
+      <div class="chapter-title">Intégration</div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="primitive intégrale tableau formule">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Primitives usuelles</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <table class="ftable">
+        <thead><tr><th>Fonction</th><th>Primitive (+ constante)</th></tr></thead>
+        <tbody>
+          <tr><td>\(x^n\) (\(n\neq -1\))</td><td>\(\dfrac{x^{n+1}}{n+1}\)</td></tr>
+          <tr><td>\(\dfrac{1}{x}\)</td><td>\(\ln|x|\)</td></tr>
+          <tr><td>\(e^{ax}\)</td><td>\(\dfrac{1}{a}e^{ax}\)</td></tr>
+          <tr><td>\(\sin(ax)\)</td><td>\(-\dfrac{1}{a}\cos(ax)\)</td></tr>
+          <tr><td>\(\cos(ax)\)</td><td>\(\dfrac{1}{a}\sin(ax)\)</td></tr>
+          <tr><td>\(\tan x\)</td><td>\(-\ln|\cos x|\)</td></tr>
+          <tr><td>\(\dfrac{1}{1+x^2}\)</td><td>\(\arctan x\)</td></tr>
+          <tr><td>\(\dfrac{1}{\sqrt{1-x^2}}\)</td><td>\(\arcsin x\)</td></tr>
+          <tr><td>\(\dfrac{u'}{u}\)</td><td>\(\ln|u|\)</td></tr>
+          <tr><td>\(u'\cdot u^n\)</td><td>\(\dfrac{u^{n+1}}{n+1}\)</td></tr>
+          <tr><td>\(u'e^u\)</td><td>\(e^u\)</td></tr>
+          <tr><td>\(\sinh x\)</td><td>\(\cosh x\)</td></tr>
+          <tr><td>\(\cosh x\)</td><td>\(\sinh x\)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="IPP intégration parties changement variable">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Techniques d'intégration</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow">
+        <div class="flabel">IPP</div>
+        <div class="fval">\(\displaystyle\int_a^b u\,v'\,dx = \Big[uv\Big]_a^b - \int_a^b u'\,v\,dx\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Changement var.</div>
+        <div class="fval">\(\displaystyle\int_a^b f(g(t))g'(t)\,dt = \int_{g(a)}^{g(b)} f(x)\,dx\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Fractions part.</div>
+        <div class="fval">\(\dfrac{P(x)}{(x-a)(x-b)} = \dfrac{A}{x-a} + \dfrac{B}{x-b}\)
+          <div class="fnote">Trouver A,B en multipliant puis substituant \(x=a\) et \(x=b\)</div>
+        </div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Intég. généralisée</div>
+        <div class="fval">\(\displaystyle\int_1^{+\infty}\frac{dx}{x^\alpha}\) converge ssi \(\alpha > 1\) · \(\displaystyle\int_0^{1}\frac{dx}{x^\alpha}\) converge ssi \(\alpha < 1\)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="inégalité intégrale valeur moyenne Cauchy-Schwarz">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Inégalités et valeur moyenne</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow">
+        <div class="flabel">Valeur moyenne</div>
+        <div class="fval">\(\displaystyle\bar{f} = \frac{1}{b-a}\int_a^b f(x)\,dx\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Inég. triangulaire</div>
+        <div class="fval">\(\displaystyle\left|\int_a^b f\right| \leq \int_a^b |f|\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Cauchy-Schwarz</div>
+        <div class="fval">\(\displaystyle\left(\int_a^b fg\right)^2 \leq \int_a^b f^2 \cdot \int_a^b g^2\)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SUITES & SÉRIES -->
+<div class="chapter cat-math" id="m-suites">
+  <div class="chapter-header">
+    <div class="chapter-icon">Σ</div>
+    <div class="chapter-meta">
+      <div class="chapter-cat">Mathématiques</div>
+      <div class="chapter-title">Suites & Séries</div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="suite arithmétique géométrique récurrence convergence">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Suites — Résultats fondamentaux</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow">
+        <div class="flabel">Arithmétique</div>
+        <div class="fval">\(u_n = u_0 + nr\) · \(\displaystyle\sum_{k=0}^{n}u_k = \frac{(n+1)(u_0+u_n)}{2}\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Géométrique</div>
+        <div class="fval">\(u_n = u_0\cdot q^n\) · \(\displaystyle\sum_{k=0}^{n}q^k = \frac{1-q^{n+1}}{1-q}\) (\(q\neq 1\))</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Sommes classiques</div>
+        <div class="fval">\(\displaystyle\sum_{k=1}^n k = \frac{n(n+1)}{2}\) · \(\displaystyle\sum_{k=1}^n k^2 = \frac{n(n+1)(2n+1)}{6}\) · \(\displaystyle\sum_{k=1}^n k^3 = \left(\frac{n(n+1)}{2}\right)^2\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Suites adjacentes</div>
+        <div class="fval">Si \((u_n)\) croissante, \((v_n)\) décroissante et \(v_n - u_n \to 0\), alors elles convergent vers la même limite.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="série convergence critère Riemann alternée absolue Alembert Cauchy">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Séries — Critères de convergence</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow">
+        <div class="flabel">Série géométrique</div>
+        <div class="fval">\(\displaystyle\sum_{n=0}^{+\infty}q^n = \frac{1}{1-q}\) converge ssi \(|q|<1\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Séries de Riemann</div>
+        <div class="fval">\(\displaystyle\sum \frac{1}{n^\alpha}\) converge ssi \(\alpha > 1\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Règle d'Alembert</div>
+        <div class="fval">\(\ell = \lim\dfrac{|u_{n+1}|}{|u_n|}\) : converge si \(\ell < 1\), diverge si \(\ell > 1\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Règle de Cauchy</div>
+        <div class="fval">\(\ell = \lim\sqrt[n]{|u_n|}\) : même conclusion</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Leibniz (alternée)</div>
+        <div class="fval">\(\sum(-1)^n u_n\) converge si \((u_n)\) décroissante et \(u_n\to 0\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Conv. absolue</div>
+        <div class="fval">Si \(\sum|u_n|\) converge, alors \(\sum u_n\) converge</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="série entière rayon convergence Taylor Maclaurin">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Séries entières</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow">
+        <div class="flabel">Rayon R</div>
+        <div class="fval">\(R = \dfrac{1}{\limsup \sqrt[n]{|a_n|}}\) · Ou via Alembert : \(R = \lim\left|\dfrac{a_n}{a_{n+1}}\right|\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Convergence</div>
+        <div class="fval">Conv. absolue sur \(]-R,R[\), diverge pour \(|x|>R\), cas limite à étudier séparément</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Développements</div>
+        <div class="fval">\(e^x = \displaystyle\sum_{n=0}^\infty \frac{x^n}{n!}\) · \(\sin x = \displaystyle\sum_{n=0}^\infty \frac{(-1)^n x^{2n+1}}{(2n+1)!}\) · \(\frac{1}{1-x} = \displaystyle\sum_{n=0}^\infty x^n\)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COMPLEXES -->
+<div class="chapter cat-math" id="m-complexes">
+  <div class="chapter-header">
+    <div class="chapter-icon">ℂ</div>
+    <div class="chapter-meta">
+      <div class="chapter-cat">Mathématiques</div>
+      <div class="chapter-title">Nombres Complexes</div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="complexe module argument Euler Moivre trigonométrie">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Représentation et formules</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow">
+        <div class="flabel">Euler</div>
+        <div class="fval">\(e^{i\theta} = \cos\theta + i\sin\theta\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Module-argument</div>
+        <div class="fval">\(z = r e^{i\theta}\) avec \(r=|z|=\sqrt{a^2+b^2}\), \(\theta = \arg(z)\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">De Moivre</div>
+        <div class="fval">\((\cos\theta+i\sin\theta)^n = \cos(n\theta)+i\sin(n\theta)\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Linéarisation</div>
+        <div class="fval">\(\cos\theta = \dfrac{e^{i\theta}+e^{-i\theta}}{2}\) · \(\sin\theta = \dfrac{e^{i\theta}-e^{-i\theta}}{2i}\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Racines n-ièmes</div>
+        <div class="fval">\(z^n = \rho e^{i\varphi} \Rightarrow z_k = \rho^{1/n} e^{i(\varphi+2k\pi)/n},\; k=0,\ldots,n-1\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Identités utiles</div>
+        <div class="fval">\(\cos^2\theta = \dfrac{1+\cos 2\theta}{2}\) · \(\sin^2\theta = \dfrac{1-\cos 2\theta}{2}\)
+          <div class="fnote">Servent à linéariser les puissances de cos/sin</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ÉQUATIONS DIFFÉRENTIELLES -->
+<div class="chapter cat-math" id="m-eq-diff">
+  <div class="chapter-header">
+    <div class="chapter-icon">y'</div>
+    <div class="chapter-meta">
+      <div class="chapter-cat">Mathématiques</div>
+      <div class="chapter-title">Équations Différentielles</div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="équation différentielle ordre 1 homogène particulière variation constante">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Équations du 1er ordre</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow">
+        <div class="flabel">Linéaire hom.</div>
+        <div class="fval">\(y' + a(x)y = 0 \Rightarrow y = C\,e^{-\int a(x)dx}\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Linéaire avec SM</div>
+        <div class="fval">\(y' + ay = f(x)\)
+          <div class="fnote">Sol. générale = sol. homogène + sol. particulière. Méthode de variation de la constante.</div>
+        </div>
+      </div>
+      <div class="frow">
+        <div class="flabel">À variables séparées</div>
+        <div class="fval">\(y' = g(x)h(y) \Rightarrow \int \dfrac{dy}{h(y)} = \int g(x)\,dx\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Bernoulli</div>
+        <div class="fval">\(y' + a(x)y = b(x)y^n\) · Changement : \(v = y^{1-n}\)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="équation différentielle ordre 2 caractéristique discriminant">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Équations du 2e ordre à coefficients constants</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow">
+        <div class="flabel">Forme générale</div>
+        <div class="fval">\(ay'' + by' + cy = f(x)\) · Éq. car. : \(ar^2 + br + c = 0\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">\(\Delta > 0\)</div>
+        <div class="fval">\(y_h = C_1 e^{r_1 x} + C_2 e^{r_2 x}\) avec \(r_1,r_2\) réels distincts</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">\(\Delta = 0\)</div>
+        <div class="fval">\(y_h = (C_1 + C_2 x)e^{r_0 x}\) avec \(r_0 = -b/(2a)\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">\(\Delta < 0\)</div>
+        <div class="fval">\(y_h = e^{\alpha x}(A\cos\beta x + B\sin\beta x)\) où \(r = \alpha \pm i\beta\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Second membre \(e^{\lambda x}\)</div>
+        <div class="fval">Si \(\lambda\) n'est pas racine de l'éq. car. : chercher \(y_p = ke^{\lambda x}\). Si racine simple : \(y_p = kxe^{\lambda x}\). Si racine double : \(y_p = kx^2e^{\lambda x}\).</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Second membre poly</div>
+        <div class="fval">Si \(0\) n'est pas racine : chercher \(y_p = P(x)\) de même degré. Si racine simple : \(y_p = xP(x)\).</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="Laplace transformée convolution fonctions usuelles">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Transformée de Laplace (SI/Physique)</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <table class="ftable">
+        <thead><tr><th>Signal \(f(t)\)</th><th>Transformée \(F(p)\)</th></tr></thead>
+        <tbody>
+          <tr><td>\(\delta(t)\) (Dirac)</td><td>\(1\)</td></tr>
+          <tr><td>\(\mathbf{1}(t)\) (échelon)</td><td>\(1/p\)</td></tr>
+          <tr><td>\(t\) (rampe)</td><td>\(1/p^2\)</td></tr>
+          <tr><td>\(t^n\)</td><td>\(n!/p^{n+1}\)</td></tr>
+          <tr><td>\(e^{at}\)</td><td>\(1/(p-a)\)</td></tr>
+          <tr><td>\(\sin(\omega t)\)</td><td>\(\omega/(p^2+\omega^2)\)</td></tr>
+          <tr><td>\(\cos(\omega t)\)</td><td>\(p/(p^2+\omega^2)\)</td></tr>
+        </tbody>
+      </table>
+      <div class="frow">
+        <div class="flabel">Dérivation</div>
+        <div class="fval">\(\mathcal{L}[f'] = pF(p) - f(0^+)\) · \(\mathcal{L}[f''] = p^2F(p) - pf(0^+) - f'(0^+)\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Val. initiale/finale</div>
+        <div class="fval">\(f(0^+) = \lim_{p\to\infty} pF(p)\) · \(f(+\infty) = \lim_{p\to 0} pF(p)\)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ALGÈBRE LINÉAIRE -->
+<div class="chapter cat-math" id="m-algebre">
+  <div class="chapter-header">
+    <div class="chapter-icon">M</div>
+    <div class="chapter-meta">
+      <div class="chapter-cat">Mathématiques</div>
+      <div class="chapter-title">Algèbre Linéaire</div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="matrice déterminant calcul cofacteur inverse rang">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Matrices et déterminants</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow">
+        <div class="flabel">Det 2×2</div>
+        <div class="fval">\(\det\begin{pmatrix}a&b\\c&d\end{pmatrix} = ad-bc\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Det 3×3 (Sarrus)</div>
+        <div class="fval">\(\det(A) = a_{11}(a_{22}a_{33}-a_{23}a_{32}) - a_{12}(a_{21}a_{33}-a_{23}a_{31}) + a_{13}(a_{21}a_{32}-a_{22}a_{31})\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Inverse 2×2</div>
+        <div class="fval">\(A^{-1} = \dfrac{1}{ad-bc}\begin{pmatrix}d&-b\\-c&a\end{pmatrix}\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Propriétés det</div>
+        <div class="fval">\(\det(AB) = \det A\cdot\det B\) · \(\det(A^T) = \det A\) · \(\det(A^{-1}) = 1/\det A\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Rang</div>
+        <div class="fval">Dimension de l'espace engendré par les colonnes (ou lignes) de \(A\)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="valeur propre vecteur propre diagonalisation spectre polynôme caractéristique">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Valeurs et vecteurs propres — Diagonalisation</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow">
+        <div class="flabel">Définition</div>
+        <div class="fval">\(A\vec{v} = \lambda\vec{v}\) avec \(\vec{v}\neq\vec{0}\) · \(\lambda\) valeur propre, \(\vec{v}\) vecteur propre</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Polynôme car.</div>
+        <div class="fval">\(\chi_A(\lambda) = \det(A-\lambda I) = 0\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Sous-espace propre</div>
+        <div class="fval">\(E_\lambda = \ker(A-\lambda I)\) = solutions de \((A-\lambda I)\vec{x}=\vec{0}\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Diagonalisation</div>
+        <div class="fval">Si \(A\) a \(n\) valeurs propres distinctes, \(A = PDP^{-1}\) avec \(D\) diagonale
+          <div class="fnote">Les colonnes de \(P\) sont les vecteurs propres associés</div>
+        </div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Trace & déterminant</div>
+        <div class="fval">\(\text{tr}(A) = \sum \lambda_i\) · \(\det(A) = \prod \lambda_i\)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="espace vectoriel base dimension sous-espace">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Espaces vectoriels</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow">
+        <div class="flabel">Théorème rang-noyau</div>
+        <div class="fval">\(\dim(\text{Im}\,f) + \dim(\ker f) = \dim E\)
+          <div class="fnote">Fondamental pour les applications linéaires</div>
+        </div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Indépendance lin.</div>
+        <div class="fval">\(v_1,\ldots,v_n\) libres ssi \(\sum \alpha_i v_i = 0 \Rightarrow \alpha_i = 0\;\forall i\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Produit scalaire std</div>
+        <div class="fval">\(\langle u,v\rangle = \sum_i u_i v_i\) · \(\|u\| = \sqrt{\langle u,u\rangle}\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Gram-Schmidt</div>
+        <div class="fval">Orthonormaliser : \(e_k = \dfrac{v_k - \sum_{j<k}\langle v_k,e_j\rangle e_j}{\|v_k - \cdots\|}\)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROBABILITÉS -->
+<div class="chapter cat-math" id="m-proba">
+  <div class="chapter-header">
+    <div class="chapter-icon">P</div>
+    <div class="chapter-meta">
+      <div class="chapter-cat">Mathématiques</div>
+      <div class="chapter-title">Probabilités & Statistiques</div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="probabilité conditionnelle Bayes total indépendance">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Probabilités — Théorèmes</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow">
+        <div class="flabel">Probabilité cond.</div>
+        <div class="fval">\(P(A|B) = \dfrac{P(A\cap B)}{P(B)}\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Formule totale</div>
+        <div class="fval">\(P(A) = \displaystyle\sum_i P(A|B_i)P(B_i)\) · \((B_i)\) partition de \(\Omega\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Bayes</div>
+        <div class="fval">\(P(B_i|A) = \dfrac{P(A|B_i)P(B_i)}{\sum_j P(A|B_j)P(B_j)}\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Indépendance</div>
+        <div class="fval">\(P(A\cap B) = P(A)\cdot P(B)\)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="variable aléatoire espérance variance loi normale binomiale Poisson">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Variables aléatoires — Lois usuelles</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow">
+        <div class="flabel">Espérance</div>
+        <div class="fval">\(E(X) = \sum x_i p_i\) (discret) · \(E(X) = \int_{-\infty}^{+\infty} x f(x)dx\) (continu)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Variance</div>
+        <div class="fval">\(V(X) = E(X^2) - [E(X)]^2\) · \(\sigma = \sqrt{V(X)}\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Bernoulli \(B(p)\)</div>
+        <div class="fval">\(E=p\) · \(V=p(1-p)\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Binomiale \(B(n,p)\)</div>
+        <div class="fval">\(P(X=k)=\binom{n}{k}p^k(1-p)^{n-k}\) · \(E=np\) · \(V=np(1-p)\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Poisson \(\mathcal{P}(\lambda)\)</div>
+        <div class="fval">\(P(X=k)=e^{-\lambda}\dfrac{\lambda^k}{k!}\) · \(E=V=\lambda\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Uniforme \(\mathcal{U}([a,b])\)</div>
+        <div class="fval">\(f(x)=\dfrac{1}{b-a}\) · \(E=\dfrac{a+b}{2}\) · \(V=\dfrac{(b-a)^2}{12}\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Normale \(\mathcal{N}(\mu,\sigma^2)\)</div>
+        <div class="fval">\(f(x)=\dfrac{1}{\sigma\sqrt{2\pi}}e^{-\frac{(x-\mu)^2}{2\sigma^2}}\) · \(E=\mu\) · \(V=\sigma^2\)</div>
+      </div>
+      <div class="frow">
+        <div class="flabel">Inég. Markov</div>
+        <div class="fval">\(P(X\geq a) \leq \dfrac{E(X)}{a}\) · Inég. Bienaymé-Tchebychev : \(P(|X-\mu|\geq k\sigma) \leq \dfrac{1}{k^2}\)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DÉMONSTRATIONS CCS -->
+<div class="chapter cat-math" id="m-demos">
+  <div class="chapter-header">
+    <div class="chapter-icon">✎</div>
+    <div class="chapter-meta">
+      <div class="chapter-cat">Mathématiques · CCS</div>
+      <div class="chapter-title">Démonstrations Importantes CCS</div>
+    </div>
+  </div>
+
+  <div class="demo-card" data-kw="irrationnel racine 2 infini premiers récurrence">
+    <div class="demo-head" onclick="toggleDemo(this)">
+      <span class="demo-badge">Démo</span>
+      <span class="demo-title">Irrationalité de \(\sqrt{2}\)</span>
+      <span class="demo-toggle">▾</span>
+    </div>
+    <div class="demo-body">
+      <div class="demo-step">
+        <div class="demo-step-num">Hypothèse (absurde)</div>
+        Supposons \(\sqrt{2} = p/q\) avec \(\text{pgcd}(p,q)=1\), \(p,q\in\mathbb{N}^*\).
+      </div>
+      <div class="demo-step">
+        <div class="demo-step-num">Développement</div>
+        Alors \(2q^2 = p^2\), donc \(p^2\) est pair, donc \(p\) est pair : \(p = 2k\). Ainsi \(2q^2 = 4k^2\), d'où \(q^2 = 2k^2\), donc \(q\) est pair.
+      </div>
+      <div class="demo-step">
+        <div class="demo-step-num">Contradiction</div>
+        \(p\) et \(q\) sont tous deux pairs, ce qui contredit \(\text{pgcd}(p,q)=1\). Donc \(\sqrt{2}\notin\mathbb{Q}\). \(\square\)
+      </div>
+    </div>
+  </div>
+
+  <div class="demo-card" data-kw="infini premiers Euclide nombres premiers">
+    <div class="demo-head" onclick="toggleDemo(this)">
+      <span class="demo-badge">Démo</span>
+      <span class="demo-title">Infinité des nombres premiers (Euclide)</span>
+      <span class="demo-toggle">▾</span>
+    </div>
+    <div class="demo-body">
+      <div class="demo-step">
+        <div class="demo-step-num">Hypothèse (absurde)</div>
+        Supposons qu'il existe un nombre fini de premiers : \(p_1, p_2,\ldots, p_n\).
+      </div>
+      <div class="demo-step">
+        <div class="demo-step-num">Construction</div>
+        Posons \(N = p_1 p_2\cdots p_n + 1\). Tout diviseur premier de \(N\) ne peut être aucun des \(p_i\) (car \(N \equiv 1 \pmod{p_i}\)).
+      </div>
+      <div class="demo-step">
+        <div class="demo-step-num">Contradiction</div>
+        Mais tout entier \(\geq 2\) possède au moins un diviseur premier. Contradiction. Donc il y a une infinité de nombres premiers. \(\square\)
+      </div>
+    </div>
+  </div>
+
+  <div class="demo-card" data-kw="série harmonique diverge 1/n logarithme">
+    <div class="demo-head" onclick="toggleDemo(this)">
+      <span class="demo-badge">Démo</span>
+      <span class="demo-title">Divergence de la série harmonique \(\sum 1/n\)</span>
+      <span class="demo-toggle">▾</span>
+    </div>
+    <div class="demo-body">
+      <div class="demo-step">
+        <div class="demo-step-num">Minoration par blocs</div>
+        On regroupe les termes : \(\sum_{k=1}^{2^n}\frac{1}{k} \geq 1 + \frac{n}{2}\) car chaque bloc \(\left(\sum_{k=2^{j-1}+1}^{2^j}\frac{1}{k}\right) \geq \frac{1}{2}\).
+      </div>
+      <div class="demo-step">
+        <div class="demo-step-num">Conclusion</div>
+        Comme \(1 + n/2 \to +\infty\), les sommes partielles sont non bornées. Donc la série diverge. \(\square\)
+      </div>
+    </div>
+  </div>
+
+  <div class="demo-card" data-kw="inégalité AM-GM arithmétique géométrique moyenne">
+    <div class="demo-head" onclick="toggleDemo(this)">
+      <span class="demo-badge">Démo</span>
+      <span class="demo-title">Inégalité arithmético-géométrique (cas \(n=2\))</span>
+      <span class="demo-toggle">▾</span>
+    </div>
+    <div class="demo-body">
+      <div class="demo-step">
+        <div class="demo-step-num">Énoncé</div>
+        Pour tous réels \(a,b \geq 0\) : \(\dfrac{a+b}{2} \geq \sqrt{ab}\).
+      </div>
+      <div class="demo-step">
+        <div class="demo-step-num">Preuve</div>
+        \((\sqrt{a}-\sqrt{b})^2 \geq 0 \Leftrightarrow a - 2\sqrt{ab} + b \geq 0 \Leftrightarrow \dfrac{a+b}{2} \geq \sqrt{ab}\). Égalité ssi \(a=b\). \(\square\)
+      </div>
+    </div>
+  </div>
+
+  <div class="demo-card" data-kw="théorème valeur intermédiaire TVI zéro continuité">
+    <div class="demo-head" onclick="toggleDemo(this)">
+      <span class="demo-badge">Démo</span>
+      <span class="demo-title">Théorème des valeurs intermédiaires (idée)</span>
+      <span class="demo-toggle">▾</span>
+    </div>
+    <div class="demo-body">
+      <div class="demo-step">
+        <div class="demo-step-num">Hypothèses</div>
+        \(f\) continue sur \([a,b]\), \(f(a) < 0 < f(b)\) (cas général par translation).
+      </div>
+      <div class="demo-step">
+        <div class="demo-step-num">Dichotomie</div>
+        Posons \(c_0 = (a+b)/2\). Si \(f(c_0)=0\) c'est fini. Sinon, on itère sur le sous-intervalle où \(f\) change de signe. On construit deux suites adjacentes \((a_n)\) croissante et \((b_n)\) décroissante avec \(b_n-a_n = (b-a)/2^n \to 0\).
+      </div>
+      <div class="demo-step">
+        <div class="demo-step-num">Conclusion</div>
+        Elles convergent vers un même \(c\). Par continuité, \(f(c) = \lim f(a_n) \leq 0\) et \(f(c) = \lim f(b_n) \geq 0\), donc \(f(c)=0\). \(\square\)
+      </div>
+    </div>
+  </div>
+
+  <div class="demo-card" data-kw="récurrence binôme Newton coefficients">
+    <div class="demo-head" onclick="toggleDemo(this)">
+      <span class="demo-badge">Démo</span>
+      <span class="demo-title">Formule du binôme de Newton par récurrence</span>
+      <span class="demo-toggle">▾</span>
+    </div>
+    <div class="demo-body">
+      <div class="demo-step">
+        <div class="demo-step-num">Énoncé</div>
+        \((a+b)^n = \displaystyle\sum_{k=0}^n \binom{n}{k}a^k b^{n-k}\)
+      </div>
+      <div class="demo-step">
+        <div class="demo-step-num">Initialisation</div>
+        \(n=1\) : \((a+b)^1 = a+b = \binom{1}{0}b + \binom{1}{1}a\). Vrai.
+      </div>
+      <div class="demo-step">
+        <div class="demo-step-num">Hérédité</div>
+        \((a+b)^{n+1} = (a+b)\cdot\sum_k\binom{n}{k}a^k b^{n-k}\). En regroupant les termes en \(a^k b^{n+1-k}\) via la relation de Pascal \(\binom{n}{k-1}+\binom{n}{k}=\binom{n+1}{k}\), on obtient le résultat au rang \(n+1\). \(\square\)
+      </div>
+    </div>
+  </div>
+
+  <div class="demo-card" data-kw="Cauchy-Schwarz inégalité produit scalaire vecteurs">
+    <div class="demo-head" onclick="toggleDemo(this)">
+      <span class="demo-badge">Démo</span>
+      <span class="demo-title">Inégalité de Cauchy-Schwarz</span>
+      <span class="demo-toggle">▾</span>
+    </div>
+    <div class="demo-body">
+      <div class="demo-step">
+        <div class="demo-step-num">Méthode du discriminant</div>
+        Pour tout \(t\in\mathbb{R}\), considérons \(q(t) = \|u+tv\|^2 = \|u\|^2 + 2t\langle u,v\rangle + t^2\|v\|^2 \geq 0\).
+      </div>
+      <div class="demo-step">
+        <div class="demo-step-num">Discriminant</div>
+        Ce trinôme en \(t\) est toujours \(\geq 0\), donc son discriminant \(\Delta \leq 0\) :
+        \(4\langle u,v\rangle^2 - 4\|u\|^2\|v\|^2 \leq 0\), soit \(|\langle u,v\rangle| \leq \|u\|\cdot\|v\|\). \(\square\)
+      </div>
+    </div>
+  </div>
+
+  <div class="demo-card" data-kw="exponentielle dérivée propre développement série">
+    <div class="demo-head" onclick="toggleDemo(this)">
+      <span class="demo-badge">Démo</span>
+      <span class="demo-title">La dérivée de \(e^x\) est \(e^x\) (par la série)</span>
+      <span class="demo-toggle">▾</span>
+    </div>
+    <div class="demo-body">
+      <div class="demo-step">
+        <div class="demo-step-num">Définition série</div>
+        \(e^x = \displaystyle\sum_{n=0}^\infty \dfrac{x^n}{n!}\), convergente sur \(\mathbb{R}\).
+      </div>
+      <div class="demo-step">
+        <div class="demo-step-num">Dérivation terme à terme</div>
+        \(\dfrac{d}{dx}\left(\dfrac{x^n}{n!}\right) = \dfrac{nx^{n-1}}{n!} = \dfrac{x^{n-1}}{(n-1)!}\)
+      </div>
+      <div class="demo-step">
+        <div class="demo-step-num">Résultat</div>
+        \((e^x)' = \displaystyle\sum_{n=1}^\infty \dfrac{x^{n-1}}{(n-1)!} = \displaystyle\sum_{m=0}^\infty \dfrac{x^m}{m!} = e^x\). \(\square\)
+      </div>
+    </div>
+  </div>
+
+  <div class="demo-card" data-kw="intégration parties IPP formule dérivation">
+    <div class="demo-head" onclick="toggleDemo(this)">
+      <span class="demo-badge">Démo</span>
+      <span class="demo-title">Formule d'intégration par parties</span>
+      <span class="demo-toggle">▾</span>
+    </div>
+    <div class="demo-body">
+      <div class="demo-step">
+        <div class="demo-step-num">Point de départ</div>
+        La règle du produit donne : \((uv)' = u'v + uv'\).
+      </div>
+      <div class="demo-step">
+        <div class="demo-step-num">Intégration</div>
+        En intégrant des deux côtés sur \([a,b]\) :
+        \([uv]_a^b = \int_a^b u'v\,dx + \int_a^b uv'\,dx\)
+      </div>
+      <div class="demo-step">
+        <div class="demo-step-num">Résultat</div>
+        D'où \(\displaystyle\int_a^b uv'\,dx = [uv]_a^b - \int_a^b u'v\,dx\). \(\square\)
+      </div>
+    </div>
+  </div>
+
+</div>
+<!-- END MATH -->
+
+<!-- ═══════════════════════════════════════════════════════
+     PHYSIQUE — MÉCANIQUE
+═══════════════════════════════════════════════════════ -->
+
+<div class="chapter cat-physic" id="p-mecanique">
+  <div class="chapter-header">
+    <div class="chapter-icon">⚙</div>
+    <div class="chapter-meta">
+      <div class="chapter-cat">Physique</div>
+      <div class="chapter-title">Mécanique du Point & des Solides</div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="Newton loi force accélération cinématique dynamique">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Lois de Newton</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow"><div class="flabel">1re loi (inertie)</div><div class="fval">Dans un référentiel galiléen, si \(\sum\vec{F}=\vec{0}\) alors \(\vec{v}=\text{cste}\)</div></div>
+      <div class="frow"><div class="flabel">2e loi (PFD)</div><div class="fval">\(\sum\vec{F} = m\vec{a}\) — Dans un réf. galiléen</div></div>
+      <div class="frow"><div class="flabel">3e loi (réciprocité)</div><div class="fval">\(\vec{F}_{A\to B} = -\vec{F}_{B\to A}\)</div></div>
+      <div class="frow"><div class="flabel">Quantité de mvt</div><div class="fval">\(\vec{p} = m\vec{v}\) · \(\sum\vec{F} = \dot{\vec{p}}\)</div></div>
+      <div class="frow"><div class="flabel">Moment cinétique</div><div class="fval">\(\vec{L}_O = \vec{OM}\wedge m\vec{v}\) · \(\sum\vec{M}_O = \dot{\vec{L}}_O\)</div></div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="énergie cinétique potentielle travail puissance théorème">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Énergie & Travail</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow"><div class="flabel">Énergie cinétique</div><div class="fval">\(E_c = \dfrac{1}{2}mv^2\)</div></div>
+      <div class="frow"><div class="flabel">Travail</div><div class="fval">\(W_{A\to B} = \int_A^B \vec{F}\cdot d\vec{l}\)</div></div>
+      <div class="frow"><div class="flabel">Théorème travail-énergie</div><div class="fval">\(\Delta E_c = \sum W_{\text{forces}}\)</div></div>
+      <div class="frow"><div class="flabel">Énergie potentielle</div><div class="fval">\(E_p = mgh\) (pesanteur) · \(E_p = \frac{1}{2}kx^2\) (ressort) · \(W_{\vec{F}\text{cons}} = -\Delta E_p\)</div></div>
+      <div class="frow"><div class="flabel">Conservation énergie</div><div class="fval">\(E_c + E_p = \text{cste}\) si forces conservatives seulement</div></div>
+      <div class="frow"><div class="flabel">Puissance</div><div class="fval">\(P = \vec{F}\cdot\vec{v} = \dfrac{dW}{dt}\)</div></div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="oscillateur harmonique pendule ressort pulsation propre période">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Oscillateurs</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow"><div class="flabel">Oscillateur libre</div><div class="fval">\(\ddot{x} + \omega_0^2 x = 0\) · \(\omega_0 = \sqrt{k/m}\) · \(T_0 = 2\pi/\omega_0\)</div></div>
+      <div class="frow"><div class="flabel">Pendule simple</div><div class="fval">\(\omega_0 = \sqrt{g/l}\) (petites oscillations)</div></div>
+      <div class="frow"><div class="flabel">Amorti</div><div class="fval">\(\ddot{x} + \dfrac{\omega_0}{Q}\dot{x} + \omega_0^2 x = 0\) · \(Q\) facteur de qualité</div></div>
+      <div class="frow"><div class="flabel">Forcé — résonance</div><div class="fval">Résonance en amplitude à \(\omega_r = \omega_0\sqrt{1-1/(2Q^2)}\) · Amplitude max \(\approx Q A_0\)</div></div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="solide rotation inertie moment angulaire Koenig">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Mécanique du Solide</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow"><div class="flabel">PFD rotation</div><div class="fval">\(\sum M_\Delta = J_\Delta\ddot{\theta}\)</div></div>
+      <div class="frow"><div class="flabel">Énergie cinétique rot.</div><div class="fval">\(E_c = \dfrac{1}{2}J_\Delta\omega^2\)</div></div>
+      <div class="frow"><div class="flabel">Théorème de Huygens</div><div class="fval">\(J_\Delta = J_G + md^2\) · (\(d\) = distance G à \(\Delta\))</div></div>
+      <div class="frow"><div class="flabel">Moments usuels</div><div class="fval">Disque : \(J = \frac{1}{2}mR^2\) · Tige (centre) : \(J = \frac{1}{12}ml^2\) · Sphère : \(J = \frac{2}{5}mR^2\)</div></div>
+      <div class="frow"><div class="flabel">Théorème de König</div><div class="fval">\(E_c = \frac{1}{2}mv_G^2 + \frac{1}{2}J_G\omega^2\)</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ONDES & OPTIQUE -->
+<div class="chapter cat-physic" id="p-ondes">
+  <div class="chapter-header">
+    <div class="chapter-icon">〜</div>
+    <div class="chapter-meta">
+      <div class="chapter-cat">Physique</div>
+      <div class="chapter-title">Ondes & Optique</div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="onde propagation célérité longueur onde fréquence période">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Ondes — Généralités</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow"><div class="flabel">Relations fondamentales</div><div class="fval">\(c = \lambda f = \lambda/T\) · \(k = 2\pi/\lambda\) · \(\omega = 2\pi f\)</div></div>
+      <div class="frow"><div class="flabel">Équation d'onde 1D</div><div class="fval">\(\dfrac{\partial^2 y}{\partial t^2} = c^2\dfrac{\partial^2 y}{\partial x^2}\) · Solution : \(y = f(x-ct) + g(x+ct)\)</div></div>
+      <div class="frow"><div class="flabel">Onde plane progressive</div><div class="fval">\(y(x,t) = A\cos(\omega t - kx + \varphi)\)</div></div>
+      <div class="frow"><div class="flabel">Onde stationnaire</div><div class="fval">\(y(x,t) = A\sin(kx)\cos(\omega t)\)</div></div>
+      <div class="frow"><div class="flabel">Effet Doppler</div><div class="fval">\(f_{obs} = f_s\dfrac{c \pm v_{obs}}{c \mp v_s}\) · (+) si rapprochement, (−) si éloignement</div></div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="optique géométrique Snell-Descartes réfraction réflexion indice">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Optique géométrique</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow"><div class="flabel">Snell-Descartes</div><div class="fval">\(n_1\sin\theta_1 = n_2\sin\theta_2\)</div></div>
+      <div class="frow"><div class="flabel">Réflexion totale</div><div class="fval">\(\sin\theta_c = n_2/n_1\) (avec \(n_1 > n_2\)) — au-delà : réflexion totale interne</div></div>
+      <div class="frow"><div class="flabel">Miroir sphérique</div><div class="fval">\(\dfrac{1}{\overline{SA'}} - \dfrac{1}{\overline{SA}} = \dfrac{2}{R} = \dfrac{1}{f'}\) (avec \(f' = -R/2\) concave)</div></div>
+      <div class="frow"><div class="flabel">Lentille mince</div><div class="fval">\(\dfrac{1}{\overline{OA'}} - \dfrac{1}{\overline{OA}} = \dfrac{1}{f'}\) · \(D = 1/f'\) en dioptries</div></div>
+      <div class="frow"><div class="flabel">Grandissement</div><div class="fval">\(\gamma = \dfrac{\overline{A'B'}}{\overline{AB}} = \dfrac{\overline{OA'}}{\overline{OA}}\)</div></div>
+      <div class="frow"><div class="flabel">Vergences assoc.</div><div class="fval">\(D_{tot} = D_1 + D_2 - \dfrac{d}{n}D_1D_2\) · Accolées : \(D_{tot} = D_1+D_2\)</div></div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="interférence diffraction Young fentes réseaux lumière">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Interférences & Diffraction</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow"><div class="flabel">Fentes de Young</div><div class="fval">Interfranges : \(i = \dfrac{\lambda D}{a}\) · Franges brillantes : \(\delta = m\lambda\) · Sombres : \(\delta = (m+\frac{1}{2})\lambda\)</div></div>
+      <div class="frow"><div class="flabel">Différence de marche</div><div class="fval">\(\delta = a\sin\theta \approx a\cdot x/D\)</div></div>
+      <div class="frow"><div class="flabel">Diffraction (fente)</div><div class="fval">Minimum à \(\sin\theta = m\lambda/a\) · Largeur pic central \(\Delta\theta = 2\lambda/a\)</div></div>
+      <div class="frow"><div class="flabel">Réseau</div><div class="fval">Maxima : \(a\sin\theta = m\lambda\) · Pouvoir de résolution : \(R = mN\)</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ÉLECTROMAGNÉTISME -->
+<div class="chapter cat-physic" id="p-em">
+  <div class="chapter-header">
+    <div class="chapter-icon">∇</div>
+    <div class="chapter-meta">
+      <div class="chapter-cat">Physique</div>
+      <div class="chapter-title">Électromagnétisme</div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="Maxwell Gauss Ampère Faraday champ électrique magnétique flux">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Équations de Maxwell & Théorèmes</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow"><div class="flabel">Gauss (E)</div><div class="fval">\(\oiint \vec{E}\cdot d\vec{S} = \dfrac{Q_{int}}{\varepsilon_0}\)</div></div>
+      <div class="frow"><div class="flabel">Gauss (B)</div><div class="fval">\(\oiint \vec{B}\cdot d\vec{S} = 0\) · (pas de monopôle magnétique)</div></div>
+      <div class="frow"><div class="flabel">Faraday</div><div class="fval">\(e = -\dfrac{d\Phi}{dt}\) · Flux : \(\Phi = \iint \vec{B}\cdot d\vec{S}\)</div></div>
+      <div class="frow"><div class="flabel">Ampère</div><div class="fval">\(\oint \vec{B}\cdot d\vec{l} = \mu_0 I_{enlacé}\)</div></div>
+      <div class="frow"><div class="flabel">Force de Lorentz</div><div class="fval">\(\vec{F} = q(\vec{E} + \vec{v}\wedge\vec{B})\)</div></div>
+      <div class="frow"><div class="flabel">Champ fil infini</div><div class="fval">\(E = \dfrac{\lambda}{2\pi\varepsilon_0 r}\) · \(B = \dfrac{\mu_0 I}{2\pi r}\)</div></div>
+      <div class="frow"><div class="flabel">Condensateur plan</div><div class="fval">\(E = \dfrac{\sigma}{\varepsilon_0}\) · \(C = \dfrac{\varepsilon_0 S}{e}\)</div></div>
+      <div class="frow"><div class="flabel">Inductance solénoïde</div><div class="fval">\(L = \mu_0 n^2 V\) avec \(n\) spires/m, \(V\) volume · Énergie : \(E = \frac{1}{2}LI^2\)</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     ÉLECTROCINÉTIQUE
+═══════════════════════════════════════════════════════ -->
+
+<div class="chapter cat-elec" id="e-bases">
+  <div class="chapter-header">
+    <div class="chapter-icon">⚡</div>
+    <div class="chapter-meta">
+      <div class="chapter-cat">Électrocinétique</div>
+      <div class="chapter-title">Bases & Lois des circuits</div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="Kirchhoff maille nœud loi tension courant diviseur">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Lois de Kirchhoff & Dipôles</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow"><div class="flabel">Loi des nœuds</div><div class="fval">\(\sum i_{\text{entrants}} = \sum i_{\text{sortants}}\)</div></div>
+      <div class="frow"><div class="flabel">Loi des mailles</div><div class="fval">\(\sum u_k = 0\) (algébrique)</div></div>
+      <div class="frow"><div class="flabel">Résistance</div><div class="fval">\(u = Ri\) · \(Z_R = R\) · Puissance : \(P = Ri^2 = u^2/R\)</div></div>
+      <div class="frow"><div class="flabel">Condensateur</div><div class="fval">\(i = C\dot{u}\) · \(Z_C = 1/(jC\omega)\) · Énergie : \(E = \frac{1}{2}Cu^2\)</div></div>
+      <div class="frow"><div class="flabel">Bobine</div><div class="fval">\(u = L\dot{i}\) · \(Z_L = jL\omega\) · Énergie : \(E = \frac{1}{2}Li^2\)</div></div>
+      <div class="frow"><div class="flabel">Diviseur tension</div><div class="fval">\(u_2 = e\cdot\dfrac{Z_2}{Z_1+Z_2}\)</div></div>
+      <div class="frow"><div class="flabel">Diviseur courant</div><div class="fval">\(i_2 = i\cdot\dfrac{Z_1}{Z_1+Z_2}\)</div></div>
+      <div class="frow"><div class="flabel">Théorème Thévenin</div><div class="fval">Tout dipôle linéaire = \(E_{Th}\) en série avec \(R_{Th}\). \(E_{Th} = u_{oc}\), \(R_{Th} = u_{oc}/i_{cc}\)</div></div>
+      <div class="frow"><div class="flabel">Norton</div><div class="fval">\(I_N = i_{cc}\) en parallèle avec \(R_{Th}\). \(I_N = E_{Th}/R_{Th}\)</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="chapter cat-elec" id="e-transitoire">
+  <div class="chapter-header">
+    <div class="chapter-icon">📈</div>
+    <div class="chapter-meta">
+      <div class="chapter-cat">Électrocinétique</div>
+      <div class="chapter-title">Régimes Transitoires</div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="RC RL RLC transitoire constante temps échelon réponse">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Circuits RC, RL, RLC</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow"><div class="flabel">RC — charge</div><div class="fval">\(\tau = RC\) · \(u_C(t) = E(1-e^{-t/\tau})\) · \(i(t) = \dfrac{E}{R}e^{-t/\tau}\)</div></div>
+      <div class="frow"><div class="flabel">RL — établissement</div><div class="fval">\(\tau = L/R\) · \(i(t) = \dfrac{E}{R}(1-e^{-t/\tau})\) · \(u_L(t) = Ee^{-t/\tau}\)</div></div>
+      <div class="frow"><div class="flabel">RLC série</div><div class="fval">\(\omega_0 = \dfrac{1}{\sqrt{LC}}\) · \(Q = \dfrac{1}{R}\sqrt{\dfrac{L}{C}}\) · \(m = \dfrac{1}{2Q} = \dfrac{R}{2}\sqrt{\dfrac{C}{L}}\)</div></div>
+      <div class="frow"><div class="flabel">Régimes RLC</div><div class="fval">\(m<1\) : pseudo-périodique · \(m=1\) : critique · \(m>1\) : apériodique</div></div>
+      <div class="frow"><div class="flabel">Conditions initiales</div><div class="fval">\(u_C(0^+) = u_C(0^-)\) · \(i_L(0^+) = i_L(0^-)\) (pas de discontinuité)</div></div>
+      <div class="alert alert-elec"><span class="alert-icon">💡</span><span>À \(t=\tau\) : le signal atteint 63% de sa valeur finale. Régime permanent pratiquement atteint à \(5\tau\).</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="chapter cat-elec" id="e-sinusoidal">
+  <div class="chapter-header">
+    <div class="chapter-icon">〜</div>
+    <div class="chapter-meta">
+      <div class="chapter-cat">Électrocinétique</div>
+      <div class="chapter-title">Régime Sinusoïdal Permanent</div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="complexe impédance phaseur amplitude puissance active réactive">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Notation complexe & Puissances</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow"><div class="flabel">Signal sinusoïdal</div><div class="fval">\(v(t) = V_m\cos(\omega t + \varphi) = \text{Re}[\underline{V}e^{j\omega t}]\) avec \(\underline{V} = V_m e^{j\varphi}\)</div></div>
+      <div class="frow"><div class="flabel">Valeur efficace</div><div class="fval">\(V_{eff} = V_m/\sqrt{2}\)</div></div>
+      <div class="frow"><div class="flabel">Puissance active</div><div class="fval">\(P = UI\cos\varphi = RI^2\) (en W)</div></div>
+      <div class="frow"><div class="flabel">Puissance réactive</div><div class="fval">\(Q = UI\sin\varphi\) (en VAR) · \(Q>0\) inductif, \(Q<0\) capacitif</div></div>
+      <div class="frow"><div class="flabel">Puissance apparente</div><div class="fval">\(S = UI = \sqrt{P^2+Q^2}\) (en VA)</div></div>
+      <div class="frow"><div class="flabel">Facteur de puissance</div><div class="fval">\(\cos\varphi = P/S\)</div></div>
+      <div class="frow"><div class="flabel">RLC série — Bilan</div><div class="fval">\(Z = R + j\left(L\omega - \dfrac{1}{C\omega}\right)\) · Résonance : \(L\omega_0 = 1/(C\omega_0)\) d'où \(\omega_0 = 1/\sqrt{LC}\)</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="chapter cat-elec" id="e-filtres">
+  <div class="chapter-header">
+    <div class="chapter-icon">∿</div>
+    <div class="chapter-meta">
+      <div class="chapter-cat">Électrocinétique</div>
+      <div class="chapter-title">Filtres & Diagrammes de Bode</div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="filtre passe bas haut bande Bode gain dB décade coupure">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Filtres du 1er ordre — Asymptotes de Bode</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <table class="ftable">
+        <thead><tr><th>Filtre</th><th>Fonction de transfert \(H(j\omega)\)</th><th>Pente pour \(\omega\gg\omega_c\)</th></tr></thead>
+        <tbody>
+          <tr><td>Passe-bas</td><td>\(\dfrac{K}{1+j\omega/\omega_c}\)</td><td>−20 dB/déc</td></tr>
+          <tr><td>Passe-haut</td><td>\(\dfrac{Kj\omega/\omega_c}{1+j\omega/\omega_c}\)</td><td>+20 dB/déc puis 0</td></tr>
+          <tr><td>Intégrateur</td><td>\(\dfrac{K}{j\omega\tau}\)</td><td>−20 dB/déc, phase = −90°</td></tr>
+          <tr><td>Dérivateur</td><td>\(Kj\omega\tau\)</td><td>+20 dB/déc, phase = +90°</td></tr>
+        </tbody>
+      </table>
+      <div class="frow"><div class="flabel">Gain dB</div><div class="fval">\(G_{dB} = 20\log|H(j\omega)|\)</div></div>
+      <div class="frow"><div class="flabel">Fréq. de coupure</div><div class="fval">\(\omega_c = 1/\tau\) · à \(\omega_c\) : \(G = G_{max} - 3\,\text{dB}\) · phase = ±45°</div></div>
+      <div class="frow"><div class="flabel">Ordre 2 passe-bas</div><div class="fval">\(H = \dfrac{K\omega_0^2}{\omega_0^2 + 2m\omega_0(j\omega) + (j\omega)^2}\) · pente \(-40\) dB/déc pour \(\omega\gg\omega_0\)</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="chapter cat-elec" id="e-aop">
+  <div class="chapter-header">
+    <div class="chapter-icon">△</div>
+    <div class="chapter-meta">
+      <div class="chapter-cat">Électrocinétique</div>
+      <div class="chapter-title">Amplificateurs Opérationnels</div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="AOP amplificateur opérationnel inverseur non-inverseur comparateur saturé">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">AOP idéal — Montages fondamentaux</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow"><div class="flabel">Hypothèses idéales</div><div class="fval">\(V_+ = V_-\) (égalité des entrées) · \(I_+ = I_- = 0\) (courant nul dans les entrées)</div></div>
+      <div class="frow"><div class="flabel">Amplificateur inverseur</div><div class="fval">\(V_s = -\dfrac{R_2}{R_1}V_e\)</div></div>
+      <div class="frow"><div class="flabel">Non-inverseur</div><div class="fval">\(V_s = \left(1+\dfrac{R_2}{R_1}\right)V_e\)</div></div>
+      <div class="frow"><div class="flabel">Suiveur (buffer)</div><div class="fval">\(V_s = V_e\) · Adapte les impédances</div></div>
+      <div class="frow"><div class="flabel">Soustracteur</div><div class="fval">\(V_s = \dfrac{R_2}{R_1}(V_2 - V_1)\) (si \(R_3=R_1\), \(R_4=R_2\))</div></div>
+      <div class="frow"><div class="flabel">Intégrateur</div><div class="fval">\(V_s = -\dfrac{1}{RC}\int V_e\,dt\)</div></div>
+      <div class="frow"><div class="flabel">Dérivateur</div><div class="fval">\(V_s = -RC\,\dfrac{dV_e}{dt}\)</div></div>
+      <div class="frow"><div class="flabel">Comparateur</div><div class="fval">Sans contre-réaction : \(V_s = V_{sat}^+\) si \(V_+>V_-\), sinon \(V_s = V_{sat}^-\)</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     THERMODYNAMIQUE
+═══════════════════════════════════════════════════════ -->
+
+<div class="chapter cat-thermo" id="t-principes">
+  <div class="chapter-header">
+    <div class="chapter-icon">🔥</div>
+    <div class="chapter-meta">
+      <div class="chapter-cat">Thermodynamique</div>
+      <div class="chapter-title">1er & 2e Principes</div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="premier principe énergie interne enthalpie travail chaleur fermé ouvert">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Premier principe</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow"><div class="flabel">Système fermé</div><div class="fval">\(\Delta U = W + Q\)</div></div>
+      <div class="frow"><div class="flabel">Enthalpie</div><div class="fval">\(H = U + PV\) · \(\Delta H = Q_P\) (à pression constante)</div></div>
+      <div class="frow"><div class="flabel">Travail des forces de pression</div><div class="fval">\(W = -\int P_{ext}dV\) · Quasi-statique : \(W = -\int PdV\)</div></div>
+      <div class="frow"><div class="flabel">Gaz parfait</div><div class="fval">\(\Delta U = nC_V\Delta T\) · \(\Delta H = nC_P\Delta T\) · \(C_P - C_V = R\) · \(\gamma = C_P/C_V\)</div></div>
+      <div class="frow"><div class="flabel">Système ouvert</div><div class="fval">\(\Delta H = W_u + Q\) (\(W_u\) : travail utile hors PdV) · En écoulement : \(\dot{Q} - \dot{W}_u = \dot{m}\Delta h\)</div></div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="deuxième principe entropie Clausius irréversibilité création">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Second principe & Entropie</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow"><div class="flabel">Second principe</div><div class="fval">\(dS = \delta S_{éch} + \delta S_{créé}\) avec \(\delta S_{créé} \geq 0\)</div></div>
+      <div class="frow"><div class="flabel">Échange d'entropie</div><div class="fval">\(\delta S_{éch} = \dfrac{\delta Q}{T_{source}}\)</div></div>
+      <div class="frow"><div class="flabel">Inégalité de Clausius</div><div class="fval">\(\oint \dfrac{\delta Q}{T} \leq 0\) · égalité si réversible</div></div>
+      <div class="frow"><div class="flabel">Gaz parfait</div><div class="fval">\(\Delta S = nC_V\ln\!\dfrac{T_2}{T_1} + nR\ln\!\dfrac{V_2}{V_1} = nC_P\ln\!\dfrac{T_2}{T_1} - nR\ln\!\dfrac{P_2}{P_1}\)</div></div>
+      <div class="frow"><div class="flabel">Corps incompressible</div><div class="fval">\(\Delta S = mC\ln\!\dfrac{T_2}{T_1}\)</div></div>
+      <div class="frow"><div class="flabel">Adiabatique réversible</div><div class="fval">\(\Delta S = 0\) (isentropique) · \(PV^\gamma = \text{cste}\) · \(TV^{\gamma-1} = \text{cste}\) · \(T^\gamma P^{1-\gamma} = \text{cste}\)</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="chapter cat-thermo" id="t-gaz">
+  <div class="chapter-header">
+    <div class="chapter-icon">💨</div>
+    <div class="chapter-meta">
+      <div class="chapter-cat">Thermodynamique</div>
+      <div class="chapter-title">Gaz parfaits — Transformations</div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="gaz parfait PV nRT transformations isotherme isobare isochore adiabatique">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Équation d'état & Transformations</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow"><div class="flabel">Équation d'état GP</div><div class="fval">\(PV = nRT\) · \(R = 8{,}314\,\text{J·mol}^{-1}\text{·K}^{-1}\)</div></div>
+      <table class="ftable" style="margin-top:8px">
+        <thead><tr><th>Transformation</th><th>Loi</th><th>Travail W</th><th>Chaleur Q</th><th>\(\Delta U\)</th></tr></thead>
+        <tbody>
+          <tr><td>Isotherme (\(\Delta T=0\))</td><td>\(PV=\text{cste}\)</td><td>\(-nRT\ln(V_2/V_1)\)</td><td>\(-W\)</td><td>\(0\)</td></tr>
+          <tr><td>Isobare (\(\Delta P=0\))</td><td>\(V/T=\text{cste}\)</td><td>\(-P\Delta V\)</td><td>\(nC_P\Delta T\)</td><td>\(nC_V\Delta T\)</td></tr>
+          <tr><td>Isochore (\(\Delta V=0\))</td><td>\(P/T=\text{cste}\)</td><td>\(0\)</td><td>\(nC_V\Delta T\)</td><td>\(Q\)</td></tr>
+          <tr><td>Adiabatique rév.</td><td>\(PV^\gamma=\text{cste}\)</td><td>\(nC_V\Delta T\)</td><td>\(0\)</td><td>\(W\)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="chapter cat-thermo" id="t-machines">
+  <div class="chapter-header">
+    <div class="chapter-icon">🔄</div>
+    <div class="chapter-meta">
+      <div class="chapter-cat">Thermodynamique</div>
+      <div class="chapter-title">Machines Thermiques</div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="Carnot moteur réfrigérateur pompe chaleur rendement COP">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Cycle de Carnot & COP</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow"><div class="flabel">Bilan global</div><div class="fval">\(Q_c + Q_f + W_{cycle} = 0\) (convention : valeurs reçues par le fluide)</div></div>
+      <div class="frow"><div class="flabel">Moteur — rendement</div><div class="fval">\(\eta = \dfrac{|W|}{Q_c} = 1 - \dfrac{T_f}{T_c} \leq \eta_{Carnot}\) · Températures en Kelvin</div></div>
+      <div class="frow"><div class="flabel">Réfrigérateur COP</div><div class="fval">\(e_{frig} = \dfrac{|Q_f|}{|W|} \leq \dfrac{T_f}{T_c-T_f}\)</div></div>
+      <div class="frow"><div class="flabel">Pompe à chaleur COP</div><div class="fval">\(e_{pac} = \dfrac{|Q_c|}{|W|} \leq \dfrac{T_c}{T_c-T_f}\)</div></div>
+      <div class="frow"><div class="flabel">Relation COP</div><div class="fval">\(e_{pac} = e_{frig} + 1\)</div></div>
+      <div class="frow"><div class="flabel">Carnot (réversible)</div><div class="fval">\(\dfrac{Q_c}{T_c} + \dfrac{Q_f}{T_f} = 0\) · L'entropie créée est nulle</div></div>
+      <div class="alert alert-thermo"><span class="alert-icon">⚠️</span><span>Toujours convertir en Kelvin ! \(T(\text{K}) = T(°\text{C}) + 273{,}15\). Les COP et rendements sont adimensionnels.</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="chapter cat-thermo" id="t-thermo-chim">
+  <div class="chapter-header">
+    <div class="chapter-icon">ΔH</div>
+    <div class="chapter-meta">
+      <div class="chapter-cat">Thermodynamique</div>
+      <div class="chapter-title">Thermochimie</div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="enthalpie formation combustion liaison Hess loi Kirchhoff thermochimie">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Enthalpies de réaction</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow"><div class="flabel">Loi de Hess</div><div class="fval">\(\Delta_r H = \sum\nu_i \Delta_f H^\circ(\text{produits}) - \sum\nu_j \Delta_f H^\circ(\text{réactifs})\)</div></div>
+      <div class="frow"><div class="flabel">Énergie de liaison</div><div class="fval">\(\Delta_r H \approx \sum E(\text{liaisons rompues}) - \sum E(\text{liaisons formées})\)</div></div>
+      <div class="frow"><div class="flabel">Loi de Kirchhoff</div><div class="fval">\(\dfrac{d\Delta_r H}{dT} = \Delta_r C_P = \sum\nu_i C_{P,i}\)</div></div>
+      <div class="frow"><div class="flabel">Énergie de Gibbs</div><div class="fval">\(\Delta_r G = \Delta_r H - T\Delta_r S\) · Spontanéité : \(\Delta_r G < 0\)</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     SCIENCES DE L'INGÉNIEUR
+═══════════════════════════════════════════════════════ -->
+
+<div class="chapter cat-si" id="si-asserv">
+  <div class="chapter-header">
+    <div class="chapter-icon">⚙</div>
+    <div class="chapter-meta">
+      <div class="chapter-cat">Sciences de l'Ingénieur</div>
+      <div class="chapter-title">Asservissements & Automatique</div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="fonction transfert FTBO FTBF schéma bloc boucle ouverte fermée">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Fonctions de transfert</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow"><div class="flabel">Boucle ouverte (BO)</div><div class="fval">\(H_{BO}(p) = C(p)\cdot G(p)\) · (correcteur × procédé)</div></div>
+      <div class="frow"><div class="flabel">Boucle fermée (BF)</div><div class="fval">\(H_{BF}(p) = \dfrac{H_{BO}}{1+H_{BO}}\) (retour unitaire)</div></div>
+      <div class="frow"><div class="flabel">Ordre 1</div><div class="fval">\(H(p) = \dfrac{K}{1+\tau p}\) · \(K\) gain statique · \(\tau\) constante de temps</div></div>
+      <div class="frow"><div class="flabel">Ordre 2</div><div class="fval">\(H(p) = \dfrac{K\omega_0^2}{p^2+2m\omega_0 p+\omega_0^2}\) · \(m\) amortissement · \(\omega_0\) pulsation propre</div></div>
+      <div class="frow"><div class="flabel">Intégrateur</div><div class="fval">\(H(p) = K/p\) · Phase −90° · Augmente la classe de 1</div></div>
+      <div class="frow"><div class="flabel">Retard pur</div><div class="fval">\(H(p) = e^{-\tau p}\) · Module = 1 · Phase = \(-\tau\omega\) rad</div></div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="Bode marge gain phase stabilité pulsation asymptote dB">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Stabilité — Critères de Bode</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow"><div class="flabel">Marge de gain</div><div class="fval">\(M_G = -G_{dB}(\omega_{\varphi=-180°})\) · Stable si \(M_G > 0\,\text{dB}\) (min. recommandé : 6 dB)</div></div>
+      <div class="frow"><div class="flabel">Marge de phase</div><div class="fval">\(M_\varphi = 180° + \varphi(\omega_{0\,\text{dB}})\) · Stable si \(M_\varphi > 0°\) (min. recommandé : 45°)</div></div>
+      <div class="frow"><div class="flabel">Criterion de Routh</div><div class="fval">Le poly dénominateur \(a_n p^n + \cdots + a_0\) est stable ssi tous les coefficients de la table de Routh sont positifs</div></div>
+      <div class="frow"><div class="flabel">Diagramme de Bode</div><div class="fval">Ordre 1 : pente −20 dB/déc après \(\omega_c\) · Ordre 2 : −40 dB/déc · Phase : −45°/déc autour de \(\omega_c\)</div></div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="correcteur PID proportionnel intégral dérivé avance retard phase">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Correcteurs PID & Avance de phase</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow"><div class="flabel">Correcteur P</div><div class="fval">\(C(p) = K_p\) · ↑ rapidité · Erreur statique réduite mais non nulle</div></div>
+      <div class="frow"><div class="flabel">Correcteur I</div><div class="fval">\(C(p) = \dfrac{1}{T_i p}\) · Annule l'erreur statique · Peut déstabiliser</div></div>
+      <div class="frow"><div class="flabel">Correcteur PI</div><div class="fval">\(C(p) = K_p\left(1+\dfrac{1}{T_i p}\right) = K_p\dfrac{T_i p + 1}{T_i p}\)</div></div>
+      <div class="frow"><div class="flabel">Correcteur PID</div><div class="fval">\(C(p) = K_p\left(1+\dfrac{1}{T_i p}+T_d p\right)\)</div></div>
+      <div class="frow"><div class="flabel">Avance de phase</div><div class="fval">\(C(p) = \dfrac{1+\tau p}{1+a\tau p}\) (\(a<1\)) · Augmente la marge de phase</div></div>
+      <div class="frow"><div class="flabel">Retard de phase</div><div class="fval">\(C(p) = \dfrac{1+\tau p}{1+b\tau p}\) (\(b>1\)) · Améliore la précision · Réduit légèrement la stabilité</div></div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="erreur statique classe position vitesse accélération système">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Précision & Erreurs en régime permanent</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow"><div class="flabel">Théorème val. finale</div><div class="fval">\(\varepsilon(\infty) = \lim_{p\to 0} p\cdot E(p)\)</div></div>
+      <div class="frow"><div class="flabel">Classe 0 — Échelon</div><div class="fval">\(\varepsilon_s = \dfrac{1}{1+K_{BO}}\) · \(K_{BO} = \lim_{p\to 0}H_{BO}(p)\)</div></div>
+      <div class="frow"><div class="flabel">Classe 1 — Échelon</div><div class="fval">\(\varepsilon_s = 0\) · Rampe : \(\varepsilon_v = 1/K_v\) · \(K_v = \lim_{p\to 0}p\cdot H_{BO}(p)\)</div></div>
+      <div class="frow"><div class="flabel">Classe 2</div><div class="fval">Erreur nulle à l'échelon et à la rampe · Parabolique : \(\varepsilon_a = 1/K_a\)</div></div>
+      <div class="alert alert-si"><span class="alert-icon">💡</span><span>La classe = nombre d'intégrateurs dans la BO. Plus la classe est élevée → meilleure précision mais plus difficile à stabiliser.</span></div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="réponse indicielle temps réponse dépassement premier ordre second">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Réponses temporelles caractéristiques</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow"><div class="flabel">Ordre 1 — échelon</div><div class="fval">\(s(t) = K(1-e^{-t/\tau})\) · Temps de réponse à 5% : \(t_{r5\%} \approx 3\tau\)</div></div>
+      <div class="frow"><div class="flabel">Ordre 2 — dépassement</div><div class="fval">\(D\% = 100\cdot\exp\!\left(\dfrac{-m\pi}{\sqrt{1-m^2}}\right)\) · nul si \(m\geq 1\)</div></div>
+      <div class="frow"><div class="flabel">Ordre 2 — pseudo-période</div><div class="fval">\(T_{ps} = \dfrac{2\pi}{\omega_0\sqrt{1-m^2}}\)</div></div>
+      <div class="frow"><div class="flabel">Ordre 2 — temps de pic</div><div class="fval">\(t_{pic} = \dfrac{\pi}{\omega_0\sqrt{1-m^2}}\)</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="chapter cat-si" id="si-meca">
+  <div class="chapter-header">
+    <div class="chapter-icon">🔩</div>
+    <div class="chapter-meta">
+      <div class="chapter-cat">Sciences de l'Ingénieur</div>
+      <div class="chapter-title">Mécanique Appliquée</div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="cinématique vitesse accélération rotation translation géométrique solide">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Cinématique des solides</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow"><div class="flabel">Vecteur vitesse</div><div class="fval">\(\vec{v}_B = \vec{v}_A + \vec{\omega}\wedge\overrightarrow{AB}\)</div></div>
+      <div class="frow"><div class="flabel">Translation</div><div class="fval">\(\vec{\omega} = \vec{0}\) · Tous les points ont la même vitesse</div></div>
+      <div class="frow"><div class="flabel">Rotation pure</div><div class="fval">\(\vec{v} = \vec{\omega}\wedge\vec{r}\) · \(v = r\omega\) (scalaire)</div></div>
+      <div class="frow"><div class="flabel">Accélération</div><div class="fval">\(\vec{a} = \vec{\alpha}\wedge\vec{r} + \vec{\omega}\wedge(\vec{\omega}\wedge\vec{r})\) · Centripète : \(-r\omega^2\vec{e}_r\) · Tangentielle : \(r\alpha\vec{e}_\theta\)</div></div>
+      <div class="frow"><div class="flabel">Engrenage</div><div class="fval">\(\omega_1 r_1 = \omega_2 r_2\) · Rapport : \(i = \omega_2/\omega_1 = -Z_1/Z_2\) (signe si axes parallèles)</div></div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="dynamique PFD rotation inertie couple puissance rendement">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Dynamique & Rendement</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow"><div class="flabel">PFD translation</div><div class="fval">\(\sum F = ma_G\)</div></div>
+      <div class="frow"><div class="flabel">PFD rotation</div><div class="fval">\(\sum M_\Delta = J_\Delta\ddot{\theta}\)</div></div>
+      <div class="frow"><div class="flabel">Puissance</div><div class="fval">\(P = F\cdot v = M\cdot\omega\)</div></div>
+      <div class="frow"><div class="flabel">Rendement</div><div class="fval">\(\eta = P_{utile}/P_{absorbée}\) · Pour n étages en série : \(\eta_{tot} = \prod \eta_i\)</div></div>
+      <div class="frow"><div class="flabel">Théorème de l'énergie</div><div class="fval">\(\dfrac{d}{dt}(E_c) = \sum P_{\text{ext}} + \sum P_{\text{int}}\)</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="chapter cat-si" id="si-electro">
+  <div class="chapter-header">
+    <div class="chapter-icon">⚡</div>
+    <div class="chapter-meta">
+      <div class="chapter-cat">Sciences de l'Ingénieur</div>
+      <div class="chapter-title">Électrotechnique</div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="moteur courant continu synchrone asynchrone triphasé puissance couple">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Machines électriques</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow"><div class="flabel">Moteur CC</div><div class="fval">\(e = K_e\omega\) · \(C_{em} = K_e I\) · \(U = e + RI\) · \(P_{mec} = e\cdot I = K_e\omega I\)</div></div>
+      <div class="frow"><div class="flabel">Moteur synchrone</div><div class="fval">\(n_s = 60f/p\) (tr/min) · \(p\) = nb paires de pôles · Tourne à la vitesse de synchronisme</div></div>
+      <div class="frow"><div class="flabel">Moteur asynchrone</div><div class="fval">Glissement : \(g = (n_s-n)/n_s\) · Fréquence rotor : \(f_r = g\cdot f\) · Puissance Joule rotor : \(P_J = g\cdot P_{trans}\)</div></div>
+      <div class="frow"><div class="flabel">Circuit triphasé</div><div class="fval">\(U_{ligne} = \sqrt{3}\cdot U_{phase}\) · Puissance : \(P_{tot} = 3P_{phase} = \sqrt{3}UI\cos\varphi\)</div></div>
+      <div class="frow"><div class="flabel">Transformateur idéal</div><div class="fval">\(\dfrac{U_2}{U_1} = \dfrac{N_2}{N_1} = m\) · \(\dfrac{I_2}{I_1} = \dfrac{1}{m}\) · \(P_1 = P_2\)</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     CHIMIE
+═══════════════════════════════════════════════════════ -->
+
+<div class="chapter cat-chim" id="c-acide">
+  <div class="chapter-header">
+    <div class="chapter-icon">⚗</div>
+    <div class="chapter-meta">
+      <div class="chapter-cat">Chimie</div>
+      <div class="chapter-title">Acides-Bases & Équilibres</div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="acide base pH pKa constante acidité équilibre solution aqueuse">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Acide-Base — Formules fondamentales</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow"><div class="flabel">Définition Brønsted</div><div class="fval">Acide : cède \(H^+\) · Base : capte \(H^+\) · Couple acide/base : \(AH/A^-\)</div></div>
+      <div class="frow"><div class="flabel">pH et constantes</div><div class="fval">\(\text{pH} = -\log[H_3O^+]\) · \(\text{pK}_a = -\log K_a\) · \(\text{pK}_e = 14\) à 25°C</div></div>
+      <div class="frow"><div class="flabel">Relation conjuguée</div><div class="fval">\(\text{pK}_a + \text{pK}_b = \text{pK}_e\) · \(K_a\cdot K_b = K_e\)</div></div>
+      <div class="frow"><div class="flabel">Acide fort</div><div class="fval">\(\text{pH} = -\log C_a\)</div></div>
+      <div class="frow"><div class="flabel">Base forte</div><div class="fval">\(\text{pH} = 14 + \log C_b\)</div></div>
+      <div class="frow"><div class="flabel">Acide faible</div><div class="fval">\(\text{pH} \approx \dfrac{1}{2}(\text{pK}_a - \log C_a)\)</div></div>
+      <div class="frow"><div class="flabel">Base faible</div><div class="fval">\(\text{pH} \approx 14 - \dfrac{1}{2}(\text{pK}_b - \log C_b)\)</div></div>
+      <div class="frow"><div class="flabel">Tampon (Henderson)</div><div class="fval">\(\text{pH} = \text{pK}_a + \log\dfrac{[\text{base}]}{[\text{acide}]}\)</div></div>
+      <div class="frow"><div class="flabel">Point équivalence</div><div class="fval">Pour un acide faible : \(\text{pH}_{eq} = \dfrac{1}{2}(\text{pK}_e + \text{pK}_a)\)</div></div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="précipitation solubilité Kps produit">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Précipitation & Solubilité</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow"><div class="flabel">Produit de solubilité</div><div class="fval">\(K_{sp} = [M^{p+}]^a[X^{q-}]^b\) pour \(M_aX_b(s)\)</div></div>
+      <div class="frow"><div class="flabel">Solubilité</div><div class="fval">\(s = \left(\dfrac{K_{sp}}{4}\right)^{1/3}\) pour \(M_2X\) · À calculer selon la stœchiométrie</div></div>
+      <div class="frow"><div class="flabel">Précipitation</div><div class="fval">Précipitation si \(Q > K_{sp}\) · Dissolution si \(Q < K_{sp}\)</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="chapter cat-chim" id="c-redox">
+  <div class="chapter-header">
+    <div class="chapter-icon">e⁻</div>
+    <div class="chapter-meta">
+      <div class="chapter-cat">Chimie</div>
+      <div class="chapter-title">Oxydo-réduction & Électrochimie</div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="oxydant réducteur potentiel Nernst Faraday électrolyse pile cellule">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Potentiels & Loi de Nernst</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow"><div class="flabel">Demi-équation</div><div class="fval">\(\text{Ox} + ne^- \rightarrow \text{Réd}\)</div></div>
+      <div class="frow"><div class="flabel">Loi de Nernst</div><div class="fval">\(E = E^\circ + \dfrac{RT}{nF}\ln\dfrac{[\text{Ox}]}{[\text{Réd}]} = E^\circ + \dfrac{0{,}06}{n}\log\dfrac{[\text{Ox}]}{[\text{Réd}]}\) (à 25°C)</div></div>
+      <div class="frow"><div class="flabel">Constante de Faraday</div><div class="fval">\(F = 96\,485\,\text{C·mol}^{-1}\)</div></div>
+      <div class="frow"><div class="flabel">FEM de la pile</div><div class="fval">\(E_{pile} = E_{cathode} - E_{anode}\) · \(\Delta_r G = -nFE_{pile}\)</div></div>
+      <div class="frow"><div class="flabel">Constante d'équilibre</div><div class="fval">\(\ln K = \dfrac{nFE^\circ}{RT} = \dfrac{nE^\circ}{0{,}06}\) (à 25°C)</div></div>
+      <div class="frow"><div class="flabel">Lois de Faraday</div><div class="fval">\(m = \dfrac{M\cdot I\cdot t}{n\cdot F}\) · masse déposée à l'électrode</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="chapter cat-chim" id="c-cinetique">
+  <div class="chapter-header">
+    <div class="chapter-icon">→</div>
+    <div class="chapter-meta">
+      <div class="chapter-cat">Chimie</div>
+      <div class="chapter-title">Cinétique Chimique</div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="vitesse réaction ordre constante loi vitesse Arrhenius énergie activation">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Lois de vitesse</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow"><div class="flabel">Loi de vitesse</div><div class="fval">\(v = k[A]^\alpha[B]^\beta\) · ordre global \(n = \alpha+\beta\)</div></div>
+      <div class="frow"><div class="flabel">Ordre 0</div><div class="fval">\([A] = [A]_0 - kt\) · \(t_{1/2} = [A]_0/(2k)\)</div></div>
+      <div class="frow"><div class="flabel">Ordre 1</div><div class="fval">\([A] = [A]_0 e^{-kt}\) · \(t_{1/2} = \ln 2/k\)</div></div>
+      <div class="frow"><div class="flabel">Ordre 2</div><div class="fval">\(\dfrac{1}{[A]} = \dfrac{1}{[A]_0} + kt\) · \(t_{1/2} = 1/(k[A]_0)\)</div></div>
+      <div class="frow"><div class="flabel">Loi d'Arrhenius</div><div class="fval">\(k = A\,e^{-E_a/RT}\) · \(\ln k = \ln A - \dfrac{E_a}{RT}\) · \(\ln\dfrac{k_2}{k_1} = \dfrac{E_a}{R}\left(\dfrac{1}{T_1}-\dfrac{1}{T_2}\right)\)</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="chapter cat-chim" id="c-orga">
+  <div class="chapter-header">
+    <div class="chapter-icon">C</div>
+    <div class="chapter-meta">
+      <div class="chapter-cat">Chimie</div>
+      <div class="chapter-title">Chimie Organique</div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="mécanisme addition élimination substitution nucléophile électrophile">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Mécanismes réactionnels</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <div class="frow"><div class="flabel">SN1</div><div class="fval">Substitution nucléophile unimoléculaire · 2 étapes · Carbocation intermédiaire · Racémisation</div></div>
+      <div class="frow"><div class="flabel">SN2</div><div class="fval">Substitution nucléophile bimoléculaire · 1 étape · Inversion de Walden · Cinétique d'ordre 2</div></div>
+      <div class="frow"><div class="flabel">E1 / E2</div><div class="fval">Élimination · Règle de Zaïtsev : alcène le plus substitué favorisé en E1</div></div>
+      <div class="frow"><div class="flabel">Addition sur C=C</div><div class="fval">Électrophile (AE) : addition de \(H_2\), \(X_2\), \(HX\) · Règle de Markovnikov : \(H^+\) sur le C le plus hydrogéné</div></div>
+      <div class="frow"><div class="flabel">Acylation de Friedel-Crafts</div><div class="fval">Substitution aromatique électrophile · Catalyseur AlCl3</div></div>
+      <div class="frow"><div class="flabel">Degrés d'insaturation</div><div class="fval">\(\text{DoU} = \dfrac{2C+2+N-H-X}{2}\) · Cycle = 1 · Double liaison = 1 · Triple liaison = 2</div></div>
+    </div>
+  </div>
+
+  <div class="fcard" data-kw="fonctions organiques aldéhyde cétone alcool acide ester amine amide">
+    <div class="fcard-head" onclick="toggle(this)">
+      <div class="fcard-title">Fonctions & Réactivités</div>
+      <span class="fcard-toggle">▾</span>
+    </div>
+    <div class="fcard-body">
+      <table class="ftable">
+        <thead><tr><th>Fonction</th><th>Groupe caractéristique</th><th>Réaction clé</th></tr></thead>
+        <tbody>
+          <tr><td>Alcool</td><td>–OH</td><td>Déshydratation, oxydation (→ aldéhyde/cétone)</td></tr>
+          <tr><td>Aldéhyde</td><td>–CHO</td><td>Réducteur fort · Oxydation → acide carboxylique</td></tr>
+          <tr><td>Cétone</td><td>C=O</td><td>Non réducteur · Addition nucléophile</td></tr>
+          <tr><td>Acide carboxylique</td><td>–COOH</td><td>Estérification (équilibre) · Acide faible pKa ≈ 4–5</td></tr>
+          <tr><td>Ester</td><td>–COOR</td><td>Hydrolyse (acide ou basique/saponification)</td></tr>
+          <tr><td>Amine</td><td>–NH2</td><td>Base · Nucléophile</td></tr>
+          <tr><td>Amide</td><td>–CONH2</td><td>Liaison peptidique · Hydrolyse difficile</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+</div><!-- end content -->
+
+</div><!-- end main -->
+
+<script>
+// ── Toggle collapse ──
+function toggle(head) {
+  head.parentElement.classList.toggle('collapsed');
+}
+function toggleDemo(head) {
+  head.parentElement.classList.toggle('collapsed');
+}
+
+// ── Smooth scroll to anchor ──
+function scrollTo(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── Search ──
+function doSearch(q) {
+  q = q.toLowerCase().trim();
+  const cards = document.querySelectorAll('.fcard, .demo-card');
+  const chapters = document.querySelectorAll('.chapter');
+  let count = 0;
+
+  if (!q) {
+    cards.forEach(c => c.classList.remove('hidden'));
+    chapters.forEach(c => c.classList.remove('hidden'));
+    document.getElementById('searchCount').textContent = '';
+    return;
+  }
+
+  cards.forEach(card => {
+    const text = (card.dataset.kw || '') + ' ' + card.innerText;
+    if (text.toLowerCase().includes(q)) {
+      card.classList.remove('hidden');
+      count++;
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+
+  // hide empty chapters
+  chapters.forEach(ch => {
+    const visible = ch.querySelectorAll('.fcard:not(.hidden), .demo-card:not(.hidden)');
+    ch.classList.toggle('hidden', visible.length === 0);
+  });
+
+  document.getElementById('searchCount').textContent = count + ' résultat' + (count > 1 ? 's' : '');
+}
+
+// ── Sidebar active on scroll ──
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+      const link = document.querySelector(`.sidebar-link[onclick="scrollTo('${id}')"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+
+document.querySelectorAll('.chapter').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
