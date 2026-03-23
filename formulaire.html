@@ -1837,6 +1837,33 @@ body {
       <div class="chapter-title">Asservissements & Automatique</div>
     </div>
   </div>
+  
+  <div class="frow"><div class="flabel">Contrainte normale</div><div class="fval">\(\sigma = F/S\)</div></div>
+<div class="frow"><div class="flabel">Loi de Hooke</div><div class="fval">\(\sigma = E\varepsilon\)</div></div>
+<div class="frow"><div class="flabel">Déformation</div><div class="fval">\(\varepsilon = \Delta l / l_0\)</div></div>
+<div class="frow"><div class="flabel">Contrainte complète</div><div class="fval">\(\sigma = E\varepsilon = \dfrac{F}{S} = \dfrac{E\Delta l}{l_0}\)</div></div>
+<div class="frow"><div class="flabel">Cond. résistance</div><div class="fval">\(\sigma \leq R_{pe} = \dfrac{R_e}{s}\)</div></div>
+
+<div class="frow"><div class="flabel">Angle unit. torsion</div><div class="fval">\(\theta = \dfrac{\alpha}{x} = \dfrac{\alpha_1}{\ell}\)</div></div>
+<div class="frow"><div class="flabel">Contrainte tang.</div><div class="fval">\(\tau = G\rho\theta\)</div></div>
+<div class="frow"><div class="flabel">Moment de torsion</div><div class="fval">\(M_t = G\theta I_G\)</div></div>
+<div class="frow"><div class="flabel">Contrainte maxi</div><div class="fval">\(\tau_{max} = \dfrac{M_t \cdot R}{I_G}\)</div></div>
+<div class="frow"><div class="flabel">Cond. résistance</div><div class="fval">\(\tau_{max} \leq \tau_{pg} = \dfrac{R_e}{s}\)</div></div>
+<div class="frow"><div class="flabel">Cond. rigidité</div><div class="fval">\(\theta \leq \theta_{limite}\)</div></div>
+<div class="frow"><div class="flabel">Accident section</div><div class="fval">\(\tau_{max} = k \cdot \tau_{nominale}\)</div></div>
+
+<div class="frow"><div class="flabel">Contrainte normale</div><div class="fval">\(\sigma = \dfrac{M_{Fz} \cdot y}{I_{Gz}}\)</div></div>
+<div class="frow"><div class="flabel">Contrainte maxi</div><div class="fval">\(\sigma_{max} = \dfrac{M_{Fz}}{I_{Gz}/y_{max}}\)</div></div>
+<div class="frow"><div class="flabel">Déformée</div><div class="fval">\(y''(x) = \dfrac{M_{Fz}}{E \cdot I_{Gz}}\)</div></div>
+
+<div class="frow"><div class="flabel">Rectangle IGx</div><div class="fval">\(I_{Gx} = \dfrac{bh^3}{12}\)</div></div>
+<div class="frow"><div class="flabel">Rectangle IGy</div><div class="fval">\(I_{Gy} = \dfrac{hb^3}{12}\)</div></div>
+<div class="frow"><div class="flabel">Cercle IGx = IGy</div><div class="fval">\(I_{Gx} = \dfrac{\pi R^4}{4} = \dfrac{\pi d^4}{64}\)</div></div>
+<div class="frow"><div class="flabel">Cercle polaire</div><div class="fval">\(I_G = \dfrac{\pi R^4}{2} = \dfrac{\pi d^4}{32}\)</div></div>
+<div class="frow"><div class="flabel">Huygens</div><div class="fval">\(I_x = I_{Gx} + S \cdot d^2\)</div></div>
+<div class="frow"><div class="flabel">Moment polaire</div><div class="fval">\(I_A = I_x + I_y\)</div></div>
+<div class="frow"><div class="flabel">Surfaces composées</div><div class="fval">\(I(S) = I(S_1) + I(S_2) + \cdots\)</div></div>
+
 
   <div class="fcard" data-kw="fonction transfert FTBO FTBF schéma bloc boucle ouverte fermée">
     <div class="fcard-head" onclick="toggle(this)">
